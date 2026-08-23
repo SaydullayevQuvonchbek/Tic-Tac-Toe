@@ -4,244 +4,286 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_color"
-    tools:context=".WelcomeFragment">
+    android:background="@color/background_color">
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_margin="16dp"
-        app:cardBackgroundColor="@color/yellow_accent"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-        <ScrollView
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fillViewport="true">
+            android:layout_height="wrap_content"
+            android:padding="24dp">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="24dp">
-
+            <!-- Title -->
             <TextView
-                android:id="@+id/textView"
+                android:id="@+id/tvTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:background="#997B00"
-                android:paddingHorizontal="24dp"
-                android:paddingVertical="8dp"
-                android:text="Tic Tac Toe"
+                android:layout_marginTop="24dp"
+                android:fontFamily="sans-serif-black"
+                android:text="TIC TAC TOE"
                 android:textColor="@color/white"
-                android:textSize="20sp"
-                android:textStyle="bold"
+                android:textSize="36sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageView
-                android:id="@+id/imageView"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:layout_marginTop="32dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/board"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView" />
+            <TextView
+                android:id="@+id/tvPro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/pro_badge_bg"
+                android:fontFamily="sans-serif-black"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="4dp"
+                android:text="PRO"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toTopOf="@+id/tvTitle"
+                app:layout_constraintEnd_toEndOf="@+id/tvTitle"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="@+id/tvTitle"
+                app:layout_constraintTop_toTopOf="@+id/tvTitle"
+                app:layout_constraintVertical_bias="0.0" />
 
-            <EditText
-                android:id="@+id/etUsername"
-                android:layout_width="200dp"
+            <!-- Username Card -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardUsername"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                app:cardBackgroundColor="#312E81"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:layout_constraintTop_toBottomOf="@+id/tvTitle">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Player Profile"
+                        android:textColor="#A5B4FC"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/etUsername"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/edittext_bg"
+                        android:hint="Enter Username"
+                        android:inputType="textPersonName"
+                        android:paddingHorizontal="16dp"
+                        android:textColor="@color/white"
+                        android:textColorHint="#818CF8" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Settings Card -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardSettings"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:hint="Enter Username"
-                android:gravity="center"
-                android:inputType="textPersonName"
+                app:cardBackgroundColor="#312E81"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:layout_constraintTop_toBottomOf="@+id/cardUsername">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Game Settings"
+                        android:textColor="#A5B4FC"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <!-- Board Size -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="Board Size"
+                        android:textColor="@color/white"
+                        android:textSize="16sp" />
+
+                    <RadioGroup
+                        android:id="@+id/rgSize"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:orientation="horizontal">
+
+                        <RadioButton
+                            android:id="@+id/rb3x3"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:buttonTint="@color/yellow_accent"
+                            android:checked="true"
+                            android:text="3x3"
+                            android:textColor="@color/white" />
+
+                        <RadioButton
+                            android:id="@+id/rb4x4"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:buttonTint="@color/yellow_accent"
+                            android:text="4x4"
+                            android:textColor="@color/white" />
+
+                        <RadioButton
+                            android:id="@+id/rb5x5"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:buttonTint="@color/yellow_accent"
+                            android:text="5x5"
+                            android:textColor="@color/white" />
+                    </RadioGroup>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="12dp"
+                        android:background="#4338CA" />
+
+                    <!-- Modes -->
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switchAiMode"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Play against AI (Single Player)"
+                        android:textColor="@color/white"
+                        app:useMaterialThemeColors="false"
+                        app:thumbTint="@color/yellow_accent"
+                        app:trackTint="#A5B4FC"/>
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switchInfinityMode"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Infinity Mode (Pieces fade away)"
+                        android:textColor="@color/white"
+                        app:useMaterialThemeColors="false"
+                        app:thumbTint="@color/yellow_accent"
+                        app:trackTint="#A5B4FC"/>
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switchArcadeMode"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Arcade Mode (5s Timer)"
+                        android:textColor="@color/white"
+                        app:useMaterialThemeColors="false"
+                        app:thumbTint="@color/yellow_accent"
+                        app:trackTint="#A5B4FC"/>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Play Offline Buttons -->
+            <TextView
+                android:id="@+id/tvPlayLocal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="PLAY OFFLINE"
+                android:textColor="#A5B4FC"
+                android:textSize="12sp"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imageView" />
+                app:layout_constraintTop_toBottomOf="@+id/cardSettings" />
 
-            <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/switchArcadeMode"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/layoutOfflineButtons"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:text="Arcade Mode (Timer)"
-                android:textColor="@color/text_color"
-                android:textSize="16sp"
-                app:layout_constraintBottom_toTopOf="@+id/tvSize"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/etUsername" />
-
-            <TextView
-                android:id="@+id/tvSize"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="Board Size"
-                android:textColor="@color/text_color"
-                app:layout_constraintBottom_toTopOf="@+id/rgSize"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <RadioGroup
-                android:id="@+id/rgSize"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
                 android:orientation="horizontal"
-                app:layout_constraintBottom_toTopOf="@+id/switchAiMode"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent">
+                app:layout_constraintTop_toBottomOf="@+id/tvPlayLocal">
 
-                <RadioButton
-                    android:id="@+id/rb3x3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:text="3x3" />
+                <Button
+                    android:id="@+id/btnPlayerX"
+                    android:layout_width="0dp"
+                    android:layout_height="60dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="#4CAF50"
+                    android:fontFamily="sans-serif-black"
+                    android:text="START AS X"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    app:cornerRadius="12dp" />
 
-                <RadioButton
-                    android:id="@+id/rb4x4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="4x4" />
+                <Button
+                    android:id="@+id/btnPlayerO"
+                    android:layout_width="0dp"
+                    android:layout_height="60dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="#EF5350"
+                    android:fontFamily="sans-serif-black"
+                    android:text="START AS O"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    app:cornerRadius="12dp" />
+            </LinearLayout>
 
-                <RadioButton
-                    android:id="@+id/rb5x5"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="5x5" />
-            </RadioGroup>
+            <View
+                android:id="@+id/divider2"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="24dp"
+                android:background="#312E81"
+                app:layout_constraintTop_toBottomOf="@+id/layoutOfflineButtons" />
 
-            <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/switchAiMode"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="Play against AI (Minimax)"
-                android:textColor="@color/text_color"
-                android:textSize="16sp"
-                app:layout_constraintBottom_toTopOf="@+id/switchInfinityMode"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/switchInfinityMode"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:text="Infinity Mode (Pro+++)"
-                android:textColor="@color/text_color"
-                android:textSize="16sp"
-                app:layout_constraintBottom_toTopOf="@+id/textView2"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:text="Who is playing first?"
-                android:textColor="@color/text_color"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toTopOf="@+id/btnPlayerX"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <ImageButton
-                android:id="@+id/btnPlayerX"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_marginBottom="32dp"
-                android:background="@drawable/circle_button_bg"
-                android:elevation="4dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/btnPlayerO"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <ImageButton
-                android:id="@+id/btnPlayerO"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_marginBottom="32dp"
-                android:background="@drawable/circle_button_bg"
-                android:elevation="4dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/btnPlayerX" />
-
-            <!-- Add X and O texts inside the buttons -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="X"
-                android:textColor="#556B2F"
-                android:textSize="40sp"
-                android:textStyle="bold"
-                android:elevation="5dp"
-                app:layout_constraintBottom_toBottomOf="@+id/btnPlayerX"
-                app:layout_constraintEnd_toEndOf="@+id/btnPlayerX"
-                app:layout_constraintStart_toStartOf="@+id/btnPlayerX"
-                app:layout_constraintTop_toTopOf="@+id/btnPlayerX" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="O"
-                android:textColor="#8B0000"
-                android:textSize="40sp"
-                android:textStyle="bold"
-                android:elevation="5dp"
-                app:layout_constraintBottom_toBottomOf="@+id/btnPlayerO"
-                app:layout_constraintEnd_toEndOf="@+id/btnPlayerO"
-                app:layout_constraintStart_toStartOf="@+id/btnPlayerO"
-                app:layout_constraintTop_toTopOf="@+id/btnPlayerO" />
-
+            <!-- Online Mode -->
             <Button
                 android:id="@+id/btnPlayOnline"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="32dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="65dp"
+                android:layout_marginTop="24dp"
                 android:backgroundTint="@color/yellow_accent"
-                android:text="Play Online (Beta)"
-                android:textColor="@color/white"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                android:fontFamily="sans-serif-black"
+                android:text="PLAY ONLINE (BETA)"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                app:cornerRadius="16dp"
+                app:layout_constraintTop_toBottomOf="@+id/divider2" />
 
+            <!-- Leaderboard -->
             <Button
                 android:id="@+id/btnLeaderboard"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="32dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="16dp"
-                android:backgroundTint="#4CAF50"
-                android:text="Global Leaderboard"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="24dp"
+                android:backgroundTint="#4338CA"
+                android:fontFamily="sans-serif-black"
+                android:text="GLOBAL LEADERBOARD"
                 android:textColor="@color/white"
-                android:textStyle="bold"
+                android:textSize="16sp"
+                app:cornerRadius="16dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/btnPlayOnline" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-        </ScrollView>
-    </androidx.cardview.widget.CardView>
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
