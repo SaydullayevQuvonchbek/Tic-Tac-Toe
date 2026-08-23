@@ -36,6 +36,8 @@ class WelcomeFragment : Fragment() {
     private fun startGame(startingPlayer: String) {
         val bundle = Bundle().apply {
             putString("startingPlayer", startingPlayer)
+            putBoolean("isInfinityMode", binding.switchInfinityMode.isChecked)
+            putBoolean("isAiMode", binding.switchAiMode.isChecked)
         }
         findNavController().navigate(R.id.action_welcomeFragment_to_gameFragment, bundle)
     }
