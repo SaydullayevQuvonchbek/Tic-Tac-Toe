@@ -210,11 +210,27 @@ class WelcomeFragment : Fragment() {
             ) {
                 pd.dismiss()
                 if (response.isSuccessful && response.body()?.status == "success") {
-                    // Host sets the rules, we just join. Defaulting to 3x3 normal if backend doesn't send rules.
-                    // Ideal: backend sends board_size and infinity_mode in JoinResponse.
-                    launchOnlineGame(user, roomCode, isHost = false, 3, false)
+                    val size = response.body()?.board_size ?: 3
+                    val isInfinity = response.body()?.infinity_mode ?: false
+                    launchOnlineGame(user, roomCode, isHost = false, size, isInfinity)
                 } else {
-                    android.widget.Toast.makeText(context, "Failed to join room: ${response.body()?.message}", android.widget.Toast.LENGTH_SHORT).show()
+                    var errorMsg = "Unknown Error"
+                    val rawError = response.errorBody()?.string()
+                    if (rawError != null) {
+                        if (rawError.trim().startsWith("<")) {
+                            errorMsg = "Server Error (HTML returned)"
+                        } else {
+                            try {
+                                val json = org.json.JSONObject(rawError)
+                                errorMsg = json.optString("message", "Unknown API Error")
+                            } catch (e: Exception) {
+                                errorMsg = rawError
+                            }
+                        }
+                    } else {
+                        errorMsg = response.body()?.message ?: "Unknown Error"
+                    }
+                    android.widget.Toast.makeText(context, "Join Failed: $errorMsg", android.widget.Toast.LENGTH_LONG).show()
                 }
             }
 

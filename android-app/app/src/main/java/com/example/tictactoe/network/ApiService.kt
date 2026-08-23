@@ -13,7 +13,7 @@ data class RoomCreateRequest(val player_id: Int, val board_size: Int, val infini
 data class RoomCreateResponse(val status: String, val room_code: String?)
 
 data class RoomJoinRequest(val player_id: Int, val room_code: String)
-data class RoomJoinResponse(val status: String, val room_code: String?, val message: String?)
+data class RoomJoinResponse(val status: String, val room_code: String?, val message: String?, val board_size: Int?, val infinity_mode: Boolean?)
 
 data class MoveRequest(val room_code: String, val player_id: Int, val row: Int, val col: Int, val next_turn: Int)
 data class MoveResponse(val status: String)

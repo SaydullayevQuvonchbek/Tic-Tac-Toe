@@ -332,7 +332,12 @@ class GameFragment : Fragment() {
         }.start()
     }
 
+    private var isNavigating = false
+
     private fun navigateToResult() {
+        if (isNavigating) return
+        isNavigating = true
+        
         countDownTimer?.cancel()
         if (isOnlineMode) {
             com.example.tictactoe.network.PusherManager.unsubscribeFromRoom(roomCode)
@@ -370,10 +375,16 @@ class GameFragment : Fragment() {
             }
         }
         
+        // Disable buttons so no further clicks occur
+        val size = if (isInfinityMode) infinityGameLogic!!.size else gameLogic!!.size
+        setButtonsEnabled(false, size)
+        
         // Show result after a small delay so user can see the final move
         binding.root.postDelayed({
-            findNavController().navigate(R.id.action_gameFragment_to_resultFragment, bundle)
-        }, 1000)
+            try {
+                findNavController().navigate(R.id.action_gameFragment_to_resultFragment, bundle)
+            } catch (e: Exception) {}
+        }, 1500)
     }
 
     override fun onDestroyView() {
