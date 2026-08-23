@@ -24,6 +24,10 @@ class WelcomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", android.content.Context.MODE_PRIVATE)
+        val savedUsername = sharedPref.getString("username", "")
+        binding.etUsername.setText(savedUsername)
+
         binding.btnPlayerX.setOnClickListener {
             startGame("X")
         }
@@ -34,6 +38,12 @@ class WelcomeFragment : Fragment() {
     }
 
     private fun startGame(startingPlayer: String) {
+        val username = binding.etUsername.text.toString()
+        if (username.isNotEmpty()) {
+            val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", android.content.Context.MODE_PRIVATE)
+            sharedPref.edit().putString("username", username).apply()
+        }
+
         val size = when (binding.rgSize.checkedRadioButtonId) {
             R.id.rb4x4 -> 4
             R.id.rb5x5 -> 5
@@ -44,7 +54,9 @@ class WelcomeFragment : Fragment() {
             putString("startingPlayer", startingPlayer)
             putBoolean("isInfinityMode", binding.switchInfinityMode.isChecked)
             putBoolean("isAiMode", binding.switchAiMode.isChecked)
+            putBoolean("isArcadeMode", binding.switchArcadeMode.isChecked)
             putInt("boardSize", size)
+            putString("username", username)
         }
         findNavController().navigate(R.id.action_welcomeFragment_to_gameFragment, bundle)
     }

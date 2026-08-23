@@ -18,8 +18,12 @@ class GameFragment : Fragment() {
     private lateinit var buttons: Array<Array<Button>>
     private var isInfinityMode = false
     private var isAiMode = false
+    private var isArcadeMode = false
+    private var username = ""
     private var aiPlayer = "O"
     private var aiObj: MinimaxAI? = null
+    
+    private var countDownTimer: android.os.CountDownTimer? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,11 +38,17 @@ class GameFragment : Fragment() {
 
         isInfinityMode = arguments?.getBoolean("isInfinityMode") ?: false
         isAiMode = arguments?.getBoolean("isAiMode") ?: false
+        isArcadeMode = arguments?.getBoolean("isArcadeMode") ?: false
+        username = arguments?.getString("username") ?: ""
         val startingPlayer = arguments?.getString("startingPlayer") ?: "X"
         val boardSize = arguments?.getInt("boardSize") ?: 3
         
         val userPlayer = startingPlayer
         aiPlayer = if (userPlayer == "X") "O" else "X"
+
+        if (isArcadeMode) {
+            binding.tvTimer.visibility = View.VISIBLE
+        }
 
         if (isAiMode) {
             aiObj = MinimaxAI() // AI logic will be updated next
@@ -189,10 +199,36 @@ class GameFragment : Fragment() {
 
     private fun updateTurnText() {
         val cp = if (isInfinityMode) infinityGameLogic!!.currentPlayer else gameLogic!!.currentPlayer
-        binding.tvTurn.text = "Player $cp's Turn"
+        binding.tvTurn.text = if (username.isNotEmpty() && cp == arguments?.getString("startingPlayer")) "$username's Turn" else "Player $cp's Turn"
+        startTimer()
+    }
+
+    private fun startTimer() {
+        if (!isArcadeMode) return
+        countDownTimer?.cancel()
+        countDownTimer = object : android.os.CountDownTimer(6000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                binding.tvTimer.text = "${millisUntilFinished / 1000}s"
+            }
+            override fun onFinish() {
+                // Time's up! Current player loses.
+                val cp = if (isInfinityMode) infinityGameLogic!!.currentPlayer else gameLogic!!.currentPlayer
+                val winner = if (cp == "X") "O" else "X"
+                
+                if (isInfinityMode) {
+                    infinityGameLogic!!.winner = winner
+                    infinityGameLogic!!.isGameOver = true
+                } else {
+                    gameLogic!!.winner = winner
+                    gameLogic!!.isGameOver = true
+                }
+                navigateToResult()
+            }
+        }.start()
     }
 
     private fun navigateToResult() {
+        countDownTimer?.cancel()
         val winner = if (isInfinityMode) infinityGameLogic!!.winner else gameLogic!!.winner
         val bundle = Bundle().apply {
             if (winner == "Draw") {
@@ -208,6 +244,7 @@ class GameFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        countDownTimer?.cancel()
         _binding = null
     }
 }

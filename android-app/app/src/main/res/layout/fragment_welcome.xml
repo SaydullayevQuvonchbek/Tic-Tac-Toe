@@ -51,6 +51,32 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView" />
 
+            <EditText
+                android:id="@+id/etUsername"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="Enter Username"
+                android:gravity="center"
+                android:inputType="textPersonName"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageView" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switchArcadeMode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="Arcade Mode (Timer)"
+                android:textColor="@color/text_color"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toTopOf="@+id/tvSize"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/etUsername" />
+
             <TextView
                 android:id="@+id/tvSize"
                 android:layout_width="wrap_content"
