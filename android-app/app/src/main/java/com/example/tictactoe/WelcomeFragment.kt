@@ -187,7 +187,7 @@ class WelcomeFragment : Fragment() {
             .setMessage("Enter Room Code:")
             .setView(input)
             .setPositiveButton("Join") { _, _ ->
-                val code = input.text.toString()
+                val code = input.text.toString().trim().uppercase()
                 if (code.isNotEmpty()) {
                     joinRoom(user, code)
                 }
