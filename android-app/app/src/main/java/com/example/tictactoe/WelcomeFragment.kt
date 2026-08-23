@@ -34,10 +34,17 @@ class WelcomeFragment : Fragment() {
     }
 
     private fun startGame(startingPlayer: String) {
+        val size = when (binding.rgSize.checkedRadioButtonId) {
+            R.id.rb4x4 -> 4
+            R.id.rb5x5 -> 5
+            else -> 3
+        }
+
         val bundle = Bundle().apply {
             putString("startingPlayer", startingPlayer)
             putBoolean("isInfinityMode", binding.switchInfinityMode.isChecked)
             putBoolean("isAiMode", binding.switchAiMode.isChecked)
+            putInt("boardSize", size)
         }
         findNavController().navigate(R.id.action_welcomeFragment_to_gameFragment, bundle)
     }

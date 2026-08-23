@@ -2,13 +2,16 @@ package com.example.tictactoe
 
 import java.util.ArrayDeque
 
-class InfinityGameLogic {
-    val board = Array(3) { Array(3) { "" } }
+class InfinityGameLogic(val size: Int) {
+    val board = Array(size) { Array(size) { "" } }
     var currentPlayer = "X"
     var isGameOver = false
     var winner = ""
 
-    // Har bir o'yinchining yurishlarini saqlaymiz (maksimal 3 ta)
+    private val winCondition = if (size == 5) 4 else size
+    // Limit is equal to size (3 for 3x3, 4 for 4x4, 5 for 5x5)
+    private val limit = size
+
     private val xMoves = ArrayDeque<Pair<Int, Int>>()
     private val oMoves = ArrayDeque<Pair<Int, Int>>()
 
@@ -19,8 +22,7 @@ class InfinityGameLogic {
             val currentQueue = if (currentPlayer == "X") xMoves else oMoves
             currentQueue.addLast(Pair(row, col))
             
-            // Agar toshlar soni 3 tadan oshib ketsa, eng eskisini o'chiramiz (limit 3)
-            if (currentQueue.size > 3) {
+            if (currentQueue.size > limit) {
                 val oldestMove = currentQueue.removeFirst()
                 board[oldestMove.first][oldestMove.second] = ""
             }
@@ -34,35 +36,56 @@ class InfinityGameLogic {
         return false
     }
 
-    // Qaysi tosh keyingi safar o'chishini bilish uchun (Xiralashtirish animatsiyasi uchun)
     fun getFadingMove(): Pair<Int, Int>? {
         val currentQueue = if (currentPlayer == "X") xMoves else oMoves
-        return if (currentQueue.size == 3) currentQueue.first() else null
+        return if (currentQueue.size == limit) currentQueue.first() else null
     }
 
     private fun checkWinner() {
-        for (i in 0..2) {
-            if (board[i][0] != "" && board[i][0] == board[i][1] && board[i][1] == board[i][2]) {
-                winner = board[i][0]
-                isGameOver = true
-                return
-            }
-            if (board[0][i] != "" && board[0][i] == board[1][i] && board[1][i] == board[2][i]) {
-                winner = board[0][i]
-                isGameOver = true
-                return
-            }
-        }
-        if (board[0][0] != "" && board[0][0] == board[1][1] && board[1][1] == board[2][2]) {
-            winner = board[0][0]
+        if (checkConsecutive(currentPlayer, winCondition)) {
+            winner = currentPlayer
             isGameOver = true
             return
         }
-        if (board[0][2] != "" && board[0][2] == board[1][1] && board[1][1] == board[2][0]) {
-            winner = board[0][2]
-            isGameOver = true
-            return
+    }
+
+    private fun checkConsecutive(player: String, needed: Int): Boolean {
+        for (r in 0 until size) {
+            for (c in 0..size - needed) {
+                var count = 0
+                for (k in 0 until needed) {
+                    if (board[r][c + k] == player) count++
+                }
+                if (count == needed) return true
+            }
         }
-        // Infinity rejimida durang bo'lmaydi, shuning uchun draw tekshiruvi kerak emas.
+        for (c in 0 until size) {
+            for (r in 0..size - needed) {
+                var count = 0
+                for (k in 0 until needed) {
+                    if (board[r + k][c] == player) count++
+                }
+                if (count == needed) return true
+            }
+        }
+        for (r in 0..size - needed) {
+            for (c in 0..size - needed) {
+                var count = 0
+                for (k in 0 until needed) {
+                    if (board[r + k][c + k] == player) count++
+                }
+                if (count == needed) return true
+            }
+        }
+        for (r in needed - 1 until size) {
+            for (c in 0..size - needed) {
+                var count = 0
+                for (k in 0 until needed) {
+                    if (board[r - k][c + k] == player) count++
+                }
+                if (count == needed) return true
+            }
+        }
+        return false
     }
 }

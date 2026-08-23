@@ -1,10 +1,11 @@
 package com.example.tictactoe
 
-class GameLogic {
-    val board = Array(3) { Array(3) { "" } }
+class GameLogic(val size: Int) {
+    val board = Array(size) { Array(size) { "" } }
     var currentPlayer = "X"
     var isGameOver = false
     var winner = ""
+    private val winCondition = if (size == 5) 4 else size
 
     fun makeMove(row: Int, col: Int): Boolean {
         if (board[row][col] == "" && !isGameOver) {
@@ -19,31 +20,15 @@ class GameLogic {
     }
 
     private fun checkWinner() {
-        for (i in 0..2) {
-            if (board[i][0] == currentPlayer && board[i][1] == currentPlayer && board[i][2] == currentPlayer) {
-                winner = currentPlayer
-                isGameOver = true
-                return
-            }
-            if (board[0][i] == currentPlayer && board[1][i] == currentPlayer && board[2][i] == currentPlayer) {
-                winner = currentPlayer
-                isGameOver = true
-                return
-            }
-        }
-        if (board[0][0] == currentPlayer && board[1][1] == currentPlayer && board[2][2] == currentPlayer) {
+        if (checkConsecutive(currentPlayer, winCondition)) {
             winner = currentPlayer
             isGameOver = true
             return
         }
-        if (board[0][2] == currentPlayer && board[1][1] == currentPlayer && board[2][0] == currentPlayer) {
-            winner = currentPlayer
-            isGameOver = true
-            return
-        }
+
         var isDraw = true
-        for (i in 0..2) {
-            for (j in 0..2) {
+        for (i in 0 until size) {
+            for (j in 0 until size) {
                 if (board[i][j] == "") {
                     isDraw = false
                     break
@@ -54,5 +39,49 @@ class GameLogic {
             isGameOver = true
             winner = "Draw"
         }
+    }
+
+    private fun checkConsecutive(player: String, needed: Int): Boolean {
+        // gorizontal
+        for (r in 0 until size) {
+            for (c in 0..size - needed) {
+                var count = 0
+                for (k in 0 until needed) {
+                    if (board[r][c + k] == player) count++
+                }
+                if (count == needed) return true
+            }
+        }
+        // vertikal
+        for (c in 0 until size) {
+            for (r in 0..size - needed) {
+                var count = 0
+                for (k in 0 until needed) {
+                    if (board[r + k][c] == player) count++
+                }
+                if (count == needed) return true
+            }
+        }
+        // diagonal (pastga o'ngga)
+        for (r in 0..size - needed) {
+            for (c in 0..size - needed) {
+                var count = 0
+                for (k in 0 until needed) {
+                    if (board[r + k][c + k] == player) count++
+                }
+                if (count == needed) return true
+            }
+        }
+        // diagonal (tepaga o'ngga)
+        for (r in needed - 1 until size) {
+            for (c in 0..size - needed) {
+                var count = 0
+                for (k in 0 until needed) {
+                    if (board[r - k][c + k] == player) count++
+                }
+                if (count == needed) return true
+            }
+        }
+        return false
     }
 }

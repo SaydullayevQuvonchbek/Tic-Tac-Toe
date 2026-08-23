@@ -64,19 +64,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvTurn">
 
-                <!-- 9 cells, we will add them programmatically or in xml -->
-                <Button android:id="@+id/btn00" android:layout_width="80dp" android:layout_height="80dp" android:layout_margin="4dp" android:backgroundTint="#F5F5F5" android:textSize="36sp" android:textColor="@color/text_color"/>
-                <Button android:id="@+id/btn01" android:layout_width="80dp" android:layout_height="80dp" android:layout_margin="4dp" android:backgroundTint="#F5F5F5" android:textSize="36sp" android:textColor="@color/text_color"/>
-                <Button android:id="@+id/btn02" android:layout_width="80dp" android:layout_height="80dp" android:layout_margin="4dp" android:backgroundTint="#F5F5F5" android:textSize="36sp" android:textColor="@color/text_color"/>
-
-                <Button android:id="@+id/btn10" android:layout_width="80dp" android:layout_height="80dp" android:layout_margin="4dp" android:backgroundTint="#F5F5F5" android:textSize="36sp" android:textColor="@color/text_color"/>
-                <Button android:id="@+id/btn11" android:layout_width="80dp" android:layout_height="80dp" android:layout_margin="4dp" android:backgroundTint="#F5F5F5" android:textSize="36sp" android:textColor="@color/text_color"/>
-                <Button android:id="@+id/btn12" android:layout_width="80dp" android:layout_height="80dp" android:layout_margin="4dp" android:backgroundTint="#F5F5F5" android:textSize="36sp" android:textColor="@color/text_color"/>
-
-                <Button android:id="@+id/btn20" android:layout_width="80dp" android:layout_height="80dp" android:layout_margin="4dp" android:backgroundTint="#F5F5F5" android:textSize="36sp" android:textColor="@color/text_color"/>
-                <Button android:id="@+id/btn21" android:layout_width="80dp" android:layout_height="80dp" android:layout_margin="4dp" android:backgroundTint="#F5F5F5" android:textSize="36sp" android:textColor="@color/text_color"/>
-                <Button android:id="@+id/btn22" android:layout_width="80dp" android:layout_height="80dp" android:layout_margin="4dp" android:backgroundTint="#F5F5F5" android:textSize="36sp" android:textColor="@color/text_color"/>
-
             </GridLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

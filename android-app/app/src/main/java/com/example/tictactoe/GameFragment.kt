@@ -35,40 +35,57 @@ class GameFragment : Fragment() {
         isInfinityMode = arguments?.getBoolean("isInfinityMode") ?: false
         isAiMode = arguments?.getBoolean("isAiMode") ?: false
         val startingPlayer = arguments?.getString("startingPlayer") ?: "X"
-        // In AI mode, let's assume the button pressed is the user's piece.
-        // And standard rules: X always goes first.
+        val boardSize = arguments?.getInt("boardSize") ?: 3
+        
         val userPlayer = startingPlayer
         aiPlayer = if (userPlayer == "X") "O" else "X"
 
         if (isAiMode) {
-            aiObj = MinimaxAI()
+            aiObj = MinimaxAI() // AI logic will be updated next
         }
 
         if (isInfinityMode) {
-            infinityGameLogic = InfinityGameLogic()
-            infinityGameLogic?.currentPlayer = "X" // X always starts
+            infinityGameLogic = InfinityGameLogic(boardSize)
+            infinityGameLogic?.currentPlayer = "X"
         } else {
-            gameLogic = GameLogic()
-            gameLogic?.currentPlayer = "X" // X always starts
+            gameLogic = GameLogic(boardSize)
+            gameLogic?.currentPlayer = "X"
         }
 
         updateTurnText()
 
-        buttons = Array(3) { r ->
-            Array(3) { c ->
-                val btnId = resources.getIdentifier("btn$r$c", "id", requireActivity().packageName)
-                val button = view.findViewById<Button>(btnId)
+        val gridLayout = view.findViewById<android.widget.GridLayout>(R.id.gridLayout)
+        gridLayout.columnCount = boardSize
+        gridLayout.rowCount = boardSize
+
+        buttons = Array(boardSize) { r ->
+            Array(boardSize) { c ->
+                val button = Button(requireContext())
+                val sizePx = (80 * resources.displayMetrics.density).toInt()
+                val marginPx = (4 * resources.displayMetrics.density).toInt()
+                
+                val params = android.widget.GridLayout.LayoutParams()
+                params.width = sizePx
+                params.height = sizePx
+                params.setMargins(marginPx, marginPx, marginPx, marginPx)
+                button.layoutParams = params
+                
+                button.backgroundTintList = android.content.res.ColorStateList.valueOf(0xFFF5F5F5.toInt())
+                button.textSize = if (boardSize == 5) 24f else 36f
+                button.setTextColor(0xFF333333.toInt()) // Default text color
+                
                 button.setOnClickListener { onCellClicked(r, c) }
+                gridLayout.addView(button)
                 button
             }
         }
-        renderBoard()
+        renderBoard(boardSize)
 
         // If AI is X, it should make the first move.
-        triggerAiMoveIfNeeded()
+        triggerAiMoveIfNeeded(boardSize)
     }
 
-    private fun triggerAiMoveIfNeeded() {
+    private fun triggerAiMoveIfNeeded(boardSize: Int) {
         if (!isAiMode) return
         val current = if (isInfinityMode) infinityGameLogic!!.currentPlayer else gameLogic!!.currentPlayer
         val gameOver = if (isInfinityMode) infinityGameLogic!!.isGameOver else gameLogic!!.isGameOver
@@ -83,8 +100,8 @@ class GameFragment : Fragment() {
                 // For Infinity mode, we will just pick a random empty spot for now.
                 if (isInfinityMode) {
                     val emptySpots = mutableListOf<Pair<Int, Int>>()
-                    for (i in 0..2) {
-                        for (j in 0..2) {
+                    for (i in 0 until boardSize) {
+                        for (j in 0 until boardSize) {
                             if (board[i][j] == "") emptySpots.add(Pair(i, j))
                         }
                     }
@@ -93,19 +110,19 @@ class GameFragment : Fragment() {
                         onCellClicked(move.first, move.second, isAi = true)
                     }
                 } else {
-                    val bestMove = aiObj?.findBestMove(board, aiPlayer)
+                    val bestMove = aiObj?.findBestMove(board, aiPlayer, boardSize)
                     if (bestMove != null) {
                         onCellClicked(bestMove.first, bestMove.second, isAi = true)
                     }
                 }
-                setButtonsEnabled(true)
+                setButtonsEnabled(true, boardSize)
             }, 500)
         }
     }
 
-    private fun setButtonsEnabled(enabled: Boolean) {
-        for (r in 0..2) {
-            for (c in 0..2) {
+    private fun setButtonsEnabled(enabled: Boolean, boardSize: Int) {
+        for (r in 0 until boardSize) {
+            for (c in 0 until boardSize) {
                 buttons[r][c].isEnabled = enabled
             }
         }
@@ -130,7 +147,8 @@ class GameFragment : Fragment() {
                 )
             }
 
-            renderBoard()
+            val boardSize = if (isInfinityMode) infinityGameLogic!!.size else gameLogic!!.size
+            renderBoard(boardSize)
             
             val isGameOver = if (isInfinityMode) infinityGameLogic!!.isGameOver else gameLogic!!.isGameOver
             if (isGameOver) {
@@ -138,18 +156,18 @@ class GameFragment : Fragment() {
             } else {
                 updateTurnText()
                 if (!isAi) {
-                    triggerAiMoveIfNeeded()
+                    triggerAiMoveIfNeeded(boardSize)
                 }
             }
         }
     }
 
-    private fun renderBoard() {
+    private fun renderBoard(boardSize: Int) {
         val currentBoard = if (isInfinityMode) infinityGameLogic!!.board else gameLogic!!.board
         val fadingMove = if (isInfinityMode) infinityGameLogic!!.getFadingMove() else null
 
-        for (r in 0..2) {
-            for (c in 0..2) {
+        for (r in 0 until boardSize) {
+            for (c in 0 until boardSize) {
                 val player = currentBoard[r][c]
                 val button = buttons[r][c]
                 button.text = player
