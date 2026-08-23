@@ -23,6 +23,14 @@ class GameFragment : Fragment() {
     private var aiPlayer = "O"
     private var aiObj: MinimaxAI? = null
     
+    // Online Multiplayer
+    private var isOnlineMode = false
+    private var roomCode = ""
+    private var playerId = -1
+    private var isHost = false
+    private var myOnlineSymbol = "X"
+    private var isMyTurnOnline = false
+    
     private var countDownTimer: android.os.CountDownTimer? = null
 
     override fun onCreateView(
@@ -39,6 +47,16 @@ class GameFragment : Fragment() {
         isInfinityMode = arguments?.getBoolean("isInfinityMode") ?: false
         isAiMode = arguments?.getBoolean("isAiMode") ?: false
         isArcadeMode = arguments?.getBoolean("isArcadeMode") ?: false
+        isOnlineMode = arguments?.getBoolean("isOnlineMode") ?: false
+        
+        if (isOnlineMode) {
+            roomCode = arguments?.getString("roomCode") ?: ""
+            playerId = arguments?.getInt("playerId") ?: -1
+            isHost = arguments?.getBoolean("isHost") ?: false
+            myOnlineSymbol = if (isHost) "X" else "O"
+            isMyTurnOnline = isHost // X always starts
+        }
+        
         username = arguments?.getString("username") ?: ""
         val startingPlayer = arguments?.getString("startingPlayer") ?: "X"
         val boardSize = arguments?.getInt("boardSize") ?: 3
@@ -91,8 +109,77 @@ class GameFragment : Fragment() {
         }
         renderBoard(boardSize)
 
-        // If AI is X, it should make the first move.
-        triggerAiMoveIfNeeded(boardSize)
+        if (isOnlineMode) {
+            binding.tvTurn.text = if (isHost) "Waiting for opponent..." else "Game Started!"
+            setButtonsEnabled(false, boardSize)
+            setupPusher()
+        } else {
+            // If AI is X, it should make the first move.
+            triggerAiMoveIfNeeded(boardSize)
+        }
+    }
+
+    private fun setupPusher() {
+        val pusherManager = com.example.tictactoe.network.PusherManager
+        pusherManager.connect()
+        pusherManager.subscribeToRoom(roomCode,
+            onGameStarted = { data ->
+                activity?.runOnUiThread {
+                    binding.tvTurn.text = "Opponent joined! Your symbol: $myOnlineSymbol"
+                    if (isMyTurnOnline) {
+                        setButtonsEnabled(true, if (isInfinityMode) infinityGameLogic!!.size else gameLogic!!.size)
+                    }
+                }
+            },
+            onMoveMade = { data ->
+                activity?.runOnUiThread {
+                    try {
+                        val json = org.json.JSONObject(data)
+                        val senderId = json.getInt("player_id")
+                        if (senderId != playerId) {
+                            val row = json.getInt("row")
+                            val col = json.getInt("col")
+                            // Opponent made a move
+                            if (isInfinityMode) {
+                                infinityGameLogic!!.makeMove(row, col)
+                            } else {
+                                gameLogic!!.makeMove(row, col)
+                            }
+                            isMyTurnOnline = true
+                            setButtonsEnabled(true, if (isInfinityMode) infinityGameLogic!!.size else gameLogic!!.size)
+                            val size = if (isInfinityMode) infinityGameLogic!!.size else gameLogic!!.size
+                            renderBoard(size)
+                            checkOnlineWinner()
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            },
+            onOpponentLeft = {
+                activity?.runOnUiThread {
+                    android.widget.Toast.makeText(context, "Opponent left! You win!", android.widget.Toast.LENGTH_LONG).show()
+                    val winner = myOnlineSymbol
+                    if (isInfinityMode) {
+                        infinityGameLogic!!.winner = winner
+                        infinityGameLogic!!.isGameOver = true
+                    } else {
+                        gameLogic!!.winner = winner
+                        gameLogic!!.isGameOver = true
+                    }
+                    navigateToResult()
+                }
+            }
+        )
+    }
+
+    private fun checkOnlineWinner() {
+        val isGameOver = if (isInfinityMode) infinityGameLogic!!.isGameOver else gameLogic!!.isGameOver
+        if (isGameOver) {
+            navigateToResult()
+        } else {
+            updateTurnText()
+        }
     }
 
     private fun triggerAiMoveIfNeeded(boardSize: Int) {
@@ -141,6 +228,9 @@ class GameFragment : Fragment() {
     private fun onCellClicked(row: Int, col: Int, isAi: Boolean = false) {
         val current = if (isInfinityMode) infinityGameLogic!!.currentPlayer else gameLogic!!.currentPlayer
         if (isAiMode && current == aiPlayer && !isAi) return // Prevent user from tapping on AI's turn
+        if (isOnlineMode) {
+            if (!isMyTurnOnline || current != myOnlineSymbol) return
+        }
 
         val moveSuccess = if (isInfinityMode) {
             infinityGameLogic!!.makeMove(row, col)
@@ -149,6 +239,18 @@ class GameFragment : Fragment() {
         }
 
         if (moveSuccess) {
+            if (isOnlineMode) {
+                isMyTurnOnline = false
+                setButtonsEnabled(false, if (isInfinityMode) infinityGameLogic!!.size else gameLogic!!.size)
+                // Send move to API
+                com.example.tictactoe.network.ApiClient.instance.makeMove(
+                    com.example.tictactoe.network.MoveRequest(roomCode, playerId, row, col, -1)
+                ).enqueue(object : retrofit2.Callback<com.example.tictactoe.network.MoveResponse> {
+                    override fun onResponse(c: retrofit2.Call<com.example.tictactoe.network.MoveResponse>, r: retrofit2.Response<com.example.tictactoe.network.MoveResponse>) {}
+                    override fun onFailure(c: retrofit2.Call<com.example.tictactoe.network.MoveResponse>, t: Throwable) {}
+                })
+            }
+
             // Haptic feedback for user (not AI)
             if (!isAi) {
                 binding.root.performHapticFeedback(
@@ -165,7 +267,7 @@ class GameFragment : Fragment() {
                 navigateToResult()
             } else {
                 updateTurnText()
-                if (!isAi) {
+                if (!isAi && !isOnlineMode) {
                     triggerAiMoveIfNeeded(boardSize)
                 }
             }
@@ -229,13 +331,38 @@ class GameFragment : Fragment() {
 
     private fun navigateToResult() {
         countDownTimer?.cancel()
+        if (isOnlineMode) {
+            com.example.tictactoe.network.PusherManager.unsubscribeFromRoom(roomCode)
+        }
+
         val winner = if (isInfinityMode) infinityGameLogic!!.winner else gameLogic!!.winner
+        
+        if (isOnlineMode) {
+            var result = "loss"
+            if (winner == "Draw") result = "draw"
+            else if (winner == myOnlineSymbol) result = "win"
+
+            // Optional: send match result to update XP
+            com.example.tictactoe.network.ApiClient.instance.matchResult(
+                com.example.tictactoe.network.MatchResultRequest(playerId, result)
+            ).enqueue(object : retrofit2.Callback<com.example.tictactoe.network.MatchResultResponse> {
+                override fun onResponse(c: retrofit2.Call<com.example.tictactoe.network.MatchResultResponse>, r: retrofit2.Response<com.example.tictactoe.network.MatchResultResponse>) {}
+                override fun onFailure(c: retrofit2.Call<com.example.tictactoe.network.MatchResultResponse>, t: Throwable) {}
+            })
+        }
+
         val bundle = Bundle().apply {
             if (winner == "Draw") {
                 putString("resultMessage", "It's a Draw!")
                 putBoolean("isDraw", true)
             } else {
-                putString("resultMessage", "Player $winner Won")
+                val winnerName = if (username.isNotEmpty() && winner == arguments?.getString("startingPlayer")) username else "Player $winner"
+                val display = if (isOnlineMode) {
+                    if (winner == myOnlineSymbol) "You Won!" else "You Lost!"
+                } else {
+                    "$winnerName Wins!"
+                }
+                putString("resultMessage", display)
                 putBoolean("isDraw", false)
             }
         }
@@ -245,6 +372,9 @@ class GameFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         countDownTimer?.cancel()
+        if (isOnlineMode) {
+            com.example.tictactoe.network.PusherManager.unsubscribeFromRoom(roomCode)
+        }
         _binding = null
     }
 }
