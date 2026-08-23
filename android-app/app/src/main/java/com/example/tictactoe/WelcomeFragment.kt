@@ -27,6 +27,17 @@ class WelcomeFragment : Fragment() {
         val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", android.content.Context.MODE_PRIVATE)
         val savedUsername = sharedPref.getString("username", "")
         binding.etUsername.setText(savedUsername)
+        
+        binding.switchAiMode.isChecked = sharedPref.getBoolean("isAiMode", false)
+        binding.switchInfinityMode.isChecked = sharedPref.getBoolean("isInfinityMode", false)
+        binding.switchArcadeMode.isChecked = sharedPref.getBoolean("isArcadeMode", false)
+        
+        val savedSize = sharedPref.getInt("boardSize", 3)
+        when (savedSize) {
+            4 -> binding.rgSize.check(R.id.rb4x4)
+            5 -> binding.rgSize.check(R.id.rb5x5)
+            else -> binding.rgSize.check(R.id.rb3x3)
+        }
 
         // Generate a random device ID once and save it
         if (sharedPref.getString("device_id", "") == "") {
@@ -51,6 +62,41 @@ class WelcomeFragment : Fragment() {
             val deviceId = sharedPref.getString("device_id", "") ?: ""
             authenticateAndPlayOnline(deviceId, username)
         }
+
+        binding.btnLeaderboard.setOnClickListener {
+            fetchAndShowLeaderboard()
+        }
+    }
+
+    private fun fetchAndShowLeaderboard() {
+        val pd = android.app.ProgressDialog(context)
+        pd.setMessage("Loading Leaderboard...")
+        pd.show()
+
+        com.example.tictactoe.network.ApiClient.instance.getLeaderboard().enqueue(object : retrofit2.Callback<com.example.tictactoe.network.LeaderboardResponse> {
+            override fun onResponse(call: retrofit2.Call<com.example.tictactoe.network.LeaderboardResponse>, response: retrofit2.Response<com.example.tictactoe.network.LeaderboardResponse>) {
+                pd.dismiss()
+                if (response.isSuccessful && response.body()?.status == "success") {
+                    val list = response.body()?.leaderboard
+                    if (list.isNullOrEmpty()) {
+                        android.widget.Toast.makeText(context, "No players yet!", android.widget.Toast.LENGTH_SHORT).show()
+                    } else {
+                        val names = list.map { "${it.rank}. ${it.username} (Level ${it.level} - ${it.xp} XP)" }.toTypedArray()
+                        android.app.AlertDialog.Builder(context)
+                            .setTitle("Global Leaderboard")
+                            .setItems(names, null)
+                            .setPositiveButton("Close", null)
+                            .show()
+                    }
+                } else {
+                    android.widget.Toast.makeText(context, "Failed to load", android.widget.Toast.LENGTH_SHORT).show()
+                }
+            }
+            override fun onFailure(call: retrofit2.Call<com.example.tictactoe.network.LeaderboardResponse>, t: Throwable) {
+                pd.dismiss()
+                android.widget.Toast.makeText(context, "Error: ${t.message}", android.widget.Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     private fun authenticateAndPlayOnline(deviceId: String, username: String) {
@@ -194,22 +240,30 @@ class WelcomeFragment : Fragment() {
 
     private fun startGame(startingPlayer: String) {
         val username = binding.etUsername.text.toString()
-        if (username.isNotEmpty()) {
-            val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", android.content.Context.MODE_PRIVATE)
-            sharedPref.edit().putString("username", username).apply()
-        }
-
         val size = when (binding.rgSize.checkedRadioButtonId) {
             R.id.rb4x4 -> 4
             R.id.rb5x5 -> 5
             else -> 3
         }
+        val isInfinityMode = binding.switchInfinityMode.isChecked
+        val isAiMode = binding.switchAiMode.isChecked
+        val isArcadeMode = binding.switchArcadeMode.isChecked
+
+        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", android.content.Context.MODE_PRIVATE)
+        sharedPref.edit().apply {
+            if (username.isNotEmpty()) putString("username", username)
+            putInt("boardSize", size)
+            putBoolean("isInfinityMode", isInfinityMode)
+            putBoolean("isAiMode", isAiMode)
+            putBoolean("isArcadeMode", isArcadeMode)
+            apply()
+        }
 
         val bundle = Bundle().apply {
             putString("startingPlayer", startingPlayer)
-            putBoolean("isInfinityMode", binding.switchInfinityMode.isChecked)
-            putBoolean("isAiMode", binding.switchAiMode.isChecked)
-            putBoolean("isArcadeMode", binding.switchArcadeMode.isChecked)
+            putBoolean("isInfinityMode", isInfinityMode)
+            putBoolean("isAiMode", isAiMode)
+            putBoolean("isArcadeMode", isArcadeMode)
             putInt("boardSize", size)
             putString("username", username)
         }

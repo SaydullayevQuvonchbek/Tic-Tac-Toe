@@ -86,10 +86,13 @@ class GameFragment : Fragment() {
         gridLayout.columnCount = boardSize
         gridLayout.rowCount = boardSize
 
+        val displayMetrics = resources.displayMetrics
+        val screenWidth = displayMetrics.widthPixels - (64 * displayMetrics.density) // 32dp margin on each side
+        val sizePx = (screenWidth / boardSize).toInt() - (8 * displayMetrics.density).toInt() // subtract margin
+
         buttons = Array(boardSize) { r ->
             Array(boardSize) { c ->
                 val button = Button(requireContext())
-                val sizePx = (80 * resources.displayMetrics.density).toInt()
                 val marginPx = (4 * resources.displayMetrics.density).toInt()
                 
                 val params = android.widget.GridLayout.LayoutParams()
@@ -110,7 +113,7 @@ class GameFragment : Fragment() {
         renderBoard(boardSize)
 
         if (isOnlineMode) {
-            binding.tvTurn.text = if (isHost) "Waiting for opponent..." else "Game Started!"
+            binding.tvTurn.text = if (isHost) "Room: $roomCode. Waiting..." else "Game Started!"
             setButtonsEnabled(false, boardSize)
             setupPusher()
         } else {
@@ -189,7 +192,7 @@ class GameFragment : Fragment() {
         
         if (current == aiPlayer && !gameOver) {
             // Disable buttons temporarily
-            setButtonsEnabled(false)
+            setButtonsEnabled(false, boardSize)
             binding.root.postDelayed({
                 val board = if (isInfinityMode) infinityGameLogic!!.board else gameLogic!!.board
                 // Wait! Infinity mode AI is much harder because minimax needs to simulate queues.
@@ -366,7 +369,11 @@ class GameFragment : Fragment() {
                 putBoolean("isDraw", false)
             }
         }
-        findNavController().navigate(R.id.action_gameFragment_to_resultFragment, bundle)
+        
+        // Show result after a small delay so user can see the final move
+        binding.root.postDelayed({
+            findNavController().navigate(R.id.action_gameFragment_to_resultFragment, bundle)
+        }, 1000)
     }
 
     override fun onDestroyView() {
