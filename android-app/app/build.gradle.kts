@@ -40,4 +40,7 @@ dependencies {
     // Navigation
     implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
     implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
+    
+    // Confetti
+    implementation("nl.dionsegijn:konfetti-xml:2.0.4")
 }

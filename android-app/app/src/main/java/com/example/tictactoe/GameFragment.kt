@@ -122,6 +122,14 @@ class GameFragment : Fragment() {
         }
 
         if (moveSuccess) {
+            // Haptic feedback for user (not AI)
+            if (!isAi) {
+                binding.root.performHapticFeedback(
+                    android.view.HapticFeedbackConstants.VIRTUAL_KEY,
+                    android.view.HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING
+                )
+            }
+
             renderBoard()
             
             val isGameOver = if (isInfinityMode) infinityGameLogic!!.isGameOver else gameLogic!!.isGameOver
