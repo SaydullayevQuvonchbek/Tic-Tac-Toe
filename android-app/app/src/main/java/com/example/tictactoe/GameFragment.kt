@@ -379,12 +379,12 @@ class GameFragment : Fragment() {
         val size = if (isInfinityMode) infinityGameLogic!!.size else gameLogic!!.size
         setButtonsEnabled(false, size)
         
-        // Show result after a small delay so user can see the final move
+        // Show result after a longer delay so user can clearly see the final move
         binding.root.postDelayed({
             try {
                 findNavController().navigate(R.id.action_gameFragment_to_resultFragment, bundle)
             } catch (e: Exception) {}
-        }, 1500)
+        }, 2500)
     }
 
     override fun onDestroyView() {
