@@ -183,145 +183,250 @@
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardTicTacToe"
                     android:layout_width="match_parent"
-                    android:layout_height="100dp"
+                    android:layout_height="96dp"
                     android:layout_marginBottom="16dp"
                     app:cardBackgroundColor="#009688"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="4dp">
                     
-                    <TextView
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center"
-                        android:text="🎮 Tic Tac Toe PRO"
-                        android:textColor="@color/white"
-                        android:textSize="22sp"
-                        android:fontFamily="sans-serif-black"/>
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🎮 Tic Tac Toe PRO"
+                            android:textColor="@color/white"
+                            android:textSize="20sp"
+                            android:fontFamily="sans-serif-black"/>
+
+                        <TextView
+                            android:id="@+id/tvRecordTicTacToe"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="🏆 Wins: 0"
+                            android:textColor="#E0F2F1"
+                            android:textSize="13sp"/>
+                    </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
                 <!-- Math Game Card -->
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardMathGame"
                     android:layout_width="match_parent"
-                    android:layout_height="100dp"
+                    android:layout_height="96dp"
                     android:layout_marginBottom="16dp"
                     app:cardBackgroundColor="#FF9800"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="4dp">
 
-                    <TextView
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center"
-                        android:text="✖️ Math Master"
-                        android:textColor="@color/white"
-                        android:textSize="22sp"
-                        android:fontFamily="sans-serif-black"/>
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="✖️ Math Master"
+                            android:textColor="@color/white"
+                            android:textSize="20sp"
+                            android:fontFamily="sans-serif-black"/>
+
+                        <TextView
+                            android:id="@+id/tvRecordMath"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="⭐ Best Score: 0 pts"
+                            android:textColor="#FFF3E0"
+                            android:textSize="13sp"/>
+                    </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
                 <!-- Memory Game Card -->
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardMemoryGame"
                     android:layout_width="match_parent"
-                    android:layout_height="100dp"
+                    android:layout_height="96dp"
                     android:layout_marginBottom="16dp"
                     app:cardBackgroundColor="#E91E63"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="4dp">
 
-                    <TextView
-                        android:id="@+id/tvMemoryGame"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center"
-                        android:text="🔒 🧠 Memory Game"
-                        android:textColor="@color/white"
-                        android:textSize="22sp"
-                        android:fontFamily="sans-serif-black"/>
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvMemoryGame"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🔒 🧠 Memory Game"
+                            android:textColor="@color/white"
+                            android:textSize="20sp"
+                            android:fontFamily="sans-serif-black"/>
+
+                        <TextView
+                            android:id="@+id/tvRecordMemory"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="⭐ Quickest Solve"
+                            android:textColor="#FCE4EC"
+                            android:textSize="13sp"/>
+                    </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
                 <!-- Color Match Card -->
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardColorMatch"
                     android:layout_width="match_parent"
-                    android:layout_height="100dp"
+                    android:layout_height="96dp"
                     android:layout_marginBottom="16dp"
                     app:cardBackgroundColor="#9C27B0"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="4dp">
 
-                    <TextView
-                        android:id="@+id/tvColorMatch"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center"
-                        android:text="🔒 🎨 Color Match"
-                        android:textColor="@color/white"
-                        android:textSize="22sp"
-                        android:fontFamily="sans-serif-black"/>
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvColorMatch"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🔒 🎨 Color Match"
+                            android:textColor="@color/white"
+                            android:textSize="20sp"
+                            android:fontFamily="sans-serif-black"/>
+
+                        <TextView
+                            android:id="@+id/tvRecordColorMatch"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="⭐ High Score: 0"
+                            android:textColor="#F3E5F5"
+                            android:textSize="13sp"/>
+                    </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
                 <!-- 2048 Card -->
                 <androidx.cardview.widget.CardView
                     android:id="@+id/card2048"
                     android:layout_width="match_parent"
-                    android:layout_height="100dp"
+                    android:layout_height="96dp"
                     android:layout_marginBottom="16dp"
                     app:cardBackgroundColor="#00BCD4"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="4dp">
 
-                    <TextView
-                        android:id="@+id/tv2048"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center"
-                        android:text="🔒 🔢 2048 Puzzle"
-                        android:textColor="@color/white"
-                        android:textSize="22sp"
-                        android:fontFamily="sans-serif-black"/>
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tv2048"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🔒 🔢 2048 Puzzle"
+                            android:textColor="@color/white"
+                            android:textSize="20sp"
+                            android:fontFamily="sans-serif-black"/>
+
+                        <TextView
+                            android:id="@+id/tvRecord2048"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="⭐ Best Tile: 2048"
+                            android:textColor="#E0F7FA"
+                            android:textSize="13sp"/>
+                    </LinearLayout>
                 </androidx.cardview.widget.CardView>
                 
                 <!-- Connect 4 Card -->
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardConnect4"
                     android:layout_width="match_parent"
-                    android:layout_height="100dp"
+                    android:layout_height="96dp"
                     android:layout_marginBottom="16dp"
                     app:cardBackgroundColor="#1D4ED8"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="4dp">
 
-                    <TextView
-                        android:id="@+id/tvConnect4"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center"
-                        android:text="🔴 Connect 4 🟡"
-                        android:textColor="@color/white"
-                        android:textSize="22sp"
-                        android:fontFamily="sans-serif-black"/>
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvConnect4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🔒 🔴 Connect 4 🟡"
+                            android:textColor="@color/white"
+                            android:textSize="20sp"
+                            android:fontFamily="sans-serif-black"/>
+
+                        <TextView
+                            android:id="@+id/tvRecordConnect4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="🏆 Wins: 0"
+                            android:textColor="#DBEAFE"
+                            android:textSize="13sp"/>
+                    </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
                 <!-- Water Sort Card -->
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardWaterSort"
                     android:layout_width="match_parent"
-                    android:layout_height="100dp"
+                    android:layout_height="96dp"
                     android:layout_marginBottom="16dp"
                     app:cardBackgroundColor="#0D9488"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="4dp">
 
-                    <TextView
-                        android:id="@+id/tvWaterSort"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center"
-                        android:text="🔒 🧪 Water Sort 💧"
-                        android:textColor="@color/white"
-                        android:textSize="22sp"
-                        android:fontFamily="sans-serif-black"/>
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvWaterSort"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🔒 🧪 Water Sort 💧"
+                            android:textColor="@color/white"
+                            android:textSize="20sp"
+                            android:fontFamily="sans-serif-black"/>
+
+                        <TextView
+                            android:id="@+id/tvRecordWaterSort"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="⭐ Best: 0 moves"
+                            android:textColor="#CCFBF1"
+                            android:textSize="13sp"/>
+                    </LinearLayout>
                 </androidx.cardview.widget.CardView>
             </LinearLayout>
 

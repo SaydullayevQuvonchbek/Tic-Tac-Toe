@@ -1,16 +1,12 @@
 package com.example.tictactoe
 
-import android.animation.ObjectAnimator
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.LinearLayout
-import android.widget.RadioGroup
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.tictactoe.databinding.FragmentWaterSortBinding
@@ -40,56 +36,56 @@ class WaterSortFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        showSetupDialog()
+        initSetupUI()
 
-        binding.btnBack.setOnClickListener { showSetupDialog() }
+        binding.btnSetupBack.setOnClickListener { findNavController().navigateUp() }
+        binding.btnGameplayBack.setOnClickListener { handleBackNavigation() }
         binding.btnUndo.setOnClickListener { handleUndo() }
         binding.btnRestart.setOnClickListener { restartLevel() }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : androidx.activity.OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                showSetupDialog()
+                handleBackNavigation()
             }
         })
     }
 
-    private fun showSetupDialog() {
-        val dialogView = layoutInflater.inflate(R.layout.dialog_water_sort_setup, null)
-        val rg = dialogView.findViewById<RadioGroup>(R.id.rgDifficulty)
-        val btnStart = dialogView.findViewById<Button>(R.id.btnStart)
-        val btnMenu = dialogView.findViewById<Button>(R.id.btnMenu)
+    private fun handleBackNavigation() {
+        if (binding.gameplayContainer.visibility == View.VISIBLE) {
+            showSetupScreen()
+        } else {
+            findNavController().navigateUp()
+        }
+    }
 
-        // Select current difficulty radio button
+    private fun initSetupUI() {
+        showSetupScreen()
+
         when (currentDifficultyColors) {
-            3 -> rg.check(R.id.rbEasy)
-            5 -> rg.check(R.id.rbMedium)
-            7 -> rg.check(R.id.rbHard)
+            3 -> binding.rgDifficulty.check(R.id.rbEasy)
+            5 -> binding.rgDifficulty.check(R.id.rbMedium)
+            7 -> binding.rgDifficulty.check(R.id.rbHard)
         }
 
-        val dialog = AlertDialog.Builder(requireContext())
-            .setView(dialogView)
-            .setCancelable(false)
-            .create()
-
-        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
-
-        btnStart.setOnClickListener {
-            currentDifficultyColors = when (rg.checkedRadioButtonId) {
+        binding.btnStartPuzzle.setOnClickListener {
+            currentDifficultyColors = when (binding.rgDifficulty.checkedRadioButtonId) {
                 R.id.rbEasy -> 3
                 R.id.rbMedium -> 5
                 R.id.rbHard -> 7
                 else -> 3
             }
-            dialog.dismiss()
             startLevel(currentDifficultyColors)
         }
+    }
 
-        btnMenu.setOnClickListener {
-            dialog.dismiss()
-            findNavController().navigateUp()
-        }
+    private fun showSetupScreen() {
+        binding.setupContainer.visibility = View.VISIBLE
+        binding.gameplayContainer.visibility = View.GONE
+    }
 
-        dialog.show()
+    private fun showGameplayScreen() {
+        binding.setupContainer.visibility = View.GONE
+        binding.gameplayContainer.visibility = View.VISIBLE
     }
 
     private fun startLevel(colorsCount: Int) {
@@ -97,6 +93,7 @@ class WaterSortFragment : Fragment() {
         selectedTubeIndex = null
         isAnimating = false
         binding.tvMoves.text = "Moves: 0"
+        showGameplayScreen()
         buildTubesUI()
     }
 
@@ -120,8 +117,7 @@ class WaterSortFragment : Fragment() {
         val totalOuterMargin = (24 * displayMetrics.density).toInt()
         val availableWidth = displayMetrics.widthPixels - totalOuterMargin
         val marginH = (3 * displayMetrics.density).toInt()
-        
-        // Exact pixel math: tubeWidth takes exact column fraction minus horizontal margins
+
         val calculatedWidth = (availableWidth / maxCols) - (marginH * 2)
         val tubeWidth = calculatedWidth.coerceIn((42 * displayMetrics.density).toInt(), (64 * displayMetrics.density).toInt())
         val tubeHeight = (tubeWidth * 2.4f).toInt()
@@ -165,11 +161,11 @@ class WaterSortFragment : Fragment() {
                 tubeViews[selected].animate().translationY(0f).setDuration(150).start()
                 selectedTubeIndex = null
             } else {
-                // Tapped target tube: Try to pour with smooth animation
+                // Tapped target tube: Try to pour
                 if (logic.canPour(selected, index)) {
                     animatePour(selected, index)
                 } else {
-                    // Invalid pour: Unselect source with little shake
+                    // Invalid pour: Unselect source
                     val fromView = tubeViews[selected]
                     fromView.isSelectedTube = false
                     fromView.animate().translationY(0f).setDuration(150).start()
@@ -187,37 +183,24 @@ class WaterSortFragment : Fragment() {
         val fromView = tubeViews[fromIndex]
         val toView = tubeViews[toIndex]
 
-        val fromLoc = IntArray(2)
-        val toLoc = IntArray(2)
-        fromView.getLocationOnScreen(fromLoc)
-        toView.getLocationOnScreen(toLoc)
+        val tiltAngle = if (fromIndex < toIndex) 35f else -35f
 
-        val dx = (toLoc[0] - fromLoc[0]).toFloat()
-        val dy = (toLoc[1] - fromLoc[1] - (fromView.height * 0.45f)).toFloat()
-        val tiltAngle = if (fromLoc[0] <= toLoc[0]) 55f else -55f
-
-        // Step 1: Fly towards target tube and tilt
-        fromView.bringToFront()
+        // Smooth in-place tilt & pour animation
         fromView.animate()
-            .translationX(dx)
-            .translationY(dy)
             .rotation(tiltAngle)
-            .setDuration(260)
+            .setDuration(180)
             .withEndAction {
-                // Step 2: Transfer liquid
                 logic.pour(fromIndex, toIndex)
                 fromView.setWaterColors(logic.tubes[fromIndex])
                 toView.setWaterColors(logic.tubes[toIndex])
                 binding.root.performHapticFeedback(android.view.HapticFeedbackConstants.VIRTUAL_KEY)
                 binding.tvMoves.text = "Moves: ${logic.movesCount}"
 
-                // Step 3: Return to original spot
                 fromView.postDelayed({
                     fromView.animate()
-                        .translationX(0f)
                         .translationY(0f)
                         .rotation(0f)
-                        .setDuration(220)
+                        .setDuration(160)
                         .withEndAction {
                             fromView.isSelectedTube = false
                             isAnimating = false
@@ -226,7 +209,7 @@ class WaterSortFragment : Fragment() {
                             }
                         }
                         .start()
-                }, 100)
+                }, 80)
             }
             .start()
     }
@@ -249,6 +232,13 @@ class WaterSortFragment : Fragment() {
     }
 
     private fun handleWin() {
+        // Record best moves
+        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+        val prevBest = sharedPref.getInt("water_sort_best_moves", 0)
+        if (prevBest == 0 || logic.movesCount < prevBest) {
+            sharedPref.edit().putInt("water_sort_best_moves", logic.movesCount).apply()
+        }
+
         binding.root.postDelayed({
             submitScoreAndNavigate()
         }, 500)

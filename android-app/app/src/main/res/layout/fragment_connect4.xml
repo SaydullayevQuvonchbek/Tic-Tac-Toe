@@ -5,80 +5,276 @@
     android:layout_height="match_parent"
     android:background="#0F172A">
 
-    <LinearLayout
-        android:id="@+id/headerLayout"
+    <!-- 1. SETUP CONTAINER (In-Fragment Screen) -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/setupContainer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
+        android:layout_height="match_parent"
         android:padding="24dp"
-        app:layout_constraintTop_toTopOf="parent">
+        android:visibility="visible">
 
         <ImageButton
-            android:id="@+id/btnBack"
+            android:id="@+id/btnSetupBack"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_marginEnd="16dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/ic_menu_revert"
-            app:tint="@color/white" />
+            app:tint="@color/white"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
-            android:id="@+id/tvTurnIndicator"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Player 1's Turn"
-            android:textColor="@color/white"
-            android:textSize="24sp"
-            android:textStyle="bold" />
-
-        <View
-            android:id="@+id/viewTurnColor"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:background="@drawable/bg_circle"
-            android:backgroundTint="#EF4444" />
-    </LinearLayout>
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/boardCard"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="12dp"
-        app:cardBackgroundColor="#1D4ED8"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/headerLayout">
-
-        <!-- 7 columns, 6 rows -->
-        <GridLayout
-            android:id="@+id/gridLayout"
+            android:id="@+id/tvSetupTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:columnCount="7"
-            android:rowCount="6"
-            android:useDefaultMargins="false"
-            android:alignmentMode="alignBounds"
-            android:padding="6dp">
+            android:text="🔴 Connect 4 PRO 🟡"
+            android:textColor="@color/white"
+            android:textSize="26sp"
+            android:fontFamily="sans-serif-black"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/btnSetupBack"
+            app:layout_constraintStart_toStartOf="parent" />
 
-        </GridLayout>
+        <TextView
+            android:id="@+id/tvSetupSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select game mode to start:"
+            android:textColor="#94A3B8"
+            android:textSize="15sp"
+            android:layout_marginTop="4dp"
+            app:layout_constraintTop_toBottomOf="@+id/tvSetupTitle"
+            app:layout_constraintStart_toStartOf="parent" />
 
-    </androidx.cardview.widget.CardView>
-    
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Drop tokens to connect 4 in a row!"
-        android:textColor="#94A3B8"
-        android:textSize="14sp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@+id/boardCard"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <RadioGroup
+            android:id="@+id/rgSetupMode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="24dp"
+            app:layout_constraintTop_toBottomOf="@+id/tvSetupSubtitle">
+
+            <RadioButton
+                android:id="@+id/rbVsAi"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🤖 Play vs AI (Bot)"
+                android:textColor="@color/white"
+                android:textSize="17sp"
+                android:padding="12dp"
+                android:checked="true" />
+
+            <RadioButton
+                android:id="@+id/rbPassPlay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="👥 2 Players (Pass &amp; Play)"
+                android:textColor="@color/white"
+                android:textSize="17sp"
+                android:padding="12dp" />
+
+            <RadioButton
+                android:id="@+id/rbCreateOnline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🌐 Create Online Room (Host)"
+                android:textColor="@color/white"
+                android:textSize="17sp"
+                android:padding="12dp" />
+
+            <RadioButton
+                android:id="@+id/rbJoinOnline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🔗 Join Online Room (Enter Code)"
+                android:textColor="@color/white"
+                android:textSize="17sp"
+                android:padding="12dp" />
+        </RadioGroup>
+
+        <!-- Room Code Input Layout -->
+        <LinearLayout
+            android:id="@+id/layoutRoomCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/rgSetupMode">
+
+            <EditText
+                android:id="@+id/etRoomCode"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="#1E293B"
+                android:hint="Enter 4-letter Room Code"
+                android:textColorHint="#64748B"
+                android:textColor="@color/white"
+                android:textAllCaps="true"
+                android:gravity="center"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:maxLength="6"
+                android:padding="8dp"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnStartGame"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="START MATCH"
+            android:backgroundTint="#10B981"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:layout_marginBottom="24dp"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- 2. WAITING FOR OPPONENT CONTAINER -->
+    <LinearLayout
+        android:id="@+id/waitingContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🌐 Room Created!"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Share this code with your friend:"
+            android:textColor="#94A3B8"
+            android:textSize="15sp"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:id="@+id/tvWaitingRoomCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ABCD"
+            android:textColor="#F59E0B"
+            android:textSize="40sp"
+            android:fontFamily="sans-serif-black"
+            android:letterSpacing="0.2"
+            android:padding="16dp"
+            android:background="#1E293B"
+            android:layout_marginBottom="24dp"/>
+
+        <ProgressBar
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:indeterminate="true"
+            android:layout_marginBottom="12dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Waiting for friend to join..."
+            android:textColor="#A5B4FC"
+            android:textSize="15sp"
+            android:layout_marginBottom="32dp"/>
+
+        <Button
+            android:id="@+id/btnCancelWaiting"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="CANCEL"
+            android:backgroundTint="#EF4444"
+            android:textColor="@color/white"
+            android:textStyle="bold"/>
+    </LinearLayout>
+
+    <!-- 3. GAMEPLAY CONTAINER -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/gameplayContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:id="@+id/headerLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="20dp"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageButton
+                android:id="@+id/btnGameplayBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="16dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_revert"
+                app:tint="@color/white" />
+
+            <TextView
+                android:id="@+id/tvTurnIndicator"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Your Turn (🔴)"
+                android:textColor="@color/white"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/viewTurnColor"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/bg_circle"
+                android:backgroundTint="#EF4444" />
+        </LinearLayout>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/boardCard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="12dp"
+            app:cardBackgroundColor="#1D4ED8"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/headerLayout">
+
+            <GridLayout
+                android:id="@+id/gridLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:columnCount="7"
+                android:rowCount="6"
+                android:useDefaultMargins="false"
+                android:alignmentMode="alignBounds"
+                android:padding="6dp"/>
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tap column to drop tokens. Connect 4 to win!"
+            android:textColor="#94A3B8"
+            android:textSize="14sp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/boardCard"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

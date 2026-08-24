@@ -5,104 +5,205 @@
     android:layout_height="match_parent"
     android:background="#0F172A">
 
-    <!-- Top Action Bar -->
-    <LinearLayout
-        android:id="@+id/headerLayout"
+    <!-- 1. SETUP CONTAINER (In-Fragment Screen) -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/setupContainer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="20dp"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="match_parent"
+        android:padding="24dp"
+        android:visibility="visible">
 
         <ImageButton
-            android:id="@+id/btnBack"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
+            android:id="@+id/btnSetupBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/ic_menu_revert"
-            app:tint="@color/white" />
+            app:tint="@color/white"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
-            android:id="@+id/tvTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="12dp"
-            android:text="🧪 Water Sort"
-            android:textColor="@color/white"
-            android:textSize="22sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tvMoves"
+            android:id="@+id/tvSetupTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Moves: 0"
-            android:textColor="#F59E0B"
-            android:textSize="16sp"
+            android:text="🧪 Water Sort PRO 💧"
+            android:textColor="@color/white"
+            android:textSize="26sp"
+            android:fontFamily="sans-serif-black"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/btnSetupBack"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/tvSetupSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Choose difficulty level:"
+            android:textColor="#94A3B8"
+            android:textSize="15sp"
+            android:layout_marginTop="4dp"
+            app:layout_constraintTop_toBottomOf="@+id/tvSetupTitle"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <RadioGroup
+            android:id="@+id/rgDifficulty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="28dp"
+            app:layout_constraintTop_toBottomOf="@+id/tvSetupSubtitle">
+
+            <RadioButton
+                android:id="@+id/rbEasy"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🟢 Easy (3 Colors - 5 Tubes)"
+                android:textColor="@color/white"
+                android:textSize="17sp"
+                android:padding="14dp"
+                android:checked="true"/>
+
+            <RadioButton
+                android:id="@+id/rbMedium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🟡 Medium (5 Colors - 7 Tubes)"
+                android:textColor="@color/white"
+                android:textSize="17sp"
+                android:padding="14dp"/>
+
+            <RadioButton
+                android:id="@+id/rbHard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🔴 Hard (7 Colors - 9 Tubes)"
+                android:textColor="@color/white"
+                android:textSize="17sp"
+                android:padding="14dp"/>
+        </RadioGroup>
+
+        <Button
+            android:id="@+id/btnStartPuzzle"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="START PUZZLE"
+            android:backgroundTint="#10B981"
+            android:textColor="@color/white"
             android:textStyle="bold"
-            android:layout_marginEnd="16dp"/>
+            android:textSize="18sp"
+            android:layout_marginBottom="24dp"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
-        <ImageButton
-            android:id="@+id/btnUndo"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@android:drawable/ic_menu_rotate"
-            android:scaleX="-1"
-            app:tint="#A5B4FC"
-            android:layout_marginEnd="8dp"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <ImageButton
-            android:id="@+id/btnRestart"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@android:drawable/ic_menu_rotate"
-            app:tint="#EF4444" />
-    </LinearLayout>
-
-    <!-- Main Tubes Container -->
-    <LinearLayout
-        android:id="@+id/tubesContainer"
+    <!-- 2. GAMEPLAY CONTAINER -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/gameplayContainer"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:padding="16dp"
-        app:layout_constraintTop_toBottomOf="@+id/headerLayout"
-        app:layout_constraintBottom_toTopOf="@+id/tvTip">
+        android:layout_height="match_parent"
+        android:visibility="gone">
 
-        <!-- Top Row of Tubes -->
+        <!-- Top Action Bar -->
         <LinearLayout
-            android:id="@+id/rowTop"
+            android:id="@+id/headerLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
+            android:padding="20dp"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageButton
+                android:id="@+id/btnGameplayBack"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_revert"
+                app:tint="@color/white" />
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="12dp"
+                android:text="🧪 Water Sort"
+                android:textColor="@color/white"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvMoves"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Moves: 0"
+                android:textColor="#F59E0B"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginEnd="16dp"/>
+
+            <ImageButton
+                android:id="@+id/btnUndo"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_rotate"
+                android:scaleX="-1"
+                app:tint="#A5B4FC"
+                android:layout_marginEnd="8dp"/>
+
+            <ImageButton
+                android:id="@+id/btnRestart"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_rotate"
+                app:tint="#EF4444" />
+        </LinearLayout>
+
+        <!-- Main Tubes Container -->
+        <LinearLayout
+            android:id="@+id/tubesContainer"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="vertical"
             android:gravity="center"
-            android:layout_marginBottom="32dp"/>
+            android:padding="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/headerLayout"
+            app:layout_constraintBottom_toTopOf="@+id/tvTip">
 
-        <!-- Bottom Row of Tubes -->
-        <LinearLayout
-            android:id="@+id/rowBottom"
-            android:layout_width="match_parent"
+            <!-- Top Row of Tubes -->
+            <LinearLayout
+                android:id="@+id/rowTop"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginBottom="24dp"/>
+
+            <!-- Bottom Row of Tubes -->
+            <LinearLayout
+                android:id="@+id/rowBottom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvTip"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"/>
+            android:text="Tap a tube to select, then tap another to pour!"
+            android:textColor="#94A3B8"
+            android:textSize="13sp"
+            android:layout_marginBottom="24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/tvTip"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Tap a tube to select, then tap another to pour!"
-        android:textColor="#94A3B8"
-        android:textSize="13sp"
-        android:layout_marginBottom="24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

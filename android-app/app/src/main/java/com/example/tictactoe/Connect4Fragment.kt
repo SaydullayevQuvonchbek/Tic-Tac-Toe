@@ -6,14 +6,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.GridLayout
 import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.RadioGroup
-import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.tictactoe.databinding.FragmentConnect4Binding
@@ -39,14 +34,13 @@ class Connect4Fragment : Fragment() {
 
     private lateinit var logic: Connect4Logic
     private val cellViews = Array(6) { arrayOfNulls<ImageView>(7) }
-    
+
     private var isAiMode = true
     private var isOnlineMode = false
     private var isHost = false
     private var roomCode = ""
     private var myPlayerNumber = 1 // 1 = Red (Host/P1), 2 = Yellow (Joiner/P2)
     private var isMyTurnOnline = false
-    private var waitingDialog: AlertDialog? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentConnect4Binding.inflate(inflater, container, false)
@@ -58,68 +52,60 @@ class Connect4Fragment : Fragment() {
 
         PusherManager.connect()
 
-        if (arguments?.containsKey("isAiMode") == true && arguments?.getBoolean("isOnlineMode", false) == false) {
-            isAiMode = arguments?.getBoolean("isAiMode", true) ?: true
-            isOnlineMode = false
-            startGame()
-        } else {
-            showCustomSetupDialog()
-        }
+        initSetupUI()
 
-        binding.btnBack.setOnClickListener { showExitDialog() }
+        // Handle Back Press
+        binding.btnSetupBack.setOnClickListener { findNavController().navigateUp() }
+        binding.btnGameplayBack.setOnClickListener { handleBackNavigation() }
+        binding.btnCancelWaiting.setOnClickListener { cancelWaiting() }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : androidx.activity.OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                showExitDialog()
+                handleBackNavigation()
             }
         })
     }
 
-    private fun showCustomSetupDialog() {
-        val dialogView = layoutInflater.inflate(R.layout.dialog_connect4_setup, null)
-        val rgMode = dialogView.findViewById<RadioGroup>(R.id.rgMode)
-        val layoutRoomCode = dialogView.findViewById<LinearLayout>(R.id.layoutRoomCode)
-        val etRoomCode = dialogView.findViewById<EditText>(R.id.etRoomCode)
-        val btnProceed = dialogView.findViewById<View>(R.id.btnProceed)
+    private fun handleBackNavigation() {
+        if (binding.gameplayContainer.visibility == View.VISIBLE || binding.waitingContainer.visibility == View.VISIBLE) {
+            cancelWaiting()
+            showSetupScreen()
+        } else {
+            findNavController().navigateUp()
+        }
+    }
 
-        val dialog = AlertDialog.Builder(requireContext())
-            .setView(dialogView)
-            .setCancelable(false)
-            .create()
+    private fun initSetupUI() {
+        showSetupScreen()
 
-        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
-
-        rgMode.setOnCheckedChangeListener { _, checkedId ->
+        binding.rgSetupMode.setOnCheckedChangeListener { _, checkedId ->
             if (checkedId == R.id.rbJoinOnline) {
-                layoutRoomCode.visibility = View.VISIBLE
+                binding.layoutRoomCode.visibility = View.VISIBLE
             } else {
-                layoutRoomCode.visibility = View.GONE
+                binding.layoutRoomCode.visibility = View.GONE
             }
         }
 
-        btnProceed.setOnClickListener {
+        binding.btnStartGame.setOnClickListener {
             val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
             val userId = sharedPref.getInt("user_id", -1)
 
-            when (rgMode.checkedRadioButtonId) {
+            when (binding.rgSetupMode.checkedRadioButtonId) {
                 R.id.rbVsAi -> {
                     isAiMode = true
                     isOnlineMode = false
-                    dialog.dismiss()
-                    startGame()
+                    startLocalGame()
                 }
                 R.id.rbPassPlay -> {
                     isAiMode = false
                     isOnlineMode = false
-                    dialog.dismiss()
-                    startGame()
+                    startLocalGame()
                 }
                 R.id.rbCreateOnline -> {
                     if (userId == -1) {
                         Toast.makeText(context, "Please set up your profile first!", Toast.LENGTH_SHORT).show()
                         return@setOnClickListener
                     }
-                    dialog.dismiss()
                     createOnlineRoom(userId)
                 }
                 R.id.rbJoinOnline -> {
@@ -127,86 +113,78 @@ class Connect4Fragment : Fragment() {
                         Toast.makeText(context, "Please set up your profile first!", Toast.LENGTH_SHORT).show()
                         return@setOnClickListener
                     }
-                    val code = etRoomCode.text.toString().trim().uppercase()
+                    val code = binding.etRoomCode.text.toString().trim().uppercase()
                     if (code.isEmpty()) {
                         Toast.makeText(context, "Please enter room code!", Toast.LENGTH_SHORT).show()
                         return@setOnClickListener
                     }
-                    dialog.dismiss()
                     joinOnlineRoom(userId, code)
                 }
             }
         }
+    }
 
-        dialog.show()
+    private fun showSetupScreen() {
+        binding.setupContainer.visibility = View.VISIBLE
+        binding.waitingContainer.visibility = View.GONE
+        binding.gameplayContainer.visibility = View.GONE
+    }
+
+    private fun showWaitingScreen(code: String) {
+        binding.setupContainer.visibility = View.GONE
+        binding.waitingContainer.visibility = View.VISIBLE
+        binding.gameplayContainer.visibility = View.GONE
+        binding.tvWaitingRoomCode.text = code
+    }
+
+    private fun showGameplayScreen() {
+        binding.setupContainer.visibility = View.GONE
+        binding.waitingContainer.visibility = View.GONE
+        binding.gameplayContainer.visibility = View.VISIBLE
+    }
+
+    private fun startLocalGame() {
+        logic = Connect4Logic()
+        showGameplayScreen()
+        setupBoard()
+        updateTurnIndicator()
+    }
+
+    private fun cancelWaiting() {
+        if (isOnlineMode && roomCode.isNotEmpty()) {
+            PusherManager.unsubscribeFromRoom(roomCode)
+            roomCode = ""
+        }
     }
 
     private fun createOnlineRoom(userId: Int) {
-        val pd = android.app.ProgressDialog(context)
-        pd.setMessage("Creating Online Room...")
-        pd.setCancelable(false)
-        pd.show()
-
         ApiClient.instance.createRoom(RoomCreateRequest(userId, 7, false))
             .enqueue(object : Callback<RoomCreateResponse> {
                 override fun onResponse(call: Call<RoomCreateResponse>, response: Response<RoomCreateResponse>) {
-                    pd.dismiss()
                     if (response.isSuccessful && response.body()?.status == "success") {
                         roomCode = response.body()?.room_code ?: ""
                         isOnlineMode = true
                         isHost = true
                         myPlayerNumber = 1
                         isMyTurnOnline = true
-                        
+
                         subscribePusherEvents()
-                        showWaitingDialog(roomCode)
+                        showWaitingScreen(roomCode)
                     } else {
                         Toast.makeText(context, "Failed to create room", Toast.LENGTH_SHORT).show()
-                        showCustomSetupDialog()
                     }
                 }
 
                 override fun onFailure(call: Call<RoomCreateResponse>, t: Throwable) {
-                    pd.dismiss()
                     Toast.makeText(context, "Network Error: ${t.message}", Toast.LENGTH_SHORT).show()
-                    showCustomSetupDialog()
                 }
             })
     }
 
-    private fun showWaitingDialog(code: String) {
-        val waitingView = layoutInflater.inflate(R.layout.dialog_connect4_waiting, null)
-        val tvCode = waitingView.findViewById<TextView>(R.id.tvWaitingRoomCode)
-        val btnCancel = waitingView.findViewById<View>(R.id.btnCancelWaiting)
-
-        tvCode.text = code
-
-        waitingDialog = AlertDialog.Builder(requireContext())
-            .setView(waitingView)
-            .setCancelable(false)
-            .create()
-
-        waitingDialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
-
-        btnCancel.setOnClickListener {
-            PusherManager.unsubscribeFromRoom(code)
-            waitingDialog?.dismiss()
-            showCustomSetupDialog()
-        }
-
-        waitingDialog?.show()
-    }
-
     private fun joinOnlineRoom(userId: Int, code: String) {
-        val pd = android.app.ProgressDialog(context)
-        pd.setMessage("Joining Room $code...")
-        pd.setCancelable(false)
-        pd.show()
-
         ApiClient.instance.joinRoom(RoomJoinRequest(userId, code))
             .enqueue(object : Callback<RoomJoinResponse> {
                 override fun onResponse(call: Call<RoomJoinResponse>, response: Response<RoomJoinResponse>) {
-                    pd.dismiss()
                     if (response.isSuccessful && response.body()?.status == "success") {
                         roomCode = code
                         isOnlineMode = true
@@ -215,19 +193,16 @@ class Connect4Fragment : Fragment() {
                         isMyTurnOnline = false
 
                         subscribePusherEvents()
-                        startGame()
+                        startLocalGame()
                         Toast.makeText(context, "Connected! Match started!", Toast.LENGTH_SHORT).show()
                     } else {
                         val msg = response.body()?.message ?: "Room not found or full"
                         Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
-                        showCustomSetupDialog()
                     }
                 }
 
                 override fun onFailure(call: Call<RoomJoinResponse>, t: Throwable) {
-                    pd.dismiss()
                     Toast.makeText(context, "Network Error: ${t.message}", Toast.LENGTH_SHORT).show()
-                    showCustomSetupDialog()
                 }
             })
     }
@@ -237,8 +212,7 @@ class Connect4Fragment : Fragment() {
             roomCode = roomCode,
             onGameStarted = {
                 activity?.runOnUiThread {
-                    waitingDialog?.dismiss()
-                    startGame()
+                    startLocalGame()
                     Toast.makeText(context, "Friend joined! Match started!", Toast.LENGTH_SHORT).show()
                 }
             },
@@ -248,7 +222,7 @@ class Connect4Fragment : Fragment() {
                         val json = JSONObject(eventData)
                         val col = json.getInt("col")
                         val player = if (myPlayerNumber == 1) 2 else 1
-                        
+
                         val row = logic.dropToken(col)
                         if (row != -1) {
                             animateTokenDrop(row, col, player)
@@ -275,12 +249,6 @@ class Connect4Fragment : Fragment() {
         )
     }
 
-    private fun startGame() {
-        logic = Connect4Logic()
-        setupBoard()
-        updateTurnIndicator()
-    }
-
     private fun setupBoard() {
         binding.gridLayout.removeAllViews()
         val displayMetrics = resources.displayMetrics
@@ -303,7 +271,7 @@ class Connect4Fragment : Fragment() {
                     }
                     setBackgroundResource(R.drawable.bg_circle)
                     backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#1E293B"))
-                    
+
                     setOnClickListener { onColumnClicked(c) }
                 }
                 binding.gridLayout.addView(img)
@@ -328,7 +296,6 @@ class Connect4Fragment : Fragment() {
                 isMyTurnOnline = false
                 animateTokenDrop(row, col, myPlayerNumber)
 
-                // Send move over network
                 ApiClient.instance.makeMove(MoveRequest(roomCode, userId, -1, col, -1))
                     .enqueue(object : Callback<MoveResponse> {
                         override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) {}
@@ -352,16 +319,15 @@ class Connect4Fragment : Fragment() {
     private fun makeMove(col: Int) {
         val player = logic.currentPlayer
         val row = logic.dropToken(col)
-        
+
         if (row != -1) {
             animateTokenDrop(row, col, player)
-            
+
             if (logic.isGameOver) {
                 handleGameOver()
             } else {
                 updateTurnIndicator()
                 if (isAiMode && logic.currentPlayer == 2) {
-                    // AI Turn
                     binding.root.postDelayed({
                         makeMove(logic.getBestMove())
                     }, 500)
@@ -372,11 +338,11 @@ class Connect4Fragment : Fragment() {
 
     private fun animateTokenDrop(row: Int, col: Int, player: Int) {
         val img = cellViews[row][col] ?: return
-        val color = if (player == 1) "#EF4444" else "#FBBF24" // Red vs Yellow
-        
+        val color = if (player == 1) "#EF4444" else "#FBBF24"
+
         img.translationY = -1000f
         img.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor(color))
-        
+
         ObjectAnimator.ofFloat(img, "translationY", 0f).apply {
             duration = 400
             interpolator = android.view.animation.BounceInterpolator()
@@ -391,7 +357,7 @@ class Connect4Fragment : Fragment() {
 
         val color = if (logic.currentPlayer == 1) "#EF4444" else "#FBBF24"
         val playerText = if (isOnlineMode) {
-            if (isMyTurnOnline) "Your Turn (${if (myPlayerNumber == 1) "🔴" else "🟡"})" 
+            if (isMyTurnOnline) "Your Turn (${if (myPlayerNumber == 1) "🔴" else "🟡"})"
             else "Opponent's Turn (${if (myPlayerNumber == 1) "🟡" else "🔴"})"
         } else if (logic.currentPlayer == 1) {
             if (isAiMode) "$displayName's Turn (🔴)" else "Player 1's Turn (🔴)"
@@ -421,7 +387,13 @@ class Connect4Fragment : Fragment() {
         } else {
             binding.tvTurnIndicator.text = "It's a Draw!"
         }
-        
+
+        // Track record
+        if (logic.winner == 1 || (isOnlineMode && logic.winner == myPlayerNumber)) {
+            val wins = sharedPref.getInt("connect4_wins", 0) + 1
+            sharedPref.edit().putInt("connect4_wins", wins).apply()
+        }
+
         binding.root.postDelayed({
             submitScoreAndExit()
         }, 1500)
@@ -446,8 +418,7 @@ class Connect4Fragment : Fragment() {
         if (isOnlineMode && roomCode.isNotEmpty()) {
             PusherManager.unsubscribeFromRoom(roomCode)
         }
-        
-        // Navigate to result
+
         val bundle = Bundle().apply {
             putString("gameType", "connect4")
             val winMsg = if (isOnlineMode) {
@@ -465,26 +436,11 @@ class Connect4Fragment : Fragment() {
         findNavController().navigate(R.id.action_connect4Fragment_to_resultFragment, bundle)
     }
 
-    private fun showExitDialog() {
-        AlertDialog.Builder(requireContext())
-            .setTitle("Quit Game?")
-            .setMessage("Are you sure you want to exit?")
-            .setPositiveButton("Exit") { _, _ ->
-                if (isOnlineMode && roomCode.isNotEmpty()) {
-                    PusherManager.unsubscribeFromRoom(roomCode)
-                }
-                findNavController().navigateUp()
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         if (isOnlineMode && roomCode.isNotEmpty()) {
             PusherManager.unsubscribeFromRoom(roomCode)
         }
-        waitingDialog?.dismiss()
         _binding = null
     }
 }

@@ -171,6 +171,21 @@ class DashboardFragment : Fragment() {
             binding.tvStreak.text = "🔥 $streak"
             binding.tvCoins.text = "🪙 $coins"
             updateGameLocks()
+
+            // Update Best Records
+            val wins = sharedPref.getInt("wins", 0)
+            val mathScore = sharedPref.getInt("math_high_score", 0)
+            val colorScore = sharedPref.getInt("color_match_high_score", 0)
+            val score2048 = sharedPref.getInt("game_2048_high_score", 0)
+            val connect4Wins = sharedPref.getInt("connect4_wins", 0)
+            val waterMoves = sharedPref.getInt("water_sort_best_moves", 0)
+
+            binding.tvRecordTicTacToe.text = "🏆 Wins: $wins"
+            binding.tvRecordMath.text = if (mathScore > 0) "⭐ Best: $mathScore pts" else "⭐ Quick Math Quiz"
+            binding.tvRecordColorMatch.text = if (colorScore > 0) "⭐ High Score: $colorScore" else "⭐ Speed &amp; Focus"
+            binding.tvRecord2048.text = if (score2048 > 0) "⭐ Best: $score2048" else "⭐ Reach 2048 Tile"
+            binding.tvRecordConnect4.text = "🏆 Wins: $connect4Wins"
+            binding.tvRecordWaterSort.text = if (waterMoves > 0) "⭐ Best: $waterMoves moves" else "⭐ Color Sorting Puzzle"
         } else {
             binding.tvUsername.text = "Guest Player"
             binding.tvLevelInfo.text = "Click edit to set username"
