@@ -51,9 +51,23 @@ class Game2048Fragment : Fragment() {
             startGame()
         }
 
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : androidx.activity.OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                showExitDialog()
+            }
+        })
+
+        binding.btnBack2048.setOnClickListener {
+            showExitDialog()
+        }
+
         val gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
             private val SWIPE_THRESHOLD = 50
             private val SWIPE_VELOCITY_THRESHOLD = 50
+
+            override fun onDown(e: MotionEvent): Boolean {
+                return true
+            }
 
             override fun onFling(e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
                 if (e1 == null) return false
@@ -75,6 +89,7 @@ class Game2048Fragment : Fragment() {
         })
 
         binding.rootLayout.setOnTouchListener { _, event -> gestureDetector.onTouchEvent(event) }
+        binding.boardCard.setOnTouchListener { _, event -> gestureDetector.onTouchEvent(event) }
         binding.gridLayout.setOnTouchListener { _, event -> gestureDetector.onTouchEvent(event) }
     }
 
@@ -297,6 +312,21 @@ class Game2048Fragment : Fragment() {
             Toast.makeText(context, "Game Over! Score: $score", Toast.LENGTH_LONG).show()
             findNavController().navigateUp()
         }
+    }
+
+    private fun showExitDialog() {
+        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setTitle("Quit Game?")
+            .setMessage("Are you sure you want to exit? Your current score will be submitted if > 0.")
+            .setPositiveButton("Exit") { _, _ ->
+                if (score > 0) {
+                    submitScoreAndExit()
+                } else {
+                    findNavController().navigateUp()
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     override fun onDestroyView() {
