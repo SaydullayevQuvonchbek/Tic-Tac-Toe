@@ -281,6 +281,7 @@
                         android:textSize="22sp"
                         android:fontFamily="sans-serif-black"/>
                 </androidx.cardview.widget.CardView>
+            </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
