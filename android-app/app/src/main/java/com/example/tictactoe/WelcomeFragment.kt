@@ -67,8 +67,9 @@ class WelcomeFragment : Fragment() {
             val coins = sharedPref.getInt("coins", 0)
             val streak = sharedPref.getInt("streak_count", 0)
             
+            // Unlocked games isn't critical for WelcomeFragment (multiplayer tic tac toe), pass null or empty list
             if (userId != -1) {
-                val user = com.example.tictactoe.network.User(userId, username, level, xp, 0, 0, coins, streak)
+                val user = com.example.tictactoe.network.User(userId, username, level, xp, 0, 0, coins, streak, emptyList())
                 showOnlineMenu(user)
             } else {
                 android.widget.Toast.makeText(context, "Please set your profile in Dashboard first", android.widget.Toast.LENGTH_SHORT).show()
