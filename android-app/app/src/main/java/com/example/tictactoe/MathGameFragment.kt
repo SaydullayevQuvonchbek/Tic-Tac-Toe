@@ -35,9 +35,14 @@ class MathGameFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : androidx.activity.OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                showExitDialog()
+            }
+        })
+
         binding.btnBack.setOnClickListener {
-            timer?.cancel()
-            findNavController().navigateUp()
+            showExitDialog()
         }
 
         val buttons = listOf(binding.btnAns1, binding.btnAns2, binding.btnAns3, binding.btnAns4)
@@ -177,6 +182,18 @@ class MathGameFragment : Fragment() {
                 findNavController().navigateUp()
             }
             .setCancelable(false)
+            .show()
+    }
+
+    private fun showExitDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Quit Game?")
+            .setMessage("Are you sure you want to exit? Your current progress will be lost.")
+            .setPositiveButton("Exit") { _, _ ->
+                timer?.cancel()
+                findNavController().navigateUp()
+            }
+            .setNegativeButton("Cancel", null)
             .show()
     }
 

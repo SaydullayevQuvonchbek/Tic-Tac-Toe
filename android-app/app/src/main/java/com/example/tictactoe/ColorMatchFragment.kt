@@ -23,8 +23,10 @@ class ColorMatchFragment : Fragment() {
     private val binding get() = _binding!!
 
     private var score = 0
+    private var combo = 0
     private var isCorrectMatch = false
     private var timer: CountDownTimer? = null
+    private var timeRemaining = 60
 
     private val colors = listOf(
         Pair("RED", Color.parseColor("#EF4444")),
@@ -46,6 +48,16 @@ class ColorMatchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : androidx.activity.OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                showExitDialog()
+            }
+        })
+
+        binding.btnBackColor.setOnClickListener {
+            showExitDialog()
+        }
+
         binding.btnWrong.setOnClickListener { checkAnswer(false) }
         binding.btnCorrect.setOnClickListener { checkAnswer(true) }
 
@@ -54,12 +66,19 @@ class ColorMatchFragment : Fragment() {
 
     private fun startGame() {
         score = 0
+        combo = 0
+        timeRemaining = 30 // Make it faster!
         updateScore()
         nextWord()
+        startTimer()
+    }
 
-        timer = object : CountDownTimer(60000, 1000) {
+    private fun startTimer() {
+        timer?.cancel()
+        timer = object : CountDownTimer(timeRemaining * 1000L, 1000) {
             override fun onTick(millisUntilFinished: Long) {
-                binding.tvTimer.text = "${millisUntilFinished / 1000}s"
+                timeRemaining = (millisUntilFinished / 1000).toInt()
+                binding.tvTimer.text = "${timeRemaining}s"
             }
 
             override fun onFinish() {
@@ -81,9 +100,17 @@ class ColorMatchFragment : Fragment() {
 
     private fun checkAnswer(userSaysYes: Boolean) {
         if (userSaysYes == isCorrectMatch) {
-            score += 10
+            combo++
+            score += (10 * combo)
+            binding.tvInstruction.text = "Correct! Combo x$combo (+1s)"
+            binding.tvInstruction.setTextColor(Color.parseColor("#34D399"))
+            timeRemaining += 1
+            startTimer()
         } else {
+            combo = 0
             score -= 10
+            binding.tvInstruction.text = "Wrong! Combo Lost"
+            binding.tvInstruction.setTextColor(Color.parseColor("#EF4444"))
         }
         updateScore()
         nextWord()
@@ -121,6 +148,18 @@ class ColorMatchFragment : Fragment() {
             Toast.makeText(context, "Game Over! Score: $score", Toast.LENGTH_LONG).show()
             findNavController().navigateUp()
         }
+    }
+
+    private fun showExitDialog() {
+        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setTitle("Quit Game?")
+            .setMessage("Are you sure you want to exit? Your current score will be lost.")
+            .setPositiveButton("Exit") { _, _ ->
+                timer?.cancel()
+                findNavController().navigateUp()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     override fun onDestroyView() {
