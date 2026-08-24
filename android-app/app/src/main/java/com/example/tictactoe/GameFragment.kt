@@ -30,6 +30,7 @@ class GameFragment : Fragment() {
     private var isHost = false
     private var myOnlineSymbol = "X"
     private var isMyTurnOnline = false
+    private var boardSize = 3
     
     private var countDownTimer: android.os.CountDownTimer? = null
 
@@ -59,7 +60,7 @@ class GameFragment : Fragment() {
         
         username = arguments?.getString("username") ?: ""
         val startingPlayer = arguments?.getString("startingPlayer") ?: "X"
-        val boardSize = arguments?.getInt("boardSize") ?: 3
+        boardSize = arguments?.getInt("boardSize") ?: 3
         
         val userPlayer = startingPlayer
         aiPlayer = if (userPlayer == "X") "O" else "X"
