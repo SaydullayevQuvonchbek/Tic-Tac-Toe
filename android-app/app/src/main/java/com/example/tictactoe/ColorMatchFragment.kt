@@ -129,30 +129,68 @@ class ColorMatchFragment : Fragment() {
         val userId = sharedPref.getInt("user_id", -1)
 
         val prevBest = sharedPref.getInt("color_match_high_score", 0)
-        if (score > prevBest) {
+        val isNewRecord = score > prevBest
+        if (isNewRecord) {
             sharedPref.edit().putInt("color_match_high_score", score).apply()
         }
 
         if (userId != -1 && score > 0) {
+            val pd = android.app.ProgressDialog(context).apply {
+                setMessage("Saving Score...")
+                setCancelable(false)
+                show()
+            }
             val req = GameScoreRequest(userId, "color_match", score)
             ApiClient.instance.submitGameScore(req).enqueue(object : Callback<GameScoreResponse> {
                 override fun onResponse(call: Call<GameScoreResponse>, response: Response<GameScoreResponse>) {
+                    pd.dismiss()
                     if (response.isSuccessful && response.body()?.status == "success") {
-                        val xpEarned = response.body()?.xp_earned ?: 0
-                        Toast.makeText(context, "Game Over! You earned $xpEarned XP", Toast.LENGTH_LONG).show()
+                        val resp = response.body()!!
+                        sharedPref.edit()
+                            .putInt("level", resp.current_level)
+                            .putInt("xp", resp.new_total_xp)
+                            .apply()
+                        showResultDialog(isNewRecord, resp.xp_earned, resp.new_total_xp, resp.level_up, resp.current_level)
+                    } else {
+                        showResultDialog(isNewRecord, 0, 0, false, 0)
                     }
-                    findNavController().navigateUp()
                 }
 
                 override fun onFailure(call: Call<GameScoreResponse>, t: Throwable) {
-                    Toast.makeText(context, "Game Over! Score: $score", Toast.LENGTH_LONG).show()
-                    findNavController().navigateUp()
+                    pd.dismiss()
+                    showResultDialog(isNewRecord, 0, 0, false, 0)
                 }
             })
         } else {
-            Toast.makeText(context, "Game Over! Score: $score", Toast.LENGTH_LONG).show()
-            findNavController().navigateUp()
+            showResultDialog(isNewRecord, 0, 0, false, 0)
         }
+    }
+
+    private fun showResultDialog(isNewRecord: Boolean, xpEarned: Int, totalXp: Int, levelUp: Boolean, currentLevel: Int) {
+        var msg = "Final Score: $score"
+        if (isNewRecord) {
+            msg += "\n🎉 NEW HIGH SCORE! 🎉"
+        }
+        if (xpEarned > 0) {
+            msg += "\n\nEarned: +$xpEarned XP\nTotal XP: $totalXp"
+        }
+        if (levelUp) {
+            msg += "\n\n🚀 LEVEL UP! You are now Level $currentLevel 🚀"
+        }
+
+        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setTitle("⏱️ Time's Up!")
+            .setMessage(msg)
+            .setPositiveButton("🔄 Play Again") { _, _ ->
+                binding.btnWrong.isEnabled = true
+                binding.btnCorrect.isEnabled = true
+                startGame()
+            }
+            .setNegativeButton("🚪 Back to Menu") { _, _ ->
+                findNavController().navigateUp()
+            }
+            .setCancelable(false)
+            .show()
     }
 
     private fun showExitDialog() {

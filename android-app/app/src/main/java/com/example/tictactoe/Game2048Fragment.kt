@@ -296,39 +296,82 @@ class Game2048Fragment : Fragment() {
         }
 
         if (!hasEmpty && !canMerge) {
-            submitScoreAndExit()
+            handleGameOver()
         }
     }
     
-    private fun submitScoreAndExit() {
+    private fun handleGameOver() {
         val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", android.content.Context.MODE_PRIVATE)
         val userId = sharedPref.getInt("user_id", -1)
 
+        var maxTile = 0
+        for (i in 0..3) {
+            for (j in 0..3) {
+                if (grid[i][j] > maxTile) maxTile = grid[i][j]
+            }
+        }
+
         val prevBest = sharedPref.getInt("game_2048_high_score", 0)
-        if (score > prevBest) {
+        val isNewRecord = score > prevBest
+        if (isNewRecord) {
             sharedPref.edit().putInt("game_2048_high_score", score).apply()
         }
 
         if (userId != -1 && score > 0) {
+            val pd = android.app.ProgressDialog(context).apply {
+                setMessage("Saving Score...")
+                setCancelable(false)
+                show()
+            }
             val req = GameScoreRequest(userId, "game_2048", score)
             ApiClient.instance.submitGameScore(req).enqueue(object : Callback<GameScoreResponse> {
                 override fun onResponse(call: Call<GameScoreResponse>, response: Response<GameScoreResponse>) {
+                    pd.dismiss()
                     if (response.isSuccessful && response.body()?.status == "success") {
-                        val xpEarned = response.body()?.xp_earned ?: 0
-                        Toast.makeText(context, "Game Over! You earned $xpEarned XP", Toast.LENGTH_LONG).show()
+                        val resp = response.body()!!
+                        sharedPref.edit()
+                            .putInt("level", resp.current_level)
+                            .putInt("xp", resp.new_total_xp)
+                            .apply()
+                        showResultDialog(maxTile, isNewRecord, resp.xp_earned, resp.new_total_xp, resp.level_up, resp.current_level)
+                    } else {
+                        showResultDialog(maxTile, isNewRecord, 0, 0, false, 0)
                     }
-                    findNavController().navigateUp()
                 }
 
                 override fun onFailure(call: Call<GameScoreResponse>, t: Throwable) {
-                    Toast.makeText(context, "Game Over! Score: $score", Toast.LENGTH_LONG).show()
-                    findNavController().navigateUp()
+                    pd.dismiss()
+                    showResultDialog(maxTile, isNewRecord, 0, 0, false, 0)
                 }
             })
         } else {
-            Toast.makeText(context, "Game Over! Score: $score", Toast.LENGTH_LONG).show()
-            findNavController().navigateUp()
+            showResultDialog(maxTile, isNewRecord, 0, 0, false, 0)
         }
+    }
+
+    private fun showResultDialog(maxTile: Int, isNewRecord: Boolean, xpEarned: Int, totalXp: Int, levelUp: Boolean, currentLevel: Int) {
+        var msg = "Final Score: $score\nHighest Tile Reached: $maxTile"
+        if (isNewRecord) {
+            msg += "\n🎉 NEW HIGH SCORE! 🎉"
+        }
+        if (xpEarned > 0) {
+            msg += "\n\nEarned: +$xpEarned XP\nTotal XP: $totalXp"
+        }
+        if (levelUp) {
+            msg += "\n\n🚀 LEVEL UP! You are now Level $currentLevel 🚀"
+        }
+
+        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setTitle("🎮 Game Over!")
+            .setMessage(msg)
+            .setPositiveButton("🔄 Play Again") { _, _ ->
+                startGame()
+            }
+            .setNegativeButton("🚪 Back to Menu") { _, _ ->
+                findNavController().navigateUp()
+            }
+            .setCancelable(false)
+            .show()
     }
 
     private fun showExitDialog() {
@@ -337,7 +380,7 @@ class Game2048Fragment : Fragment() {
             .setMessage("Are you sure you want to exit? Your current score will be submitted if > 0.")
             .setPositiveButton("Exit") { _, _ ->
                 if (score > 0) {
-                    submitScoreAndExit()
+                    handleGameOver()
                 } else {
                     findNavController().navigateUp()
                 }
