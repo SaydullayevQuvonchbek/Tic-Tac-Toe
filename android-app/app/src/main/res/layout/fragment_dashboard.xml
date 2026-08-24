@@ -302,6 +302,27 @@
                         android:textSize="22sp"
                         android:fontFamily="sans-serif-black"/>
                 </androidx.cardview.widget.CardView>
+
+                <!-- Water Sort Card -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardWaterSort"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:layout_marginBottom="16dp"
+                    app:cardBackgroundColor="#0D9488"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp">
+
+                    <TextView
+                        android:id="@+id/tvWaterSort"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="🔒 🧪 Water Sort 💧"
+                        android:textColor="@color/white"
+                        android:textSize="22sp"
+                        android:fontFamily="sans-serif-black"/>
+                </androidx.cardview.widget.CardView>
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

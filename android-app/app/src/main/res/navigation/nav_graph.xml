@@ -28,6 +28,9 @@
         <action
             android:id="@+id/action_dashboardFragment_to_connect4Fragment"
             app:destination="@id/connect4Fragment" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_waterSortFragment"
+            app:destination="@id/waterSortFragment" />
     </fragment>
 
     <fragment
@@ -91,6 +94,10 @@
             app:destination="@id/connect4Fragment"
             app:popUpTo="@id/dashboardFragment" />
         <action
+            android:id="@+id/action_resultFragment_to_waterSortFragment"
+            app:destination="@id/waterSortFragment"
+            app:popUpTo="@id/dashboardFragment" />
+        <action
             android:id="@+id/action_resultFragment_to_dashboardFragment"
             app:destination="@id/dashboardFragment"
             app:popUpTo="@id/nav_graph"
@@ -134,6 +141,16 @@
         tools:layout="@layout/fragment_connect4">
         <action
             android:id="@+id/action_connect4Fragment_to_resultFragment"
+            app:destination="@id/resultFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/waterSortFragment"
+        android:name="com.example.tictactoe.WaterSortFragment"
+        android:label="Water Sort"
+        tools:layout="@layout/fragment_water_sort">
+        <action
+            android:id="@+id/action_waterSortFragment_to_resultFragment"
             app:destination="@id/resultFragment" />
     </fragment>
 

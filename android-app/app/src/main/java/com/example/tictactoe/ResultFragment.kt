@@ -71,6 +71,7 @@ class ResultFragment : Fragment() {
                 // Local o'yinda qaytadan boshlash
                 when (gameType) {
                     "connect4" -> findNavController().navigate(R.id.action_resultFragment_to_connect4Fragment, arguments)
+                    "water_sort" -> findNavController().navigate(R.id.action_resultFragment_to_waterSortFragment, arguments)
                     else -> findNavController().navigate(R.id.action_resultFragment_to_gameFragment, arguments)
                 }
             }

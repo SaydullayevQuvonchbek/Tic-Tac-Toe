@@ -66,6 +66,10 @@ class DashboardFragment : Fragment() {
         binding.cardConnect4.setOnClickListener {
             handleGameClick("connect4", 4, 200, binding.tvConnect4, "🔴 Connect 4 🟡", R.id.action_dashboardFragment_to_connect4Fragment)
         }
+
+        binding.cardWaterSort.setOnClickListener {
+            handleGameClick("water_sort", 3, 150, binding.tvWaterSort, "🧪 Water Sort 💧", R.id.action_dashboardFragment_to_waterSortFragment)
+        }
         
         binding.cardDailyReward.setOnClickListener {
             if (ensureProfile()) claimDailyReward()
@@ -87,6 +91,7 @@ class DashboardFragment : Fragment() {
         
         updateLock("memory_game", 2, binding.tvMemoryGame, "🧠 Memory Game")
         updateLock("color_match", 3, binding.tvColorMatch, "🎨 Color Match")
+        updateLock("water_sort", 3, binding.tvWaterSort, "🧪 Water Sort 💧")
         updateLock("connect4", 4, binding.tvConnect4, "🔴 Connect 4 🟡")
         updateLock("game_2048", 5, binding.tv2048, "🔢 2048 Puzzle")
     }
