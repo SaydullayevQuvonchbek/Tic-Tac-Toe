@@ -199,26 +199,6 @@
                         android:fontFamily="sans-serif-black"/>
                 </androidx.cardview.widget.CardView>
 
-                <!-- Memory Game Card -->
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cardMemoryGame"
-                    android:layout_width="match_parent"
-                    android:layout_height="100dp"
-                    android:layout_marginBottom="16dp"
-                    app:cardBackgroundColor="#E91E63"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="4dp">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:text="🧠 Memory Game"
-                        android:textColor="@color/white"
-                        android:textSize="22sp"
-                        android:fontFamily="sans-serif-black"/>
-                </androidx.cardview.widget.CardView>
-
                 <!-- Math Game Card -->
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardMathGame"
@@ -239,19 +219,68 @@
                         android:fontFamily="sans-serif-black"/>
                 </androidx.cardview.widget.CardView>
 
-                <Button
-                    android:id="@+id/btnGlobalLeaderboard"
+                <!-- Memory Game Card -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardMemoryGame"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:layout_marginTop="16dp"
-                    android:backgroundTint="#4338CA"
-                    android:fontFamily="sans-serif-black"
-                    android:text="🏆 GLOBAL LEADERBOARD"
-                    android:textColor="@color/white"
-                    android:textSize="16sp"
-                    app:cornerRadius="16dp" />
+                    android:layout_height="100dp"
+                    android:layout_marginBottom="16dp"
+                    app:cardBackgroundColor="#E91E63"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp">
 
-            </LinearLayout>
+                    <TextView
+                        android:id="@+id/tvMemoryGame"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="🔒 🧠 Memory Game"
+                        android:textColor="@color/white"
+                        android:textSize="22sp"
+                        android:fontFamily="sans-serif-black"/>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Color Match Card -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardColorMatch"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:layout_marginBottom="16dp"
+                    app:cardBackgroundColor="#9C27B0"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp">
+
+                    <TextView
+                        android:id="@+id/tvColorMatch"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="🔒 🎨 Color Match"
+                        android:textColor="@color/white"
+                        android:textSize="22sp"
+                        android:fontFamily="sans-serif-black"/>
+                </androidx.cardview.widget.CardView>
+
+                <!-- 2048 Card -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card2048"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:layout_marginBottom="16dp"
+                    app:cardBackgroundColor="#00BCD4"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp">
+
+                    <TextView
+                        android:id="@+id/tv2048"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="🔒 🔢 2048 Puzzle"
+                        android:textColor="@color/white"
+                        android:textSize="22sp"
+                        android:fontFamily="sans-serif-black"/>
+                </androidx.cardview.widget.CardView>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

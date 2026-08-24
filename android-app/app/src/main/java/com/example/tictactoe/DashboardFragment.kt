@@ -52,20 +52,70 @@ class DashboardFragment : Fragment() {
         }
 
         binding.cardMemoryGame.setOnClickListener {
-            if (ensureProfile()) {
-                findNavController().navigate(R.id.action_dashboardFragment_to_memoryGameFragment)
-            }
+            handleGameClick("memory_game", 2, 50, binding.tvMemoryGame, "🧠 Memory Game", R.id.action_dashboardFragment_to_memoryGameFragment)
+        }
+        
+        binding.cardColorMatch.setOnClickListener {
+            handleGameClick("color_match", 3, 100, binding.tvColorMatch, "🎨 Color Match", R.id.action_dashboardFragment_to_colorMatchFragment)
+        }
+
+        binding.card2048.setOnClickListener {
+            handleGameClick("game_2048", 5, 250, binding.tv2048, "🔢 2048 Puzzle", R.id.action_dashboardFragment_to_game2048Fragment)
         }
         
         binding.cardDailyReward.setOnClickListener {
-            if (ensureProfile()) {
-                claimDailyReward()
+            if (ensureProfile()) claimDailyReward()
+        }
+    }
+    
+    private fun updateGameLocks() {
+        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", android.content.Context.MODE_PRIVATE)
+        val level = sharedPref.getInt("level", 1)
+        
+        fun updateLock(key: String, reqLevel: Int, tv: android.widget.TextView, title: String) {
+            val isUnlocked = sharedPref.getBoolean("unlocked_$key", false) || level >= reqLevel
+            if (isUnlocked) {
+                tv.text = title
+            } else {
+                tv.text = "🔒 $title"
             }
         }
+        
+        updateLock("memory_game", 2, binding.tvMemoryGame, "🧠 Memory Game")
+        updateLock("color_match", 3, binding.tvColorMatch, "🎨 Color Match")
+        updateLock("game_2048", 5, binding.tv2048, "🔢 2048 Puzzle")
+    }
 
-        // Leaderboard will be moved to its own tab, but we can leave the button logic if it's still in XML,
-        // or just ignore if it was removed from XML. Wait, btnGlobalLeaderboard was removed from XML in previous edit, 
-        // so I should remove it here to avoid crash.
+    private fun handleGameClick(key: String, reqLevel: Int, cost: Int, tv: android.widget.TextView, title: String, actionId: Int) {
+        if (!ensureProfile()) return
+        
+        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", android.content.Context.MODE_PRIVATE)
+        val level = sharedPref.getInt("level", 1)
+        val coins = sharedPref.getInt("coins", 0)
+        val isUnlocked = sharedPref.getBoolean("unlocked_$key", false) || level >= reqLevel
+        
+        if (isUnlocked) {
+            findNavController().navigate(actionId)
+        } else {
+            AlertDialog.Builder(requireContext())
+                .setTitle("Game Locked 🔒")
+                .setMessage("Reach Level $reqLevel to unlock for free, or buy it now for $cost 🪙.")
+                .setPositiveButton("Buy ($cost 🪙)") { _, _ ->
+                    if (coins >= cost) {
+                        sharedPref.edit()
+                            .putInt("coins", coins - cost)
+                            .putBoolean("unlocked_$key", true)
+                            .apply()
+                        loadProfile()
+                        updateGameLocks()
+                        Toast.makeText(context, "Game Unlocked!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(context, "Not enough coins!", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
+        }
     }
 
     private fun ensureProfile(): Boolean {
@@ -91,6 +141,7 @@ class DashboardFragment : Fragment() {
             binding.tvLevelInfo.text = "Level $level | $xp XP"
             binding.tvStreak.text = "🔥 $streak"
             binding.tvCoins.text = "🪙 $coins"
+            updateGameLocks()
         } else {
             binding.tvUsername.text = "Guest Player"
             binding.tvLevelInfo.text = "Click edit to set username"

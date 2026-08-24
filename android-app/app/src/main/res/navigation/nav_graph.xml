@@ -19,6 +19,12 @@
         <action
             android:id="@+id/action_dashboardFragment_to_memoryGameFragment"
             app:destination="@id/memoryGameFragment" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_colorMatchFragment"
+            app:destination="@id/colorMatchFragment" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_game2048Fragment"
+            app:destination="@id/game2048Fragment" />
     </fragment>
 
     <fragment
@@ -101,4 +107,17 @@
         android:name="com.example.tictactoe.ProfileFragment"
         android:label="Profile"
         tools:layout="@layout/fragment_profile" />
+        
+    <fragment
+        android:id="@+id/colorMatchFragment"
+        android:name="com.example.tictactoe.ColorMatchFragment"
+        android:label="Color Match"
+        tools:layout="@layout/fragment_color_match" />
+
+    <fragment
+        android:id="@+id/game2048Fragment"
+        android:name="com.example.tictactoe.Game2048Fragment"
+        android:label="2048 Puzzle"
+        tools:layout="@layout/fragment_2048" />
+
 </navigation>
