@@ -43,9 +43,9 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/boardCard"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_margin="12dp"
         app:cardBackgroundColor="#1D4ED8"
         app:cardCornerRadius="16dp"
         app:cardElevation="8dp"
@@ -54,14 +54,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/headerLayout">
 
-        <!-- 7 columns, 6 rows. We will use a GridLayout and insert circle views -->
+        <!-- 7 columns, 6 rows -->
         <GridLayout
             android:id="@+id/gridLayout"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:columnCount="7"
             android:rowCount="6"
-            android:padding="8dp">
+            android:useDefaultMargins="false"
+            android:alignmentMode="alignBounds"
+            android:padding="6dp">
 
         </GridLayout>
 

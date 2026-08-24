@@ -284,9 +284,11 @@ class Connect4Fragment : Fragment() {
     private fun setupBoard() {
         binding.gridLayout.removeAllViews()
         val displayMetrics = resources.displayMetrics
-        val boardWidth = displayMetrics.widthPixels - (32 * displayMetrics.density).toInt()
-        val cellSize = boardWidth / 7
-        val marginPx = (4 * displayMetrics.density).toInt()
+        val totalOuterMargin = (40 * displayMetrics.density).toInt()
+        val availableWidth = displayMetrics.widthPixels - totalOuterMargin
+        val cellSize = availableWidth / 7
+        val marginPx = (2 * displayMetrics.density).toInt()
+        val cellDimension = cellSize - (marginPx * 2)
 
         for (r in 0 until 6) {
             for (c in 0 until 7) {
@@ -295,8 +297,8 @@ class Connect4Fragment : Fragment() {
                         GridLayout.spec(r),
                         GridLayout.spec(c)
                     ).apply {
-                        width = cellSize - (marginPx * 2)
-                        height = cellSize - (marginPx * 2)
+                        width = cellDimension
+                        height = cellDimension
                         setMargins(marginPx, marginPx, marginPx, marginPx)
                     }
                     setBackgroundResource(R.drawable.bg_circle)
