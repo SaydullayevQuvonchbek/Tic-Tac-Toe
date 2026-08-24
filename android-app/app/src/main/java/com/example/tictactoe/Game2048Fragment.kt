@@ -97,7 +97,7 @@ class Game2048Fragment : Fragment() {
                 tv.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
                 tv.gravity = android.view.Gravity.CENTER
                 tv.textSize = 24f
-                tv.textStyle = android.graphics.Typeface.BOLD
+                tv.setTypeface(null, android.graphics.Typeface.BOLD)
                 
                 card.addView(tv)
                 binding.gridLayout.addView(card)
@@ -278,8 +278,8 @@ class Game2048Fragment : Fragment() {
         val userId = sharedPref.getInt("user_id", -1)
 
         if (userId != -1 && score > 0) {
-            val req = GameScoreRequest(userId, score)
-            ApiClient.instance.submitScore(req).enqueue(object : Callback<GameScoreResponse> {
+            val req = GameScoreRequest(userId, "game_2048", score)
+            ApiClient.instance.submitGameScore(req).enqueue(object : Callback<GameScoreResponse> {
                 override fun onResponse(call: Call<GameScoreResponse>, response: Response<GameScoreResponse>) {
                     if (response.isSuccessful && response.body()?.status == "success") {
                         val xpEarned = response.body()?.xp_earned ?: 0
