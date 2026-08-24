@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center"
+    android:background="#1E293B">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🌐 Room Created!"
+        android:textColor="@color/white"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Share this code with your friend:"
+        android:textColor="#94A3B8"
+        android:textSize="14sp"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:id="@+id/tvWaitingRoomCode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ABCD"
+        android:textColor="#F59E0B"
+        android:textSize="36sp"
+        android:fontFamily="sans-serif-black"
+        android:letterSpacing="0.2"
+        android:padding="12dp"
+        android:background="#334155"
+        android:layout_marginBottom="16dp"/>
+
+    <ProgressBar
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:indeterminate="true"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Waiting for friend to join..."
+        android:textColor="#A5B4FC"
+        android:textSize="14sp"
+        android:layout_marginBottom="20dp"/>
+
+    <Button
+        android:id="@+id/btnCancelWaiting"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="CANCEL"
+        android:backgroundTint="#EF4444"
+        android:textColor="@color/white"
+        android:textStyle="bold"/>
+
+</LinearLayout>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="#1E293B">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="🔴 Connect 4 Setup 🟡"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select Game Mode:"
+        android:textColor="#94A3B8"
+        android:textSize="14sp"
+        android:layout_marginBottom="12dp"/>
+
+    <RadioGroup
+        android:id="@+id/rgMode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="16dp">
+
+        <RadioButton
+            android:id="@+id/rbVsAi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🤖 Play vs AI (Bot)"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:padding="8dp"
+            android:checked="true"/>
+
+        <RadioButton
+            android:id="@+id/rbPassPlay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="👥 2 Players (Pass &amp; Play)"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:padding="8dp"/>
+
+        <RadioButton
+            android:id="@+id/rbCreateOnline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🌐 Create Online Room (Host)"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:padding="8dp"/>
+
+        <RadioButton
+            android:id="@+id/rbJoinOnline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🔗 Join Online Room (Enter Code)"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:padding="8dp"/>
+    </RadioGroup>
+
+    <!-- Room Code Input Layout (shown when Join is selected) -->
+    <LinearLayout
+        android:id="@+id/layoutRoomCode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:layout_marginBottom="16dp">
+
+        <EditText
+            android:id="@+id/etRoomCode"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="#334155"
+            android:hint="Enter 4-letter Room Code"
+            android:textColorHint="#64748B"
+            android:textColor="@color/white"
+            android:textAllCaps="true"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:maxLength="6"
+            android:padding="8dp"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnProceed"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="START"
+        android:backgroundTint="#10B981"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="16sp"/>
+
+</LinearLayout>
