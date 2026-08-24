@@ -55,16 +55,57 @@ class MemoryGameFragment : Fragment() {
             showExitDialog()
         }
 
-        setupBoard()
-        startTimer()
+        showSetupDialog()
     }
 
-    private fun setupBoard() {
-        cards = (emojis + emojis).shuffled()
-        val displayMetrics = resources.displayMetrics
-        val cardSize = (displayMetrics.widthPixels - 64) / 4 - 16
+    private fun showSetupDialog() {
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_memory_setup, null)
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
 
-        for (i in 0 until 16) {
+        val rgTheme = dialogView.findViewById<android.widget.RadioGroup>(R.id.rgTheme)
+        val rgDifficulty = dialogView.findViewById<android.widget.RadioGroup>(R.id.rgDifficulty)
+        val btnStart = dialogView.findViewById<android.widget.Button>(R.id.btnStart)
+
+        btnStart.setOnClickListener {
+            val isAnimals = rgTheme.checkedRadioButtonId == R.id.rbAnimals
+            val (rows, cols) = when (rgDifficulty.checkedRadioButtonId) {
+                R.id.rbEasy -> 4 to 2 // 8 cards (4 pairs)
+                R.id.rbMedium -> 4 to 3 // 12 cards (6 pairs)
+                R.id.rbHard -> 4 to 4 // 16 cards (8 pairs)
+                else -> 4 to 4
+            }
+            dialog.dismiss()
+            setupBoard(rows, cols, isAnimals)
+            startTimer()
+        }
+        dialog.show()
+    }
+
+    private var totalPairs = 8
+
+    private fun setupBoard(rows: Int, cols: Int, isAnimals: Boolean) {
+        val themeEmojis = if (isAnimals) {
+            listOf("🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼")
+        } else {
+            listOf("🍎", "🍌", "🍉", "🍇", "🍓", "🍒", "🍍", "🥝")
+        }
+
+        totalPairs = (rows * cols) / 2
+        binding.tvMatches.text = "Matches: 0/$totalPairs"
+        
+        val selectedEmojis = themeEmojis.take(totalPairs)
+        cards = (selectedEmojis + selectedEmojis).shuffled()
+        
+        binding.gridMemory.rowCount = rows
+        binding.gridMemory.columnCount = cols
+
+        val displayMetrics = resources.displayMetrics
+        val cardSize = (displayMetrics.widthPixels - 64) / cols - 16
+
+        for (i in 0 until (rows * cols)) {
             val card = CardView(requireContext()).apply {
                 layoutParams = GridLayout.LayoutParams().apply {
                     width = cardSize
@@ -112,13 +153,13 @@ class MemoryGameFragment : Fragment() {
                     secondCard?.animate()?.alpha(0f)?.setDuration(300)?.start()
                     
                     matches++
-                    binding.tvMatches.text = "Matches: $matches/8"
+                    binding.tvMatches.text = "Matches: $matches/$totalPairs"
                     
                     firstCard = null
                     secondCard = null
                     isProcessing = false
                     
-                    if (matches == 8) {
+                    if (matches == totalPairs) {
                         endGame(true)
                     }
                 }, 500)
