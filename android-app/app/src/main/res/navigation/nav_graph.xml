@@ -89,4 +89,16 @@
             android:name="isDraw"
             app:argType="boolean" />
     </fragment>
+
+    <fragment
+        android:id="@+id/leaderboardFragment"
+        android:name="com.example.tictactoe.LeaderboardFragment"
+        android:label="Ranks"
+        tools:layout="@layout/fragment_leaderboard" />
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.tictactoe.ProfileFragment"
+        android:label="Profile"
+        tools:layout="@layout/fragment_profile" />
 </navigation>
