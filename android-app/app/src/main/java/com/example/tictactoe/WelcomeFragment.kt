@@ -64,8 +64,11 @@ class WelcomeFragment : Fragment() {
             val level = sharedPref.getInt("level", 1)
             val xp = sharedPref.getInt("xp", 0)
             
+            val coins = sharedPref.getInt("coins", 0)
+            val streak = sharedPref.getInt("streak_count", 0)
+            
             if (userId != -1) {
-                val user = com.example.tictactoe.network.User(userId, username, level, xp, 0, 0)
+                val user = com.example.tictactoe.network.User(userId, username, level, xp, 0, 0, coins, streak)
                 showOnlineMenu(user)
             } else {
                 android.widget.Toast.makeText(context, "Please set your profile in Dashboard first", android.widget.Toast.LENGTH_SHORT).show()
