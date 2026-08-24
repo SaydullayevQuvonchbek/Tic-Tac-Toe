@@ -92,6 +92,7 @@ class DashboardFragment : Fragment() {
         val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", android.content.Context.MODE_PRIVATE)
         val level = sharedPref.getInt("level", 1)
         val coins = sharedPref.getInt("coins", 0)
+        val userId = sharedPref.getInt("user_id", -1)
         val isUnlocked = sharedPref.getBoolean("unlocked_$key", false) || level >= reqLevel
         
         if (isUnlocked) {
@@ -101,14 +102,32 @@ class DashboardFragment : Fragment() {
                 .setTitle("Game Locked 🔒")
                 .setMessage("Reach Level $reqLevel to unlock for free, or buy it now for $cost 🪙.")
                 .setPositiveButton("Buy ($cost 🪙)") { _, _ ->
-                    if (coins >= cost) {
-                        sharedPref.edit()
-                            .putInt("coins", coins - cost)
-                            .putBoolean("unlocked_$key", true)
-                            .apply()
-                        loadProfile()
-                        updateGameLocks()
-                        Toast.makeText(context, "Game Unlocked!", Toast.LENGTH_SHORT).show()
+                    if (coins >= cost && userId != -1) {
+                        val pd = android.app.ProgressDialog(context)
+                        pd.setMessage("Unlocking game...")
+                        pd.show()
+                        
+                        ApiClient.instance.buyItem(com.example.tictactoe.network.StoreBuyRequest(userId, key, cost))
+                            .enqueue(object : retrofit2.Callback<com.example.tictactoe.network.StoreBuyResponse> {
+                                override fun onResponse(call: retrofit2.Call<com.example.tictactoe.network.StoreBuyResponse>, response: retrofit2.Response<com.example.tictactoe.network.StoreBuyResponse>) {
+                                    pd.dismiss()
+                                    if (response.isSuccessful && response.body()?.status == "success") {
+                                        val newBal = response.body()?.new_coin_balance ?: (coins - cost)
+                                        sharedPref.edit()
+                                            .putInt("coins", newBal)
+                                            .putBoolean("unlocked_$key", true)
+                                            .apply()
+                                        loadProfile()
+                                        Toast.makeText(context, "Game Unlocked!", Toast.LENGTH_SHORT).show()
+                                    } else {
+                                        Toast.makeText(context, response.body()?.message ?: "Could not buy item", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                                override fun onFailure(call: retrofit2.Call<com.example.tictactoe.network.StoreBuyResponse>, t: Throwable) {
+                                    pd.dismiss()
+                                    Toast.makeText(context, "Network Error", Toast.LENGTH_SHORT).show()
+                                }
+                            })
                     } else {
                         Toast.makeText(context, "Not enough coins!", Toast.LENGTH_SHORT).show()
                     }
@@ -190,14 +209,19 @@ class DashboardFragment : Fragment() {
                     if (response.isSuccessful && response.body()?.status == "success") {
                         val user = response.body()?.user
                         if (user != null) {
-                            sharedPref.edit()
+                            val editor = sharedPref.edit()
                                 .putString("username", user.username)
                                 .putInt("user_id", user.id)
                                 .putInt("level", user.level)
                                 .putInt("xp", user.xp)
                                 .putInt("coins", user.coins)
                                 .putInt("streak_count", user.streak_count)
-                                .apply()
+                            
+                            user.unlocked_games?.forEach { game ->
+                                editor.putBoolean("unlocked_$game", true)
+                            }
+                            
+                            editor.apply()
                             loadProfile()
                             Toast.makeText(context, "Profile Updated!", Toast.LENGTH_SHORT).show()
                         }
