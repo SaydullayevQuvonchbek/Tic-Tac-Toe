@@ -103,15 +103,36 @@ class MemoryGameFragment : Fragment() {
         binding.gridMemory.columnCount = cols
 
         val displayMetrics = resources.displayMetrics
-        val cardSize = (displayMetrics.widthPixels - 64) / cols - 16
+        val screenWidth = displayMetrics.widthPixels
+        val screenHeight = displayMetrics.heightPixels
+        
+        // Top bar takes about 80dp. We leave some padding at bottom (32dp) and sides (32dp)
+        val density = displayMetrics.density
+        val availableWidth = screenWidth - (32 * density).toInt()
+        val availableHeight = screenHeight - (120 * density).toInt()
+
+        val maxCardWidth = availableWidth / cols
+        val maxCardHeight = availableHeight / rows
+        
+        // Pick the smaller one so it's a square and fits both dimensions
+        val cellSize = Math.min(maxCardWidth, maxCardHeight)
+        
+        // 4dp margin on each side = 8dp total per cell
+        val marginPx = (4 * density).toInt()
+        val cardSize = cellSize - (marginPx * 2)
 
         for (i in 0 until (rows * cols)) {
             val card = CardView(requireContext()).apply {
-                layoutParams = GridLayout.LayoutParams().apply {
-                    width = cardSize
-                    height = cardSize
-                    setMargins(8, 8, 8, 8)
-                }
+                val row = i / cols
+                val col = i % cols
+                val params = GridLayout.LayoutParams(
+                    GridLayout.spec(row),
+                    GridLayout.spec(col)
+                )
+                params.width = cardSize
+                params.height = cardSize
+                params.setMargins(marginPx, marginPx, marginPx, marginPx)
+                layoutParams = params
                 setCardBackgroundColor(android.graphics.Color.parseColor("#312E81"))
                 radius = 16f
                 cardElevation = 8f
