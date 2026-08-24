@@ -112,10 +112,23 @@ class GameFragment : Fragment() {
         }
         renderBoard(boardSize)
 
+        val isRematch = arguments?.getBoolean("isRematch", false) ?: false
         if (isOnlineMode) {
-            binding.tvTurn.text = if (isHost) "Room: $roomCode. Waiting..." else "Game Started!"
-            setButtonsEnabled(false, boardSize)
             setupPusher()
+            if (isRematch) {
+                binding.tvTurn.text = if (isHost) "Rematch started! Your turn ($myOnlineSymbol)" else "Rematch started! Opponent's turn"
+                isMyTurnOnline = isHost
+                setButtonsEnabled(isHost, boardSize)
+                com.example.tictactoe.network.ApiClient.instance.makeMove(
+                    com.example.tictactoe.network.MoveRequest(roomCode, playerId, -99, -99, -1)
+                ).enqueue(object : retrofit2.Callback<com.example.tictactoe.network.MoveResponse> {
+                    override fun onResponse(c: retrofit2.Call<com.example.tictactoe.network.MoveResponse>, r: retrofit2.Response<com.example.tictactoe.network.MoveResponse>) {}
+                    override fun onFailure(c: retrofit2.Call<com.example.tictactoe.network.MoveResponse>, t: Throwable) {}
+                })
+            } else {
+                binding.tvTurn.text = if (isHost) "Room: $roomCode. Waiting..." else "Game Started!"
+                setButtonsEnabled(false, boardSize)
+            }
         } else {
             // If AI is X, it should make the first move.
             triggerAiMoveIfNeeded(boardSize)
@@ -142,6 +155,23 @@ class GameFragment : Fragment() {
                         if (senderId != -1 && senderId != playerId) {
                             val row = json.optInt("row", json.optString("row", "0").toIntOrNull() ?: 0)
                             val col = json.optInt("col", json.optString("col", "0").toIntOrNull() ?: 0)
+
+                            if (row == -99 && col == -99) {
+                                // Rematch signal!
+                                if (isInfinityMode) {
+                                    infinityGameLogic = com.example.tictactoe.InfinityGameLogic(boardSize)
+                                    infinityGameLogic?.currentPlayer = "X"
+                                } else {
+                                    gameLogic = com.example.tictactoe.GameLogic(boardSize)
+                                    gameLogic?.currentPlayer = "X"
+                                }
+                                renderBoard(boardSize)
+                                isMyTurnOnline = isHost
+                                setButtonsEnabled(isMyTurnOnline, boardSize)
+                                binding.tvTurn.text = if (isMyTurnOnline) "Rematch: Your turn ($myOnlineSymbol)" else "Rematch: Opponent's turn"
+                                return@runOnUiThread
+                            }
+
                             // Opponent made a move
                             if (isInfinityMode) {
                                 infinityGameLogic!!.makeMove(row, col)
@@ -347,9 +377,6 @@ class GameFragment : Fragment() {
         isNavigating = true
         
         countDownTimer?.cancel()
-        if (isOnlineMode) {
-            com.example.tictactoe.network.PusherManager.unsubscribeFromRoom(roomCode)
-        }
 
         val winner = if (isInfinityMode) infinityGameLogic!!.winner else gameLogic!!.winner
         

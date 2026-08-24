@@ -1,5 +1,6 @@
 package com.example.tictactoe
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,14 +8,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.tictactoe.databinding.FragmentResultBinding
-
+import com.example.tictactoe.network.PusherManager
 import nl.dionsegijn.konfetti.core.Party
 import nl.dionsegijn.konfetti.core.Position
 import nl.dionsegijn.konfetti.core.emitter.Emitter
-import nl.dionsegijn.konfetti.core.models.Shape
-import nl.dionsegijn.konfetti.core.models.Size
 import java.util.concurrent.TimeUnit
-import android.graphics.Color
 
 class ResultFragment : Fragment() {
 
@@ -34,6 +32,8 @@ class ResultFragment : Fragment() {
 
         val resultMessage = arguments?.getString("resultMessage") ?: "Unknown"
         val isDraw = arguments?.getBoolean("isDraw") ?: false
+        val isOnlineMode = arguments?.getBoolean("isOnlineMode") ?: false
+        val gameType = arguments?.getString("gameType") ?: "tic_tac_toe"
 
         binding.tvResultMessage.text = resultMessage
 
@@ -41,12 +41,12 @@ class ResultFragment : Fragment() {
             binding.tvHeader.text = "Draw"
             binding.ivResult.setImageResource(R.drawable.board)
             binding.tvSubMessage.text = "Congrats to both of you for equally excelling in the art of not winning."
-            binding.btnAction.text = "REPLAY"
+            binding.btnAction.text = if (isOnlineMode) "REMATCH 🔄" else "REPLAY"
         } else {
             binding.tvHeader.text = "Winner"
             binding.ivResult.setImageResource(R.drawable.trophy)
             binding.tvSubMessage.text = "Congrats on being the undisputed champion of pressing buttons like a pro."
-            binding.btnAction.text = "RESTART"
+            binding.btnAction.text = if (isOnlineMode) "REMATCH 🔄" else "RESTART"
             
             // Trigger Confetti
             val party = Party(
@@ -61,19 +61,29 @@ class ResultFragment : Fragment() {
             binding.konfettiView.start(party)
         }
 
-        binding.btnAction.setOnClickListener {
-            val isOnlineMode = arguments?.getBoolean("isOnlineMode") ?: false
-            val gameType = arguments?.getString("gameType") ?: "tic_tac_toe"
-            if (isOnlineMode) {
-                // Online o'yinda xonadan chiqib ketish kerak, qayta ulanish qiyinroq (yangi xona ochilishi kerak)
-                findNavController().navigate(R.id.action_resultFragment_to_dashboardFragment)
-            } else {
-                // Local o'yinda qaytadan boshlash
-                when (gameType) {
-                    "connect4" -> findNavController().navigate(R.id.action_resultFragment_to_connect4Fragment, arguments)
-                    "water_sort" -> findNavController().navigate(R.id.action_resultFragment_to_waterSortFragment, arguments)
-                    else -> findNavController().navigate(R.id.action_resultFragment_to_gameFragment, arguments)
+        if (isOnlineMode) {
+            binding.btnSecondary.visibility = View.VISIBLE
+            binding.btnSecondary.text = "EXIT TO MENU 🚪"
+            binding.btnSecondary.setOnClickListener {
+                val roomCode = arguments?.getString("roomCode") ?: ""
+                if (roomCode.isNotEmpty()) {
+                    PusherManager.unsubscribeFromRoom(roomCode)
                 }
+                findNavController().navigate(R.id.action_resultFragment_to_dashboardFragment)
+            }
+        } else {
+            binding.btnSecondary.visibility = View.GONE
+        }
+
+        binding.btnAction.setOnClickListener {
+            val rematchBundle = Bundle(arguments).apply {
+                putBoolean("isRematch", true)
+            }
+
+            when (gameType) {
+                "connect4" -> findNavController().navigate(R.id.action_resultFragment_to_connect4Fragment, rematchBundle)
+                "water_sort" -> findNavController().navigate(R.id.action_resultFragment_to_waterSortFragment, rematchBundle)
+                else -> findNavController().navigate(R.id.action_resultFragment_to_gameFragment, rematchBundle)
             }
         }
     }

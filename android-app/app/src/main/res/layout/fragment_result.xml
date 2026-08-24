@@ -74,19 +74,40 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvResultMessage" />
 
-            <Button
-                android:id="@+id/btnAction"
-                android:layout_width="200dp"
-                android:layout_height="50dp"
-                android:layout_marginBottom="32dp"
-                android:text="RESTART"
-                android:textColor="@color/white"
-                android:textStyle="bold"
-                app:backgroundTint="#0052CC"
-                app:cornerRadius="25dp"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                android:gravity="center"
+                android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent">
+
+                <Button
+                    android:id="@+id/btnAction"
+                    android:layout_width="220dp"
+                    android:layout_height="50dp"
+                    android:text="RESTART"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    app:backgroundTint="#0052CC"
+                    app:cornerRadius="25dp" />
+
+                <Button
+                    android:id="@+id/btnSecondary"
+                    android:layout_width="220dp"
+                    android:layout_height="44dp"
+                    android:layout_marginTop="8dp"
+                    android:text="EXIT TO MENU"
+                    android:textColor="#666666"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    app:backgroundTint="#EEEEEE"
+                    app:cornerRadius="22dp" />
+            </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

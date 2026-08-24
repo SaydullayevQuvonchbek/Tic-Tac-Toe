@@ -73,7 +73,7 @@ object PusherManager {
 
                 val normalizedName = eventName.lowercase()
                 when {
-                    normalizedName.contains("start") -> {
+                    normalizedName.contains("start") || normalizedName.contains("rematch") || normalizedName.contains("restart") -> {
                         Log.d(TAG, "Dispatched -> onGameStarted")
                         onGameStarted(data)
                     }

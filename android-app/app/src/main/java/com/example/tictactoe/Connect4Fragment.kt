@@ -64,6 +64,27 @@ class Connect4Fragment : Fragment() {
                 handleBackNavigation()
             }
         })
+
+        val isRematch = arguments?.getBoolean("isRematch", false) ?: false
+        if (isRematch) {
+            isOnlineMode = arguments?.getBoolean("isOnlineMode", false) ?: false
+            roomCode = arguments?.getString("roomCode", "") ?: ""
+            isHost = arguments?.getBoolean("isHost", false) ?: false
+            isAiMode = arguments?.getBoolean("isAiMode", false) ?: false
+            myPlayerNumber = if (isHost) 1 else 2
+            isMyTurnOnline = isHost
+
+            startLocalGame()
+            if (isOnlineMode && roomCode.isNotEmpty()) {
+                subscribePusherEvents()
+                val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+                val myUserId = sharedPref.getInt("user_id", -1)
+                ApiClient.instance.makeMove(MoveRequest(roomCode, myUserId, -99, -99, -1)).enqueue(object : Callback<MoveResponse> {
+                    override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) {}
+                    override fun onFailure(call: Call<MoveResponse>, t: Throwable) {}
+                })
+            }
+        }
     }
 
     private fun handleBackNavigation() {
@@ -230,6 +251,15 @@ class Connect4Fragment : Fragment() {
                         }
 
                         val col = json.optInt("col", json.optString("col", "-1").toIntOrNull() ?: -1)
+                        if (col == -99) {
+                            logic = Connect4Logic()
+                            setupBoard()
+                            isMyTurnOnline = isHost
+                            updateTurnIndicator()
+                            Toast.makeText(context, "Rematch started! 🔥", Toast.LENGTH_SHORT).show()
+                            return@runOnUiThread
+                        }
+
                         if (col in 0..6) {
                             val opponentPlayerNumber = if (myPlayerNumber == 1) 2 else 1
                             val row = logic.dropToken(col)
@@ -425,10 +455,6 @@ class Connect4Fragment : Fragment() {
                 })
         }
 
-        if (isOnlineMode && roomCode.isNotEmpty()) {
-            PusherManager.unsubscribeFromRoom(roomCode)
-        }
-
         val bundle = Bundle().apply {
             putString("gameType", "connect4")
             val winMsg = if (isOnlineMode) {
@@ -442,6 +468,8 @@ class Connect4Fragment : Fragment() {
             putBoolean("isDraw", logic.winner == 0)
             putBoolean("isAiMode", isAiMode)
             putBoolean("isOnlineMode", isOnlineMode)
+            putString("roomCode", roomCode)
+            putBoolean("isHost", isHost)
         }
         findNavController().navigate(R.id.action_connect4Fragment_to_resultFragment, bundle)
     }
