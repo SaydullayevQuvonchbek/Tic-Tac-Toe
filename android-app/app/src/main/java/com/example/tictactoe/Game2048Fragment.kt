@@ -94,24 +94,27 @@ class Game2048Fragment : Fragment() {
     }
 
     private fun setupGrid() {
-        val size = resources.displayMetrics.widthPixels - 48 * resources.displayMetrics.density.toInt()
-        val cellSize = (size - 16 * resources.displayMetrics.density.toInt()) / 4
-        
+        val marginPx = (4 * resources.displayMetrics.density).toInt() // 4dp margin
+
         for (i in 0..3) {
             for (j in 0..3) {
                 val card = CardView(requireContext())
-                val params = GridLayout.LayoutParams()
-                params.width = cellSize
-                params.height = cellSize
-                params.setMargins(8, 8, 8, 8)
+                val params = GridLayout.LayoutParams(
+                    GridLayout.spec(i, 1f),
+                    GridLayout.spec(j, 1f)
+                )
+                params.width = 0
+                params.height = 0
+                params.setMargins(marginPx, marginPx, marginPx, marginPx)
                 card.layoutParams = params
                 card.radius = 8f * resources.displayMetrics.density
                 card.setCardBackgroundColor(Color.parseColor("#CDC1B4"))
+                card.cardElevation = 0f
 
                 val tv = TextView(requireContext())
                 tv.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
                 tv.gravity = android.view.Gravity.CENTER
-                tv.textSize = 24f
+                tv.textSize = 28f
                 tv.setTypeface(null, android.graphics.Typeface.BOLD)
                 
                 card.addView(tv)
