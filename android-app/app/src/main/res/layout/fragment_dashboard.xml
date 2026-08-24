@@ -62,9 +62,39 @@
                         android:text="Level 1 | 0 XP"
                         android:textColor="#A5B4FC"
                         android:textSize="14sp"
-                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/btnEditProfile"
                         app:layout_constraintStart_toEndOf="@+id/ivAvatar"
                         app:layout_constraintTop_toBottomOf="@+id/tvUsername" />
+                        
+                    <!-- Streak and Coins -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:orientation="horizontal"
+                        android:layout_marginStart="16dp"
+                        app:layout_constraintStart_toEndOf="@+id/ivAvatar"
+                        app:layout_constraintTop_toBottomOf="@+id/tvLevelInfo">
+                        
+                        <TextView
+                            android:id="@+id/tvStreak"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🔥 0"
+                            android:textColor="#F59E0B"
+                            android:textStyle="bold"
+                            android:textSize="14sp" />
+                            
+                        <TextView
+                            android:id="@+id/tvCoins"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:text="🪙 0"
+                            android:textColor="#FCD34D"
+                            android:textStyle="bold"
+                            android:textSize="14sp" />
+                    </LinearLayout>
 
                     <ImageButton
                         android:id="@+id/btnEditProfile"
@@ -79,6 +109,55 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
 
+            <!-- Daily Reward Card -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardDailyReward"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="#F59E0B"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="8dp"
+                app:layout_constraintTop_toBottomOf="@+id/cardProfile">
+                
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🎁"
+                        android:textSize="32sp" />
+                        
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:orientation="vertical">
+                        
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Daily Reward"
+                            android:textColor="@color/white"
+                            android:textStyle="bold"
+                            android:textSize="18sp" />
+                            
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Tap to claim your daily bonus!"
+                            android:textColor="#FEF3C7"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
             <TextView
                 android:id="@+id/tvTitle"
                 android:layout_width="wrap_content"
@@ -90,7 +169,7 @@
                 android:textSize="24sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cardProfile" />
+                app:layout_constraintTop_toBottomOf="@+id/cardDailyReward" />
 
             <!-- Game Cards -->
             <LinearLayout

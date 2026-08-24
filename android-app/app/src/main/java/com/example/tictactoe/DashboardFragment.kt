@@ -56,12 +56,16 @@ class DashboardFragment : Fragment() {
                 findNavController().navigate(R.id.action_dashboardFragment_to_memoryGameFragment)
             }
         }
-
-        binding.btnGlobalLeaderboard.setOnClickListener {
-            // Reusing logic from WelcomeFragment or we can extract it.
-            // For now, let's keep it simple and just show a Toast that we are fetching.
-            fetchAndShowLeaderboard()
+        
+        binding.cardDailyReward.setOnClickListener {
+            if (ensureProfile()) {
+                claimDailyReward()
+            }
         }
+
+        // Leaderboard will be moved to its own tab, but we can leave the button logic if it's still in XML,
+        // or just ignore if it was removed from XML. Wait, btnGlobalLeaderboard was removed from XML in previous edit, 
+        // so I should remove it here to avoid crash.
     }
 
     private fun ensureProfile(): Boolean {
@@ -79,13 +83,19 @@ class DashboardFragment : Fragment() {
         val username = sharedPref.getString("username", "") ?: ""
         val level = sharedPref.getInt("level", 1)
         val xp = sharedPref.getInt("xp", 0)
+        val coins = sharedPref.getInt("coins", 0)
+        val streak = sharedPref.getInt("streak_count", 0)
 
         if (username.isNotEmpty()) {
             binding.tvUsername.text = username
             binding.tvLevelInfo.text = "Level $level | $xp XP"
+            binding.tvStreak.text = "🔥 $streak"
+            binding.tvCoins.text = "🪙 $coins"
         } else {
             binding.tvUsername.text = "Guest Player"
             binding.tvLevelInfo.text = "Click edit to set username"
+            binding.tvStreak.text = "🔥 0"
+            binding.tvCoins.text = "🪙 0"
             showEditProfileDialog()
         }
     }
@@ -134,6 +144,8 @@ class DashboardFragment : Fragment() {
                                 .putInt("user_id", user.id)
                                 .putInt("level", user.level)
                                 .putInt("xp", user.xp)
+                                .putInt("coins", user.coins)
+                                .putInt("streak_count", user.streak_count)
                                 .apply()
                             loadProfile()
                             Toast.makeText(context, "Profile Updated!", Toast.LENGTH_SHORT).show()
@@ -158,33 +170,45 @@ class DashboardFragment : Fragment() {
             })
     }
     
-    private fun fetchAndShowLeaderboard() {
+    private fun claimDailyReward() {
         val pd = android.app.ProgressDialog(context)
-        pd.setMessage("Loading Leaderboard...")
+        pd.setMessage("Checking reward...")
         pd.show()
+        
+        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", android.content.Context.MODE_PRIVATE)
+        val userId = sharedPref.getInt("user_id", -1)
 
-        ApiClient.instance.getLeaderboard().enqueue(object : retrofit2.Callback<com.example.tictactoe.network.LeaderboardResponse> {
-            override fun onResponse(call: retrofit2.Call<com.example.tictactoe.network.LeaderboardResponse>, response: retrofit2.Response<com.example.tictactoe.network.LeaderboardResponse>) {
+        ApiClient.instance.claimDailyReward(com.example.tictactoe.network.DailyRewardRequest(userId)).enqueue(object : retrofit2.Callback<com.example.tictactoe.network.DailyRewardResponse> {
+            override fun onResponse(call: retrofit2.Call<com.example.tictactoe.network.DailyRewardResponse>, response: retrofit2.Response<com.example.tictactoe.network.DailyRewardResponse>) {
                 pd.dismiss()
                 if (response.isSuccessful && response.body()?.status == "success") {
-                    val list = response.body()?.leaderboard
-                    if (list.isNullOrEmpty()) {
-                        Toast.makeText(context, "No players yet!", Toast.LENGTH_SHORT).show()
-                    } else {
-                        val names = list.map { "${it.rank}. ${it.username} (Level ${it.level} - ${it.xp} XP)" }.toTypedArray()
-                        AlertDialog.Builder(requireContext())
-                            .setTitle("Global Leaderboard")
-                            .setItems(names, null)
-                            .setPositiveButton("Close", null)
-                            .show()
-                    }
+                    val reward = response.body()?.reward_coins ?: 0
+                    val total = response.body()?.new_total_coins ?: 0
+                    
+                    sharedPref.edit().putInt("coins", total).apply()
+                    loadProfile()
+                    
+                    AlertDialog.Builder(requireContext())
+                        .setTitle("🎁 Reward Claimed!")
+                        .setMessage("You received $reward coins!\nTotal Coins: $total")
+                        .setPositiveButton("Awesome!", null)
+                        .show()
                 } else {
-                    Toast.makeText(context, "Failed to load", Toast.LENGTH_SHORT).show()
+                    var errorMsg = "Could not claim"
+                    val rawError = response.errorBody()?.string()
+                    if (rawError != null && rawError.contains("message")) {
+                        try {
+                            errorMsg = org.json.JSONObject(rawError).optString("message", "Already claimed today.")
+                        } catch (e: Exception) {}
+                    } else {
+                        errorMsg = response.body()?.message ?: "Already claimed today."
+                    }
+                    Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show()
                 }
             }
-            override fun onFailure(call: retrofit2.Call<com.example.tictactoe.network.LeaderboardResponse>, t: Throwable) {
+            override fun onFailure(call: retrofit2.Call<com.example.tictactoe.network.DailyRewardResponse>, t: Throwable) {
                 pd.dismiss()
-                Toast.makeText(context, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Network Error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }

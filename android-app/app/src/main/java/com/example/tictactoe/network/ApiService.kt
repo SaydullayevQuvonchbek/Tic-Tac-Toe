@@ -7,7 +7,10 @@ import retrofit2.http.POST
 
 data class AuthRequest(val device_id: String, val username: String)
 data class AuthResponse(val status: String, val user: User?)
-data class User(val id: Int, val username: String, val level: Int, val xp: Int, val wins: Int, val losses: Int)
+data class User(val id: Int, val username: String, val level: Int, val xp: Int, val wins: Int, val losses: Int, val coins: Int, val streak_count: Int)
+
+data class DailyRewardRequest(val player_id: Int)
+data class DailyRewardResponse(val status: String, val reward_coins: Int?, val new_total_coins: Int?, val message: String?)
 
 data class RoomCreateRequest(val player_id: Int, val board_size: Int, val infinity_mode: Boolean)
 data class RoomCreateResponse(val status: String, val room_code: String?)
@@ -47,4 +50,7 @@ interface ApiService {
 
     @POST("game/score")
     fun submitGameScore(@Body req: GameScoreRequest): Call<GameScoreResponse>
+
+    @POST("users/daily-reward")
+    fun claimDailyReward(@Body req: DailyRewardRequest): Call<DailyRewardResponse>
 }
