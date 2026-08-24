@@ -62,7 +62,7 @@ class ResultFragment : Fragment() {
         }
 
         binding.btnAction.setOnClickListener {
-            findNavController().navigate(R.id.action_resultFragment_to_welcomeFragment)
+            findNavController().navigate(R.id.action_resultFragment_to_dashboardFragment)
         }
     }
 

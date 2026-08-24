@@ -26,7 +26,6 @@ class WelcomeFragment : Fragment() {
 
         val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", android.content.Context.MODE_PRIVATE)
         val savedUsername = sharedPref.getString("username", "")
-        binding.etUsername.setText(savedUsername)
         
         binding.switchAiMode.isChecked = sharedPref.getBoolean("isAiMode", false)
         binding.switchInfinityMode.isChecked = sharedPref.getBoolean("isInfinityMode", false)
@@ -66,8 +65,8 @@ class WelcomeFragment : Fragment() {
             val xp = sharedPref.getInt("xp", 0)
             
             if (userId != -1) {
-                val user = com.example.tictactoe.network.User(userId, deviceId, username, level, xp, 0, 0, 0)
-                showOnlineDialog(user)
+                val user = com.example.tictactoe.network.User(userId, username, level, xp, 0, 0)
+                showOnlineMenu(user)
             } else {
                 android.widget.Toast.makeText(context, "Please set your profile in Dashboard first", android.widget.Toast.LENGTH_SHORT).show()
             }
