@@ -25,6 +25,9 @@
         <action
             android:id="@+id/action_dashboardFragment_to_game2048Fragment"
             app:destination="@id/game2048Fragment" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_connect4Fragment"
+            app:destination="@id/connect4Fragment" />
     </fragment>
 
     <fragment
@@ -119,5 +122,15 @@
         android:name="com.example.tictactoe.Game2048Fragment"
         android:label="2048 Puzzle"
         tools:layout="@layout/fragment_2048" />
+
+    <fragment
+        android:id="@+id/connect4Fragment"
+        android:name="com.example.tictactoe.Connect4Fragment"
+        android:label="Connect 4"
+        tools:layout="@layout/fragment_connect4">
+        <action
+            android:id="@+id/action_connect4Fragment_to_resultFragment"
+            app:destination="@id/resultFragment" />
+    </fragment>
 
 </navigation>
