@@ -259,6 +259,10 @@ class MemoryGameFragment : Fragment() {
                     pd.dismiss()
                     if (response.isSuccessful && response.body()?.status == "success") {
                         val resp = response.body()!!
+                        val prevBest = sharedPref.getInt("memory_game_best", 0)
+                        if (score > prevBest) {
+                            sharedPref.edit().putInt("memory_game_best", score).apply()
+                        }
                         sharedPref.edit()
                             .putInt("level", resp.current_level)
                             .putInt("xp", resp.new_total_xp)

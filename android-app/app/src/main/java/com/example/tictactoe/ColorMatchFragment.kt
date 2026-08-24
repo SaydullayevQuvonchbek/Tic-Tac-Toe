@@ -128,6 +128,11 @@ class ColorMatchFragment : Fragment() {
         val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", android.content.Context.MODE_PRIVATE)
         val userId = sharedPref.getInt("user_id", -1)
 
+        val prevBest = sharedPref.getInt("color_match_high_score", 0)
+        if (score > prevBest) {
+            sharedPref.edit().putInt("color_match_high_score", score).apply()
+        }
+
         if (userId != -1 && score > 0) {
             val req = GameScoreRequest(userId, "color_match", score)
             ApiClient.instance.submitGameScore(req).enqueue(object : Callback<GameScoreResponse> {

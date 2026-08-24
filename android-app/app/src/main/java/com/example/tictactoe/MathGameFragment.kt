@@ -148,6 +148,10 @@ class MathGameFragment : Fragment() {
                     pd.dismiss()
                     if (response.isSuccessful && response.body()?.status == "success") {
                         val resp = response.body()!!
+                        val prevBest = sharedPref.getInt("math_high_score", 0)
+                        if (score > prevBest) {
+                            sharedPref.edit().putInt("math_high_score", score).apply()
+                        }
                         // Update local shared prefs
                         sharedPref.edit()
                             .putInt("level", resp.current_level)

@@ -304,6 +304,11 @@ class Game2048Fragment : Fragment() {
         val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", android.content.Context.MODE_PRIVATE)
         val userId = sharedPref.getInt("user_id", -1)
 
+        val prevBest = sharedPref.getInt("game_2048_high_score", 0)
+        if (score > prevBest) {
+            sharedPref.edit().putInt("game_2048_high_score", score).apply()
+        }
+
         if (userId != -1 && score > 0) {
             val req = GameScoreRequest(userId, "game_2048", score)
             ApiClient.instance.submitGameScore(req).enqueue(object : Callback<GameScoreResponse> {

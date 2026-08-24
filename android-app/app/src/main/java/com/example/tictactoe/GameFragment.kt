@@ -365,6 +365,11 @@ class GameFragment : Fragment() {
                 override fun onResponse(c: retrofit2.Call<com.example.tictactoe.network.MatchResultResponse>, r: retrofit2.Response<com.example.tictactoe.network.MatchResultResponse>) {}
                 override fun onFailure(c: retrofit2.Call<com.example.tictactoe.network.MatchResultResponse>, t: Throwable) {}
             })
+        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", android.content.Context.MODE_PRIVATE)
+        val isUserWinner = if (isOnlineMode) winner == myOnlineSymbol else (username.isNotEmpty() && winner == arguments?.getString("startingPlayer")) || (!isAiMode && winner == "X") || (isAiMode && winner == "X")
+        if (winner != "Draw" && isUserWinner) {
+            val currentWins = sharedPref.getInt("wins", 0) + 1
+            sharedPref.edit().putInt("wins", currentWins).apply()
         }
 
         val bundle = Bundle().apply {

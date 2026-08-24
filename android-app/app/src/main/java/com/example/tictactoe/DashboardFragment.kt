@@ -62,7 +62,7 @@ class DashboardFragment : Fragment() {
         binding.card2048.setOnClickListener {
             handleGameClick("game_2048", 5, 250, binding.tv2048, "🔢 2048 Puzzle", R.id.action_dashboardFragment_to_game2048Fragment)
         }
-        
+
         binding.cardConnect4.setOnClickListener {
             handleGameClick("connect4", 4, 200, binding.tvConnect4, "🔴 Connect 4 🟡", R.id.action_dashboardFragment_to_connect4Fragment)
         }
@@ -74,6 +74,11 @@ class DashboardFragment : Fragment() {
         binding.cardDailyReward.setOnClickListener {
             if (ensureProfile()) claimDailyReward()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadProfile()
     }
     
     private fun updateGameLocks() {
@@ -175,6 +180,7 @@ class DashboardFragment : Fragment() {
             // Update Best Records
             val wins = sharedPref.getInt("wins", 0)
             val mathScore = sharedPref.getInt("math_high_score", 0)
+            val memoryScore = sharedPref.getInt("memory_game_best", 0)
             val colorScore = sharedPref.getInt("color_match_high_score", 0)
             val score2048 = sharedPref.getInt("game_2048_high_score", 0)
             val connect4Wins = sharedPref.getInt("connect4_wins", 0)
@@ -182,6 +188,7 @@ class DashboardFragment : Fragment() {
 
             binding.tvRecordTicTacToe.text = "🏆 Wins: $wins"
             binding.tvRecordMath.text = if (mathScore > 0) "⭐ Best: $mathScore pts" else "⭐ Quick Math Quiz"
+            binding.tvRecordMemory.text = if (memoryScore > 0) "⭐ Best: $memoryScore pts" else "⭐ Quickest Solve"
             binding.tvRecordColorMatch.text = if (colorScore > 0) "⭐ High Score: $colorScore" else "⭐ Speed &amp; Focus"
             binding.tvRecord2048.text = if (score2048 > 0) "⭐ Best: $score2048" else "⭐ Reach 2048 Tile"
             binding.tvRecordConnect4.text = "🏆 Wins: $connect4Wins"
