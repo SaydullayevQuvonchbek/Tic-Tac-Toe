@@ -75,6 +75,8 @@ class MemoryGameFragment : Fragment() {
                 R.id.rbEasy -> 4 to 2 // 8 cards (4 pairs)
                 R.id.rbMedium -> 4 to 3 // 12 cards (6 pairs)
                 R.id.rbHard -> 4 to 4 // 16 cards (8 pairs)
+                R.id.rbPro -> 5 to 4 // 20 cards (10 pairs)
+                R.id.rbExpert -> 6 to 5 // 30 cards (15 pairs)
                 else -> 4 to 4
             }
             dialog.dismiss()
@@ -88,9 +90,9 @@ class MemoryGameFragment : Fragment() {
 
     private fun setupBoard(rows: Int, cols: Int, isAnimals: Boolean) {
         val themeEmojis = if (isAnimals) {
-            listOf("🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼")
+            listOf("🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼", "🐨", "🐯", "🦁", "🐮", "🐷", "🐸", "🐵", "🐧")
         } else {
-            listOf("🍎", "🍌", "🍉", "🍇", "🍓", "🍒", "🍍", "🥝")
+            listOf("🍎", "🍌", "🍉", "🍇", "🍓", "🍒", "🍍", "🥝", "🍑", "🥭", "🍏", "🍐", "🍋", "🍊", "🍈", "🥥")
         }
 
         totalPairs = (rows * cols) / 2
