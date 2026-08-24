@@ -53,83 +53,25 @@ class WelcomeFragment : Fragment() {
         }
 
         binding.btnPlayOnline.setOnClickListener {
-            val username = binding.etUsername.text.toString()
+            val username = sharedPref.getString("username", "") ?: ""
             if (username.isEmpty()) {
-                android.widget.Toast.makeText(context, "Enter Username first!", android.widget.Toast.LENGTH_SHORT).show()
+                android.widget.Toast.makeText(context, "Username not set in Dashboard!", android.widget.Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            sharedPref.edit().putString("username", username).apply()
             val deviceId = sharedPref.getString("device_id", "") ?: ""
-            authenticateAndPlayOnline(deviceId, username)
+            
+            // We assume device is already authenticated from Dashboard
+            val userId = sharedPref.getInt("user_id", -1)
+            val level = sharedPref.getInt("level", 1)
+            val xp = sharedPref.getInt("xp", 0)
+            
+            if (userId != -1) {
+                val user = com.example.tictactoe.network.User(userId, deviceId, username, level, xp, 0, 0, 0)
+                showOnlineDialog(user)
+            } else {
+                android.widget.Toast.makeText(context, "Please set your profile in Dashboard first", android.widget.Toast.LENGTH_SHORT).show()
+            }
         }
-
-        binding.btnLeaderboard.setOnClickListener {
-            fetchAndShowLeaderboard()
-        }
-    }
-
-    private fun fetchAndShowLeaderboard() {
-        val pd = android.app.ProgressDialog(context)
-        pd.setMessage("Loading Leaderboard...")
-        pd.show()
-
-        com.example.tictactoe.network.ApiClient.instance.getLeaderboard().enqueue(object : retrofit2.Callback<com.example.tictactoe.network.LeaderboardResponse> {
-            override fun onResponse(call: retrofit2.Call<com.example.tictactoe.network.LeaderboardResponse>, response: retrofit2.Response<com.example.tictactoe.network.LeaderboardResponse>) {
-                pd.dismiss()
-                if (response.isSuccessful && response.body()?.status == "success") {
-                    val list = response.body()?.leaderboard
-                    if (list.isNullOrEmpty()) {
-                        android.widget.Toast.makeText(context, "No players yet!", android.widget.Toast.LENGTH_SHORT).show()
-                    } else {
-                        val names = list.map { "${it.rank}. ${it.username} (Level ${it.level} - ${it.xp} XP)" }.toTypedArray()
-                        android.app.AlertDialog.Builder(context)
-                            .setTitle("Global Leaderboard")
-                            .setItems(names, null)
-                            .setPositiveButton("Close", null)
-                            .show()
-                    }
-                } else {
-                    android.widget.Toast.makeText(context, "Failed to load", android.widget.Toast.LENGTH_SHORT).show()
-                }
-            }
-            override fun onFailure(call: retrofit2.Call<com.example.tictactoe.network.LeaderboardResponse>, t: Throwable) {
-                pd.dismiss()
-                android.widget.Toast.makeText(context, "Error: ${t.message}", android.widget.Toast.LENGTH_SHORT).show()
-            }
-        })
-    }
-
-    private fun authenticateAndPlayOnline(deviceId: String, username: String) {
-        val pd = android.app.ProgressDialog(context)
-        pd.setMessage("Connecting to server...")
-        pd.setCancelable(false)
-        pd.show()
-
-        com.example.tictactoe.network.ApiClient.instance.auth(
-            com.example.tictactoe.network.AuthRequest(deviceId, username)
-        ).enqueue(object : retrofit2.Callback<com.example.tictactoe.network.AuthResponse> {
-            override fun onResponse(
-                call: retrofit2.Call<com.example.tictactoe.network.AuthResponse>,
-                response: retrofit2.Response<com.example.tictactoe.network.AuthResponse>
-            ) {
-                pd.dismiss()
-                if (response.isSuccessful && response.body()?.status == "success") {
-                    val user = response.body()?.user
-                    if (user != null) {
-                        showOnlineMenu(user)
-                    } else {
-                        android.widget.Toast.makeText(context, "Failed to get user data", android.widget.Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    android.widget.Toast.makeText(context, "Auth failed!", android.widget.Toast.LENGTH_SHORT).show()
-                }
-            }
-
-            override fun onFailure(call: retrofit2.Call<com.example.tictactoe.network.AuthResponse>, t: Throwable) {
-                pd.dismiss()
-                android.widget.Toast.makeText(context, "Network Error: ${t.message}", android.widget.Toast.LENGTH_LONG).show()
-            }
-        })
     }
 
     private fun showOnlineMenu(user: com.example.tictactoe.network.User) {
@@ -255,7 +197,9 @@ class WelcomeFragment : Fragment() {
     }
 
     private fun startGame(startingPlayer: String) {
-        val username = binding.etUsername.text.toString()
+        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", android.content.Context.MODE_PRIVATE)
+        val username = sharedPref.getString("username", "") ?: ""
+        
         val size = when (binding.rgSize.checkedRadioButtonId) {
             R.id.rb4x4 -> 4
             R.id.rb5x5 -> 5
@@ -265,9 +209,7 @@ class WelcomeFragment : Fragment() {
         val isAiMode = binding.switchAiMode.isChecked
         val isArcadeMode = binding.switchArcadeMode.isChecked
 
-        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", android.content.Context.MODE_PRIVATE)
         sharedPref.edit().apply {
-            if (username.isNotEmpty()) putString("username", username)
             putInt("boardSize", size)
             putBoolean("isInfinityMode", isInfinityMode)
             putBoolean("isAiMode", isAiMode)

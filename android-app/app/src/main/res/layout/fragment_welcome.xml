@@ -23,80 +23,23 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:fontFamily="sans-serif-black"
-                android:text="TIC TAC TOE"
+                android:text="TIC TAC TOE PRO"
                 android:textColor="@color/white"
-                android:textSize="36sp"
+                android:textSize="28sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/tvPro"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/pro_badge_bg"
-                android:fontFamily="sans-serif-black"
-                android:paddingHorizontal="8dp"
-                android:paddingVertical="4dp"
-                android:text="PRO"
-                android:textColor="@color/white"
-                android:textSize="12sp"
-                app:layout_constraintBottom_toTopOf="@+id/tvTitle"
-                app:layout_constraintEnd_toEndOf="@+id/tvTitle"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="@+id/tvTitle"
-                app:layout_constraintTop_toTopOf="@+id/tvTitle"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <!-- Username Card -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardUsername"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                app:cardBackgroundColor="#312E81"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="4dp"
-                app:layout_constraintTop_toBottomOf="@+id/tvTitle">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Player Profile"
-                        android:textColor="#A5B4FC"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-
-                    <EditText
-                        android:id="@+id/etUsername"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:layout_marginTop="8dp"
-                        android:background="@drawable/edittext_bg"
-                        android:hint="Enter Username"
-                        android:inputType="textPersonName"
-                        android:paddingHorizontal="16dp"
-                        android:textColor="@color/white"
-                        android:textColorHint="#818CF8" />
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
 
             <!-- Settings Card -->
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardSettings"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="24dp"
                 app:cardBackgroundColor="#312E81"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="4dp"
-                app:layout_constraintTop_toBottomOf="@+id/cardUsername">
+                app:layout_constraintTop_toBottomOf="@+id/tvTitle">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -260,29 +203,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="65dp"
                 android:layout_marginTop="24dp"
+                android:layout_marginBottom="24dp"
                 android:backgroundTint="@color/yellow_accent"
                 android:fontFamily="sans-serif-black"
                 android:text="PLAY ONLINE (BETA)"
                 android:textColor="@color/black"
                 android:textSize="18sp"
                 app:cornerRadius="16dp"
-                app:layout_constraintTop_toBottomOf="@+id/divider2" />
-
-            <!-- Leaderboard -->
-            <Button
-                android:id="@+id/btnLeaderboard"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="24dp"
-                android:backgroundTint="#4338CA"
-                android:fontFamily="sans-serif-black"
-                android:text="GLOBAL LEADERBOARD"
-                android:textColor="@color/white"
-                android:textSize="16sp"
-                app:cornerRadius="16dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btnPlayOnline" />
+                app:layout_constraintTop_toBottomOf="@+id/divider2" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

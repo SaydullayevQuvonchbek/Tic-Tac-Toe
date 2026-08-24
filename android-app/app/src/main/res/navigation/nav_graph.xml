@@ -3,7 +3,47 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/welcomeFragment">
+    app:startDestination="@id/dashboardFragment">
+
+    <fragment
+        android:id="@+id/dashboardFragment"
+        android:name="com.example.tictactoe.DashboardFragment"
+        android:label="Dashboard"
+        tools:layout="@layout/fragment_dashboard">
+        <action
+            android:id="@+id/action_dashboardFragment_to_welcomeFragment"
+            app:destination="@id/welcomeFragment" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_mathGameFragment"
+            app:destination="@id/mathGameFragment" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_memoryGameFragment"
+            app:destination="@id/memoryGameFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/mathGameFragment"
+        android:name="com.example.tictactoe.MathGameFragment"
+        android:label="Math Game"
+        tools:layout="@layout/fragment_math_game">
+        <action
+            android:id="@+id/action_mathGameFragment_to_dashboardFragment"
+            app:destination="@id/dashboardFragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/memoryGameFragment"
+        android:name="com.example.tictactoe.MemoryGameFragment"
+        android:label="Memory Game"
+        tools:layout="@layout/fragment_memory_game">
+        <action
+            android:id="@+id/action_memoryGameFragment_to_dashboardFragment"
+            app:destination="@id/dashboardFragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true" />
+    </fragment>
 
     <fragment
         android:id="@+id/welcomeFragment"
@@ -38,8 +78,8 @@
             app:destination="@id/gameFragment"
             app:popUpTo="@id/welcomeFragment" />
         <action
-            android:id="@+id/action_resultFragment_to_welcomeFragment"
-            app:destination="@id/welcomeFragment"
+            android:id="@+id/action_resultFragment_to_dashboardFragment"
+            app:destination="@id/dashboardFragment"
             app:popUpTo="@id/nav_graph"
             app:popUpToInclusive="true" />
         <argument

@@ -21,6 +21,9 @@ data class MoveResponse(val status: String)
 data class MatchResultRequest(val player_id: Int, val result: String)
 data class MatchResultResponse(val status: String, val xp_earned: Int, val new_total_xp: Int, val level_up: Boolean, val current_level: Int)
 
+data class GameScoreRequest(val player_id: Int, val game_type: String, val score: Int)
+data class GameScoreResponse(val status: String, val xp_earned: Int, val new_total_xp: Int, val level_up: Boolean, val current_level: Int)
+
 data class LeaderboardPlayer(val rank: Int, val username: String, val level: Int, val xp: Int, val wins: Int)
 data class LeaderboardResponse(val status: String, val leaderboard: List<LeaderboardPlayer>?)
 
@@ -41,4 +44,7 @@ interface ApiService {
 
     @POST("match/result")
     fun matchResult(@Body req: MatchResultRequest): Call<MatchResultResponse>
+
+    @POST("game/score")
+    fun submitGameScore(@Body req: GameScoreRequest): Call<GameScoreResponse>
 }
