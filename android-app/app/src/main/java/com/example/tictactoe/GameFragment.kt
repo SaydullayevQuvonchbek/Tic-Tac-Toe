@@ -280,6 +280,7 @@ class GameFragment : Fragment() {
     private fun renderBoard(boardSize: Int) {
         val currentBoard = if (isInfinityMode) infinityGameLogic!!.board else gameLogic!!.board
         val fadingMove = if (isInfinityMode) infinityGameLogic!!.getFadingMove() else null
+        val winningLine = if (isInfinityMode) infinityGameLogic!!.winningLine else gameLogic!!.winningLine
 
         for (r in 0 until boardSize) {
             for (c in 0 until boardSize) {
@@ -290,6 +291,13 @@ class GameFragment : Fragment() {
                     button.setTextColor(0xFF556B2F.toInt())
                 } else if (player == "O") {
                     button.setTextColor(0xFF8B0000.toInt())
+                }
+                
+                // Highlight winning line
+                if (winningLine != null && winningLine.contains(Pair(r, c))) {
+                    button.backgroundTintList = android.content.res.ColorStateList.valueOf(0xFFC8E6C9.toInt()) // Light green
+                } else {
+                    button.backgroundTintList = android.content.res.ColorStateList.valueOf(0xFFF5F5F5.toInt())
                 }
                 
                 // Animatsiya: O'chib ketuvchi toshni xiralashtirish
@@ -373,6 +381,18 @@ class GameFragment : Fragment() {
                 putString("resultMessage", display)
                 putBoolean("isDraw", false)
             }
+            
+            // Pass the exact same configuration so ResultFragment can replay
+            putBoolean("isInfinityMode", isInfinityMode)
+            putBoolean("isAiMode", isAiMode)
+            putBoolean("isArcadeMode", isArcadeMode)
+            putBoolean("isOnlineMode", isOnlineMode)
+            putString("roomCode", roomCode)
+            putInt("playerId", playerId)
+            putBoolean("isHost", isHost)
+            putString("username", username)
+            putString("startingPlayer", arguments?.getString("startingPlayer") ?: "X")
+            putInt("boardSize", arguments?.getInt("boardSize") ?: 3)
         }
         
         // Disable buttons so no further clicks occur

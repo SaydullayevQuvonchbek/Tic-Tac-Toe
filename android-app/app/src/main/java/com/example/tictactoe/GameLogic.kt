@@ -41,45 +41,75 @@ class GameLogic(val size: Int) {
         }
     }
 
+    var winningLine: List<Pair<Int, Int>>? = null
+
     private fun checkConsecutive(player: String, needed: Int): Boolean {
         // gorizontal
         for (r in 0 until size) {
             for (c in 0..size - needed) {
                 var count = 0
+                val line = mutableListOf<Pair<Int, Int>>()
                 for (k in 0 until needed) {
-                    if (board[r][c + k] == player) count++
+                    if (board[r][c + k] == player) {
+                        count++
+                        line.add(Pair(r, c + k))
+                    }
                 }
-                if (count == needed) return true
+                if (count == needed) {
+                    winningLine = line
+                    return true
+                }
             }
         }
         // vertikal
         for (c in 0 until size) {
             for (r in 0..size - needed) {
                 var count = 0
+                val line = mutableListOf<Pair<Int, Int>>()
                 for (k in 0 until needed) {
-                    if (board[r + k][c] == player) count++
+                    if (board[r + k][c] == player) {
+                        count++
+                        line.add(Pair(r + k, c))
+                    }
                 }
-                if (count == needed) return true
+                if (count == needed) {
+                    winningLine = line
+                    return true
+                }
             }
         }
         // diagonal (pastga o'ngga)
         for (r in 0..size - needed) {
             for (c in 0..size - needed) {
                 var count = 0
+                val line = mutableListOf<Pair<Int, Int>>()
                 for (k in 0 until needed) {
-                    if (board[r + k][c + k] == player) count++
+                    if (board[r + k][c + k] == player) {
+                        count++
+                        line.add(Pair(r + k, c + k))
+                    }
                 }
-                if (count == needed) return true
+                if (count == needed) {
+                    winningLine = line
+                    return true
+                }
             }
         }
         // diagonal (tepaga o'ngga)
         for (r in needed - 1 until size) {
             for (c in 0..size - needed) {
                 var count = 0
+                val line = mutableListOf<Pair<Int, Int>>()
                 for (k in 0 until needed) {
-                    if (board[r - k][c + k] == player) count++
+                    if (board[r - k][c + k] == player) {
+                        count++
+                        line.add(Pair(r - k, c + k))
+                    }
                 }
-                if (count == needed) return true
+                if (count == needed) {
+                    winningLine = line
+                    return true
+                }
             }
         }
         return false

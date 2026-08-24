@@ -62,7 +62,14 @@ class ResultFragment : Fragment() {
         }
 
         binding.btnAction.setOnClickListener {
-            findNavController().navigate(R.id.action_resultFragment_to_dashboardFragment)
+            val isOnlineMode = arguments?.getBoolean("isOnlineMode") ?: false
+            if (isOnlineMode) {
+                // Online o'yinda xonadan chiqib ketish kerak, qayta ulanish qiyinroq (yangi xona ochilishi kerak)
+                findNavController().navigate(R.id.action_resultFragment_to_dashboardFragment)
+            } else {
+                // Local o'yinda qaytadan boshlash
+                findNavController().navigate(R.id.action_resultFragment_to_gameFragment, arguments)
+            }
         }
     }
 
