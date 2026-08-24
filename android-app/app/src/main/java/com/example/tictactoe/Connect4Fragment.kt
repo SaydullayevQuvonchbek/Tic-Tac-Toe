@@ -385,12 +385,16 @@ class Connect4Fragment : Fragment() {
     }
 
     private fun updateTurnIndicator() {
+        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+        val username = sharedPref.getString("username", "") ?: ""
+        val displayName = if (username.isNotEmpty()) username else "Player 1"
+
         val color = if (logic.currentPlayer == 1) "#EF4444" else "#FBBF24"
         val playerText = if (isOnlineMode) {
             if (isMyTurnOnline) "Your Turn (${if (myPlayerNumber == 1) "🔴" else "🟡"})" 
             else "Opponent's Turn (${if (myPlayerNumber == 1) "🟡" else "🔴"})"
         } else if (logic.currentPlayer == 1) {
-            "Player 1's Turn (🔴)"
+            if (isAiMode) "$displayName's Turn (🔴)" else "Player 1's Turn (🔴)"
         } else {
             if (isAiMode) "Bot's Turn (🟡)" else "Player 2's Turn (🟡)"
         }
@@ -399,12 +403,18 @@ class Connect4Fragment : Fragment() {
     }
 
     private fun handleGameOver() {
+        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+        val username = sharedPref.getString("username", "") ?: ""
+        val displayName = if (username.isNotEmpty()) username else "You"
+
         if (logic.winner != 0) {
             logic.winningLine?.forEach { (r, c) ->
                 cellViews[r][c]?.alpha = 0.5f
             }
             if (isOnlineMode) {
-                binding.tvTurnIndicator.text = if (logic.winner == myPlayerNumber) "You Win! 🎉" else "Opponent Wins!"
+                binding.tvTurnIndicator.text = if (logic.winner == myPlayerNumber) "$displayName Wins! 🎉" else "Opponent Wins!"
+            } else if (isAiMode) {
+                binding.tvTurnIndicator.text = if (logic.winner == 1) "$displayName Wins! 🎉" else "Bot Wins!"
             } else {
                 binding.tvTurnIndicator.text = "Player ${logic.winner} Wins!"
             }
@@ -420,6 +430,8 @@ class Connect4Fragment : Fragment() {
     private fun submitScoreAndExit() {
         val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
         val userId = sharedPref.getInt("user_id", -1)
+        val username = sharedPref.getString("username", "") ?: ""
+        val displayName = if (username.isNotEmpty()) username else "You"
         val isWinner = if (isOnlineMode) logic.winner == myPlayerNumber else logic.winner == 1
         val score = if (isWinner) 50 else if (logic.winner == 0) 10 else 0
 
@@ -439,9 +451,11 @@ class Connect4Fragment : Fragment() {
         val bundle = Bundle().apply {
             putString("gameType", "connect4")
             val winMsg = if (isOnlineMode) {
-                if (logic.winner == myPlayerNumber) "You Won! 🎉" else if (logic.winner == 0) "It's a Draw!" else "You Lost!"
+                if (logic.winner == myPlayerNumber) "$displayName Won! 🎉" else if (logic.winner == 0) "It's a Draw!" else "You Lost!"
+            } else if (isAiMode) {
+                if (logic.winner == 1) "$displayName Won! 🎉" else if (logic.winner == 2) "Bot Won!" else "It's a Draw!"
             } else {
-                if (logic.winner == 1) "Player 1 (Red) Wins!" else if (logic.winner == 2) (if (isAiMode) "Bot (Yellow) Wins!" else "Player 2 (Yellow) Wins!") else "It's a Draw!"
+                if (logic.winner == 1) "Player 1 (Red) Wins!" else if (logic.winner == 2) "Player 2 (Yellow) Wins!" else "It's a Draw!"
             }
             putString("resultMessage", winMsg)
             putBoolean("isDraw", logic.winner == 0)
