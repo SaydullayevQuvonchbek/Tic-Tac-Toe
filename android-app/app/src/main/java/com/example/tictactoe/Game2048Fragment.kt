@@ -94,20 +94,29 @@ class Game2048Fragment : Fragment() {
     }
 
     private fun setupGrid() {
-        val marginPx = (4 * resources.displayMetrics.density).toInt() // 4dp margin
+        // Board has 24dp margin on left/right -> 48dp total
+        // GridLayout has 8dp padding on left/right -> 16dp total
+        // Each cell has 4dp margin on left/right -> 8dp * 4 = 32dp total
+        // Total fixed horizontal space = 48 + 16 + 32 = 96dp
+        val displayMetrics = resources.displayMetrics
+        val screenWidth = displayMetrics.widthPixels
+        val fixedSpacePx = (96 * displayMetrics.density).toInt()
+        val cellSize = (screenWidth - fixedSpacePx) / 4
+
+        val marginPx = (4 * displayMetrics.density).toInt()
 
         for (i in 0..3) {
             for (j in 0..3) {
                 val card = CardView(requireContext())
                 val params = GridLayout.LayoutParams(
-                    GridLayout.spec(i, 1f),
-                    GridLayout.spec(j, 1f)
+                    GridLayout.spec(i),
+                    GridLayout.spec(j)
                 )
-                params.width = 0
-                params.height = 0
+                params.width = cellSize
+                params.height = cellSize
                 params.setMargins(marginPx, marginPx, marginPx, marginPx)
                 card.layoutParams = params
-                card.radius = 8f * resources.displayMetrics.density
+                card.radius = 8f * displayMetrics.density
                 card.setCardBackgroundColor(Color.parseColor("#CDC1B4"))
                 card.cardElevation = 0f
 
