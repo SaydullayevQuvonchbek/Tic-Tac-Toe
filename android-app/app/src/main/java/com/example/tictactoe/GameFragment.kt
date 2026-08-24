@@ -138,10 +138,10 @@ class GameFragment : Fragment() {
                 activity?.runOnUiThread {
                     try {
                         val json = org.json.JSONObject(data)
-                        val senderId = json.getInt("player_id")
-                        if (senderId != playerId) {
-                            val row = json.getInt("row")
-                            val col = json.getInt("col")
+                        val senderId = json.optInt("player_id", json.optString("player_id", "-1").toIntOrNull() ?: -1)
+                        if (senderId != -1 && senderId != playerId) {
+                            val row = json.optInt("row", json.optString("row", "0").toIntOrNull() ?: 0)
+                            val col = json.optInt("col", json.optString("col", "0").toIntOrNull() ?: 0)
                             // Opponent made a move
                             if (isInfinityMode) {
                                 infinityGameLogic!!.makeMove(row, col)

@@ -220,17 +220,27 @@ class Connect4Fragment : Fragment() {
                 activity?.runOnUiThread {
                     try {
                         val json = JSONObject(eventData)
-                        val col = json.getInt("col")
-                        val player = if (myPlayerNumber == 1) 2 else 1
+                        val senderId = json.optInt("player_id", -1)
+                        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+                        val myUserId = sharedPref.getInt("user_id", -1)
 
-                        val row = logic.dropToken(col)
-                        if (row != -1) {
-                            animateTokenDrop(row, col, player)
-                            if (logic.isGameOver) {
-                                handleGameOver()
-                            } else {
-                                isMyTurnOnline = true
-                                updateTurnIndicator()
+                        // Ignore our own move echoed back from Pusher
+                        if (senderId != -1 && myUserId != -1 && senderId == myUserId) {
+                            return@runOnUiThread
+                        }
+
+                        val col = json.optInt("col", json.optString("col", "-1").toIntOrNull() ?: -1)
+                        if (col in 0..6) {
+                            val opponentPlayerNumber = if (myPlayerNumber == 1) 2 else 1
+                            val row = logic.dropToken(col)
+                            if (row != -1) {
+                                animateTokenDrop(row, col, opponentPlayerNumber)
+                                if (logic.isGameOver) {
+                                    handleGameOver()
+                                } else {
+                                    isMyTurnOnline = true
+                                    updateTurnIndicator()
+                                }
                             }
                         }
                     } catch (e: Exception) {
