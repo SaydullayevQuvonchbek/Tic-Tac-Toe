@@ -34,6 +34,12 @@
         <action
             android:id="@+id/action_dashboardFragment_to_dotsAndBoxesFragment"
             app:destination="@id/dotsAndBoxesFragment" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_gomokuFragment"
+            app:destination="@id/gomokuFragment" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_checkersFragment"
+            app:destination="@id/checkersFragment" />
     </fragment>
 
     <fragment
@@ -105,6 +111,14 @@
             app:destination="@id/dotsAndBoxesFragment"
             app:popUpTo="@id/dashboardFragment" />
         <action
+            android:id="@+id/action_resultFragment_to_gomokuFragment"
+            app:destination="@id/gomokuFragment"
+            app:popUpTo="@id/dashboardFragment" />
+        <action
+            android:id="@+id/action_resultFragment_to_checkersFragment"
+            app:destination="@id/checkersFragment"
+            app:popUpTo="@id/dashboardFragment" />
+        <action
             android:id="@+id/action_resultFragment_to_dashboardFragment"
             app:destination="@id/dashboardFragment"
             app:popUpTo="@id/nav_graph"
@@ -168,6 +182,26 @@
         tools:layout="@layout/fragment_dots_and_boxes">
         <action
             android:id="@+id/action_dotsAndBoxesFragment_to_resultFragment"
+            app:destination="@id/resultFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/gomokuFragment"
+        android:name="com.example.tictactoe.GomokuFragment"
+        android:label="Gomoku"
+        tools:layout="@layout/fragment_gomoku">
+        <action
+            android:id="@+id/action_gomokuFragment_to_resultFragment"
+            app:destination="@id/resultFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/checkersFragment"
+        android:name="com.example.tictactoe.CheckersFragment"
+        android:label="Checkers"
+        tools:layout="@layout/fragment_checkers">
+        <action
+            android:id="@+id/action_checkersFragment_to_resultFragment"
             app:destination="@id/resultFragment" />
     </fragment>
 

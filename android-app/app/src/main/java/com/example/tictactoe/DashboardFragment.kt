@@ -74,6 +74,14 @@ class DashboardFragment : Fragment() {
         binding.cardDotsAndBoxes.setOnClickListener {
             handleGameClick("dots_and_boxes", 2, 100, binding.tvDotsAndBoxes, "🟥 Dots &amp; Boxes", R.id.action_dashboardFragment_to_dotsAndBoxesFragment)
         }
+
+        binding.cardGomoku.setOnClickListener {
+            handleGameClick("gomoku", 3, 150, binding.tvGomoku, "⚪⚫ Gomoku (5 in a Row)", R.id.action_dashboardFragment_to_gomokuFragment)
+        }
+
+        binding.cardCheckers.setOnClickListener {
+            handleGameClick("checkers", 4, 200, binding.tvCheckers, "👑 Shashka (Checkers)", R.id.action_dashboardFragment_to_checkersFragment)
+        }
         
         binding.cardDailyReward.setOnClickListener {
             if (ensureProfile()) claimDailyReward()
@@ -99,6 +107,8 @@ class DashboardFragment : Fragment() {
         }
         
         updateLock("dots_and_boxes", 2, binding.tvDotsAndBoxes, "🟥 Dots &amp; Boxes")
+        updateLock("gomoku", 3, binding.tvGomoku, "⚪⚫ Gomoku (5 in a Row)")
+        updateLock("checkers", 4, binding.tvCheckers, "👑 Shashka (Checkers)")
         updateLock("memory_game", 2, binding.tvMemoryGame, "🧠 Memory Game")
         updateLock("color_match", 3, binding.tvColorMatch, "🎨 Color Match")
         updateLock("water_sort", 3, binding.tvWaterSort, "🧪 Water Sort 💧")
@@ -191,6 +201,8 @@ class DashboardFragment : Fragment() {
             val connect4Wins = sharedPref.getInt("connect4_wins", 0)
             val waterMoves = sharedPref.getInt("water_sort_best_moves", 0)
             val dotsWins = sharedPref.getInt("dots_and_boxes_wins", 0)
+            val gomokuWins = sharedPref.getInt("gomoku_wins", 0)
+            val checkersWins = sharedPref.getInt("checkers_wins", 0)
 
             binding.tvRecordTicTacToe.text = "🏆 Wins: $wins"
             binding.tvRecordMath.text = if (mathScore > 0) "⭐ Best: $mathScore pts" else "⭐ Quick Math Quiz"
@@ -200,6 +212,8 @@ class DashboardFragment : Fragment() {
             binding.tvRecordConnect4.text = "🏆 Wins: $connect4Wins"
             binding.tvRecordWaterSort.text = if (waterMoves > 0) "⭐ Best: $waterMoves moves" else "⭐ Color Sorting Puzzle"
             binding.tvRecordDotsAndBoxes.text = "🏆 Wins: $dotsWins"
+            binding.tvRecordGomoku.text = "🏆 Wins: $gomokuWins"
+            binding.tvRecordCheckers.text = "🏆 Wins: $checkersWins"
         } else {
             binding.tvUsername.text = "Guest Player"
             binding.tvLevelInfo.text = "Click edit to set username"
