@@ -70,6 +70,10 @@ class DashboardFragment : Fragment() {
         binding.cardWaterSort.setOnClickListener {
             handleGameClick("water_sort", 3, 150, binding.tvWaterSort, "🧪 Water Sort 💧", R.id.action_dashboardFragment_to_waterSortFragment)
         }
+
+        binding.cardDotsAndBoxes.setOnClickListener {
+            handleGameClick("dots_and_boxes", 2, 100, binding.tvDotsAndBoxes, "🟥 Dots &amp; Boxes", R.id.action_dashboardFragment_to_dotsAndBoxesFragment)
+        }
         
         binding.cardDailyReward.setOnClickListener {
             if (ensureProfile()) claimDailyReward()
@@ -94,6 +98,7 @@ class DashboardFragment : Fragment() {
             }
         }
         
+        updateLock("dots_and_boxes", 2, binding.tvDotsAndBoxes, "🟥 Dots &amp; Boxes")
         updateLock("memory_game", 2, binding.tvMemoryGame, "🧠 Memory Game")
         updateLock("color_match", 3, binding.tvColorMatch, "🎨 Color Match")
         updateLock("water_sort", 3, binding.tvWaterSort, "🧪 Water Sort 💧")
@@ -185,6 +190,7 @@ class DashboardFragment : Fragment() {
             val score2048 = sharedPref.getInt("game_2048_high_score", 0)
             val connect4Wins = sharedPref.getInt("connect4_wins", 0)
             val waterMoves = sharedPref.getInt("water_sort_best_moves", 0)
+            val dotsWins = sharedPref.getInt("dots_and_boxes_wins", 0)
 
             binding.tvRecordTicTacToe.text = "🏆 Wins: $wins"
             binding.tvRecordMath.text = if (mathScore > 0) "⭐ Best: $mathScore pts" else "⭐ Quick Math Quiz"
@@ -193,6 +199,7 @@ class DashboardFragment : Fragment() {
             binding.tvRecord2048.text = if (score2048 > 0) "⭐ Best: $score2048" else "⭐ Reach 2048 Tile"
             binding.tvRecordConnect4.text = "🏆 Wins: $connect4Wins"
             binding.tvRecordWaterSort.text = if (waterMoves > 0) "⭐ Best: $waterMoves moves" else "⭐ Color Sorting Puzzle"
+            binding.tvRecordDotsAndBoxes.text = "🏆 Wins: $dotsWins"
         } else {
             binding.tvUsername.text = "Guest Player"
             binding.tvLevelInfo.text = "Click edit to set username"

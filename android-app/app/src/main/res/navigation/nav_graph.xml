@@ -31,6 +31,9 @@
         <action
             android:id="@+id/action_dashboardFragment_to_waterSortFragment"
             app:destination="@id/waterSortFragment" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_dotsAndBoxesFragment"
+            app:destination="@id/dotsAndBoxesFragment" />
     </fragment>
 
     <fragment
@@ -98,6 +101,10 @@
             app:destination="@id/waterSortFragment"
             app:popUpTo="@id/dashboardFragment" />
         <action
+            android:id="@+id/action_resultFragment_to_dotsAndBoxesFragment"
+            app:destination="@id/dotsAndBoxesFragment"
+            app:popUpTo="@id/dashboardFragment" />
+        <action
             android:id="@+id/action_resultFragment_to_dashboardFragment"
             app:destination="@id/dashboardFragment"
             app:popUpTo="@id/nav_graph"
@@ -151,6 +158,16 @@
         tools:layout="@layout/fragment_water_sort">
         <action
             android:id="@+id/action_waterSortFragment_to_resultFragment"
+            app:destination="@id/resultFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/dotsAndBoxesFragment"
+        android:name="com.example.tictactoe.DotsAndBoxesFragment"
+        android:label="Dots &amp; Boxes"
+        tools:layout="@layout/fragment_dots_and_boxes">
+        <action
+            android:id="@+id/action_dotsAndBoxesFragment_to_resultFragment"
             app:destination="@id/resultFragment" />
     </fragment>
 

@@ -83,6 +83,7 @@ class ResultFragment : Fragment() {
             when (gameType) {
                 "connect4" -> findNavController().navigate(R.id.action_resultFragment_to_connect4Fragment, rematchBundle)
                 "water_sort" -> findNavController().navigate(R.id.action_resultFragment_to_waterSortFragment, rematchBundle)
+                "dots_and_boxes" -> findNavController().navigate(R.id.action_resultFragment_to_dotsAndBoxesFragment, rematchBundle)
                 else -> findNavController().navigate(R.id.action_resultFragment_to_gameFragment, rematchBundle)
             }
         }
