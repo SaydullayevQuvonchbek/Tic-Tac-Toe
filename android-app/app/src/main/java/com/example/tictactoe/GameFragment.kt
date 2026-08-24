@@ -368,6 +368,7 @@ class GameFragment : Fragment() {
         }
 
         val bundle = Bundle().apply {
+            putString("gameType", "tic_tac_toe")
             if (winner == "Draw") {
                 putString("resultMessage", "It's a Draw!")
                 putBoolean("isDraw", true)

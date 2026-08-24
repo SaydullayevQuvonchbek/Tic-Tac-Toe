@@ -35,12 +35,12 @@ class Connect4Fragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // For now, default to AI mode if not specified
-        isAiMode = arguments?.getBoolean("isAiMode", true) ?: true
-
-        logic = Connect4Logic()
-        setupBoard()
-        updateTurnIndicator()
+        if (arguments?.containsKey("isAiMode") == true) {
+            isAiMode = arguments?.getBoolean("isAiMode", true) ?: true
+            startGame()
+        } else {
+            showModeSelectionDialog()
+        }
 
         binding.btnBack.setOnClickListener { showExitDialog() }
 
@@ -51,7 +51,26 @@ class Connect4Fragment : Fragment() {
         })
     }
 
+    private fun showModeSelectionDialog() {
+        val options = arrayOf("🤖 Play vs AI (Bot)", "👥 2 Players (Pass & Play)")
+        AlertDialog.Builder(requireContext())
+            .setTitle("Select Game Mode")
+            .setItems(options) { _, which ->
+                isAiMode = (which == 0)
+                startGame()
+            }
+            .setCancelable(false)
+            .show()
+    }
+
+    private fun startGame() {
+        logic = Connect4Logic()
+        setupBoard()
+        updateTurnIndicator()
+    }
+
     private fun setupBoard() {
+        binding.gridLayout.removeAllViews()
         val displayMetrics = resources.displayMetrics
         val boardWidth = displayMetrics.widthPixels - (32 * displayMetrics.density).toInt()
         val cellSize = boardWidth / 7
@@ -124,7 +143,12 @@ class Connect4Fragment : Fragment() {
 
     private fun updateTurnIndicator() {
         val color = if (logic.currentPlayer == 1) "#EF4444" else "#FBBF24"
-        binding.tvTurnIndicator.text = "Player ${logic.currentPlayer}'s Turn"
+        val playerText = if (logic.currentPlayer == 1) {
+            "Player 1's Turn (🔴)"
+        } else {
+            if (isAiMode) "Bot's Turn (🟡)" else "Player 2's Turn (🟡)"
+        }
+        binding.tvTurnIndicator.text = playerText
         binding.viewTurnColor.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor(color))
     }
 
@@ -159,8 +183,11 @@ class Connect4Fragment : Fragment() {
         
         // Navigate to result
         val bundle = Bundle().apply {
-            putString("resultMessage", if (logic.winner == 1) "You Win!" else if (logic.winner == 2) "You Lose!" else "Draw!")
+            putString("gameType", "connect4")
+            val winMsg = if (logic.winner == 1) "Player 1 (Red) Wins!" else if (logic.winner == 2) (if (isAiMode) "Bot (Yellow) Wins!" else "Player 2 (Yellow) Wins!") else "It's a Draw!"
+            putString("resultMessage", winMsg)
             putBoolean("isDraw", logic.winner == 0)
+            putBoolean("isAiMode", isAiMode)
         }
         findNavController().navigate(R.id.action_connect4Fragment_to_resultFragment, bundle)
     }
