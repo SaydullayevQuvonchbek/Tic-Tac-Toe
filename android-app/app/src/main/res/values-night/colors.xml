@@ -8,13 +8,13 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     
-    <!-- Light Mode Theme Colors -->
-    <color name="background_color">#F1F5F9</color>
-    <color name="card_background">#FFFFFF</color>
-    <color name="card_surface">#FFFFFF</color>
-    <color name="text_color">#0F172A</color>
-    <color name="text_secondary">#64748B</color>
+    <!-- Dark Mode Theme Colors -->
+    <color name="background_color">#0F172A</color>
+    <color name="card_background">#1E293B</color>
+    <color name="card_surface">#1E293B</color>
+    <color name="text_color">#F8FAFC</color>
+    <color name="text_secondary">#94A3B8</color>
     <color name="yellow_accent">#FFCA28</color>
     <color name="red_accent">#EF5350</color>
-    <color name="border_color">#CBD5E1</color>
+    <color name="border_color">#334155</color>
 </resources>

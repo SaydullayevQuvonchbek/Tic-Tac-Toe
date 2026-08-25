@@ -1,3 +1,53 @@
 <resources>
-    <string name="app_name">Tic Tac Toe</string>
+    <string name="app_name">Mini Games Arena</string>
+
+    <!-- Navigation / Dashboard -->
+    <string name="nav_games">O\'yinlar</string>
+    <string name="nav_ranks">Reyting</string>
+    <string name="nav_profile">Profil</string>
+
+    <!-- Profile & Settings -->
+    <string name="profile_title">Mening Profilim</string>
+    <string name="profile_settings">Sozlamalar ⚙️</string>
+    <string name="settings_title">Ilova Sozlamalari</string>
+    <string name="settings_language">Tilni tanlang / Language / Язык</string>
+    <string name="settings_theme">Mavzu / Theme</string>
+    <string name="theme_dark">🌙 Tungi rejim (Dark)</string>
+    <string name="theme_light">☀️ Kunduzgi rejim (Light)</string>
+    <string name="settings_sound">🔊 Tovush effektlari</string>
+    <string name="settings_vibration">📳 Tebranish (Vibration)</string>
+    <string name="btn_save">Saqlash</string>
+    <string name="btn_cancel">Bekor qilish</string>
+    <string name="level_label">Daraja</string>
+    <string name="coins_label">Tangalar</string>
+    <string name="streak_label">Ketma-ketlik</string>
+    <string name="daily_reward_title">🎁 Kunlik Sovg\'a</string>
+    <string name="claim_reward">Olish</string>
+
+    <!-- Games Titles -->
+    <string name="game_tictactoe">Tic Tac Toe</string>
+    <string name="game_connect4">Connect 4 PRO</string>
+    <string name="game_water_sort">Water Sort 💧</string>
+    <string name="game_dots_and_boxes">Dots &amp; Boxes 🟥</string>
+    <string name="game_gomoku">Gomoku (5 in a Row) ⚪⚫</string>
+    <string name="game_checkers">Shashka (Checkers) 👑</string>
+    <string name="game_math">Math Master</string>
+    <string name="game_memory">Memory Game</string>
+    <string name="game_color_match">Color Match</string>
+    <string name="game_2048">2048 Puzzle</string>
+
+    <!-- Game Modes & Actions -->
+    <string name="mode_ai">🤖 Aqlli AI Bot bilan o\'ynash</string>
+    <string name="mode_local">👥 1v1 Birga o\'ynash (Bitta qurilmada)</string>
+    <string name="mode_online">🌐 Online Xona (Do\'st bilan)</string>
+    <string name="btn_start_game">O\'YINNI BOSHLASH ▶</string>
+    <string name="btn_create_room">XONA OCHISH 🏠</string>
+    <string name="btn_join">ULANISH</string>
+    <string name="hint_room_code">6 xonali kod</string>
+    <string name="waiting_opponent">Raqib kutilmoqda...</string>
+    <string name="your_turn">Sizning navbatingiz! ⚡</string>
+    <string name="opponent_turn">Raqib o\'ylamoqda...</string>
+    <string name="bot_turn">🤖 Bot o\'ylamoqda...</string>
+    <string name="btn_rematch">QAYTA O\'YNASH 🔄</string>
+    <string name="btn_exit_menu">BOSH SAHIFAGA CHIQISH 🚪</string>
 </resources>

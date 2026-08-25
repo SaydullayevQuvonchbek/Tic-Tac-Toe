@@ -3,7 +3,9 @@ package com.example.tictactoe
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.DashPathEffect
 import android.graphics.Paint
+import android.graphics.Path
 import android.graphics.RadialGradient
 import android.graphics.RectF
 import android.graphics.Shader
@@ -18,6 +20,12 @@ class CheckersBoardView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
+
+    var isFlipped: Boolean = false
+        set(value) {
+            field = value
+            invalidate()
+        }
 
     var logic: CheckersLogic? = null
         set(value) {
@@ -50,8 +58,26 @@ class CheckersBoardView @JvmOverloads constructor(
     }
 
     private val validMoveIndicatorPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#9910B981") // Translucent Emerald Green
+        color = Color.parseColor("#9910B981") // Translucent Emerald
         style = Paint.Style.FILL
+    }
+
+    private val jumpMoveIndicatorPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#E6EF4444") // Vibrant Crimson for Jumps
+        style = Paint.Style.FILL
+    }
+
+    private val jumpTrailPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#FBBF24") // Golden Trail
+        style = Paint.Style.STROKE
+        strokeWidth = 6f
+        pathEffect = DashPathEffect(floatArrayOf(10f, 10f), 0f)
+    }
+
+    private val mandatoryCaptureHaloPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#EF4444")
+        style = Paint.Style.STROKE
+        strokeWidth = 8f
     }
 
     private val p1PiecePaint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -60,6 +86,13 @@ class CheckersBoardView @JvmOverloads constructor(
     private val crownPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#FBBF24")
         textAlign = Paint.Align.CENTER
+        isFakeBoldText = true
+    }
+
+    private val jumpTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.WHITE
+        textAlign = Paint.Align.CENTER
+        textSize = 28f
         isFakeBoldText = true
     }
 
@@ -83,7 +116,13 @@ class CheckersBoardView @JvmOverloads constructor(
         startY = (height - (cellSize * 8f)) / 2f
         pieceRadius = cellSize * 0.40f
         crownPaint.textSize = cellSize * 0.45f
+        jumpTextPaint.textSize = cellSize * 0.32f
     }
+
+    fun toScreenR(r: Int) = if (isFlipped) 7 - r else r
+    fun toScreenC(c: Int) = if (isFlipped) 7 - c else c
+    fun toBoardR(sr: Int) = if (isFlipped) 7 - sr else sr
+    fun toBoardC(sc: Int) = if (isFlipped) 7 - sc else sc
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
@@ -91,10 +130,13 @@ class CheckersBoardView @JvmOverloads constructor(
         if (cellSize == 0f) calculateDimensions()
 
         // 1. Draw 8x8 Board Squares
-        for (r in 0..7) {
-            for (c in 0..7) {
-                val left = startX + c * cellSize
-                val top = startY + r * cellSize
+        for (sr in 0..7) {
+            for (sc in 0..7) {
+                val r = toBoardR(sr)
+                val c = toBoardC(sc)
+
+                val left = startX + sc * cellSize
+                val top = startY + sr * cellSize
                 val rect = RectF(left, top, left + cellSize, top + cellSize)
 
                 val isDark = (r + c) % 2 != 0
@@ -107,20 +149,63 @@ class CheckersBoardView @JvmOverloads constructor(
             }
         }
 
-        // 2. Draw Valid Move Destinations
-        for (move in validMoves) {
-            val cx = startX + move.toC * cellSize + cellSize / 2f
-            val cy = startY + move.toR * cellSize + cellSize / 2f
-            canvas.drawCircle(cx, cy, pieceRadius * 0.42f, validMoveIndicatorPaint)
+        // 2. Identify and Highlight Pieces with Mandatory Jumps
+        val piecesWithMandatoryJumps = mutableSetOf<Pair<Int, Int>>()
+        val allJumps = l.getAllValidMovesForPlayer(l.currentPlayer).filter { it.isJump }
+        if (allJumps.isNotEmpty()) {
+            for (jump in allJumps) {
+                piecesWithMandatoryJumps.add(Pair(jump.fromR, jump.fromC))
+            }
         }
 
-        // 3. Draw Pieces
-        for (r in 0..7) {
-            for (c in 0..7) {
+        for (p in piecesWithMandatoryJumps) {
+            val sr = toScreenR(p.first)
+            val sc = toScreenC(p.second)
+            val cx = startX + sc * cellSize + cellSize / 2f
+            val cy = startY + sr * cellSize + cellSize / 2f
+            canvas.drawCircle(cx, cy, pieceRadius + 6f, mandatoryCaptureHaloPaint)
+        }
+
+        // 3. Draw Jump Trail and Destination Squares
+        for (move in validMoves) {
+            val fromSr = toScreenR(move.fromR)
+            val fromSc = toScreenC(move.fromC)
+            val toSr = toScreenR(move.toR)
+            val toSc = toScreenC(move.toC)
+
+            val startCx = startX + fromSc * cellSize + cellSize / 2f
+            val startCy = startY + fromSr * cellSize + cellSize / 2f
+            val destCx = startX + toSc * cellSize + cellSize / 2f
+            val destCy = startY + toSr * cellSize + cellSize / 2f
+
+            if (move.isJump) {
+                // Draw connecting dashed jump trail
+                val path = Path().apply {
+                    moveTo(startCx, startCy)
+                    quadTo((startCx + destCx) / 2f, min(startCy, destCy) - 24f, destCx, destCy)
+                }
+                canvas.drawPath(path, jumpTrailPaint)
+
+                // Draw Jump Target Circle
+                canvas.drawCircle(destCx, destCy, pieceRadius * 0.48f, jumpMoveIndicatorPaint)
+                val yPos = (destCy - ((jumpTextPaint.descent() + jumpTextPaint.ascent()) / 2))
+                canvas.drawText("⚔️", destCx, yPos, jumpTextPaint)
+            } else {
+                // Simple move indicator
+                canvas.drawCircle(destCx, destCy, pieceRadius * 0.42f, validMoveIndicatorPaint)
+            }
+        }
+
+        // 4. Draw Pieces
+        for (sr in 0..7) {
+            for (sc in 0..7) {
+                val r = toBoardR(sr)
+                val c = toBoardC(sc)
                 val piece = l.board[r][c]
+
                 if (piece != CheckersLogic.EMPTY) {
-                    val cx = startX + c * cellSize + cellSize / 2f
-                    val cy = startY + r * cellSize + cellSize / 2f
+                    val cx = startX + sc * cellSize + cellSize / 2f
+                    val cy = startY + sr * cellSize + cellSize / 2f
 
                     if (l.isP1(piece)) {
                         // P1 (Red Piece)
@@ -160,10 +245,13 @@ class CheckersBoardView @JvmOverloads constructor(
             val touchY = event.y
 
             if (touchX in startX..(startX + cellSize * 8) && touchY in startY..(startY + cellSize * 8)) {
-                val col = ((touchX - startX) / cellSize).toInt().coerceIn(0, 7)
-                val row = ((touchY - startY) / cellSize).toInt().coerceIn(0, 7)
+                val sc = ((touchX - startX) / cellSize).toInt().coerceIn(0, 7)
+                val sr = ((touchY - startY) / cellSize).toInt().coerceIn(0, 7)
 
-                handleSquareTap(row, col)
+                val r = toBoardR(sr)
+                val c = toBoardC(sc)
+
+                handleSquareTap(r, c)
                 return true
             }
         }

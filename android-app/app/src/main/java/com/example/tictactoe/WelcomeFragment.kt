@@ -1,17 +1,30 @@
 package com.example.tictactoe
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.tictactoe.databinding.FragmentWelcomeBinding
+import com.example.tictactoe.network.ApiClient
+import com.example.tictactoe.network.PusherManager
+import com.example.tictactoe.network.RoomCreateRequest
+import com.example.tictactoe.network.RoomCreateResponse
+import com.example.tictactoe.network.RoomJoinRequest
+import com.example.tictactoe.network.RoomJoinResponse
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class WelcomeFragment : Fragment() {
 
     private var _binding: FragmentWelcomeBinding? = null
     private val binding get() = _binding!!
+
+    private var roomCode = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -24,211 +37,161 @@ class WelcomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", android.content.Context.MODE_PRIVATE)
-        val savedUsername = sharedPref.getString("username", "")
-        
-        binding.switchAiMode.isChecked = sharedPref.getBoolean("isAiMode", false)
-        binding.switchInfinityMode.isChecked = sharedPref.getBoolean("isInfinityMode", false)
-        binding.switchArcadeMode.isChecked = sharedPref.getBoolean("isArcadeMode", false)
-        
-        val savedSize = sharedPref.getInt("boardSize", 3)
-        when (savedSize) {
-            4 -> binding.rgSize.check(R.id.rb4x4)
-            5 -> binding.rgSize.check(R.id.rb5x5)
-            else -> binding.rgSize.check(R.id.rb3x3)
+        PusherManager.connect()
+        initUI()
+    }
+
+    private fun initUI() {
+        showSetupScreen()
+
+        binding.btnSetupBack.setOnClickListener { findNavController().navigateUp() }
+        binding.btnCancelWaiting.setOnClickListener { cancelWaiting() }
+
+        binding.rgMode.setOnCheckedChangeListener { _, checkedId ->
+            binding.onlineOptionsContainer.visibility = if (checkedId == R.id.rbOnline) View.VISIBLE else View.GONE
+            binding.btnStartGame.visibility = if (checkedId == R.id.rbOnline) View.GONE else View.VISIBLE
         }
 
-        // Generate a random device ID once and save it
-        if (sharedPref.getString("device_id", "") == "") {
-            sharedPref.edit().putString("device_id", java.util.UUID.randomUUID().toString()).apply()
-        }
-
-        binding.btnPlayerX.setOnClickListener {
-            startGame("X")
-        }
-
-        binding.btnPlayerO.setOnClickListener {
-            startGame("O")
-        }
-
-        binding.btnPlayOnline.setOnClickListener {
-            val username = sharedPref.getString("username", "") ?: ""
-            if (username.isEmpty()) {
-                android.widget.Toast.makeText(context, "Username not set in Dashboard!", android.widget.Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+        binding.btnStartGame.setOnClickListener {
+            val size = when (binding.rgSize.checkedRadioButtonId) {
+                R.id.rb4x4 -> 4
+                R.id.rb5x5 -> 5
+                else -> 3
             }
-            val deviceId = sharedPref.getString("device_id", "") ?: ""
-            
-            // We assume device is already authenticated from Dashboard
-            val userId = sharedPref.getInt("user_id", -1)
-            val level = sharedPref.getInt("level", 1)
-            val xp = sharedPref.getInt("xp", 0)
-            
-            val coins = sharedPref.getInt("coins", 0)
-            val streak = sharedPref.getInt("streak_count", 0)
-            
-            // Unlocked games isn't critical for WelcomeFragment (multiplayer tic tac toe), pass null or empty list
-            if (userId != -1) {
-                val user = com.example.tictactoe.network.User(userId, username, level, xp, 0, 0, coins, streak, emptyList())
-                showOnlineMenu(user)
+            val isAiMode = binding.rbAi.isChecked
+            val isInfinityMode = binding.switchInfinityMode.isChecked
+            val isArcadeMode = binding.switchArcadeMode.isChecked
+
+            launchLocalGame(size, isAiMode, isInfinityMode, isArcadeMode)
+        }
+
+        binding.btnCreateRoom.setOnClickListener {
+            val size = when (binding.rgSize.checkedRadioButtonId) {
+                R.id.rb4x4 -> 4
+                R.id.rb5x5 -> 5
+                else -> 3
+            }
+            val isInfinity = binding.switchInfinityMode.isChecked
+            createOnlineRoom(size, isInfinity)
+        }
+
+        binding.btnJoinRoom.setOnClickListener {
+            val code = binding.etRoomCode.text.toString().trim().uppercase()
+            if (code.length == 6 || code.length == 4) {
+                val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+                val userId = sharedPref.getInt("user_id", -1)
+                joinOnlineRoom(userId, code)
             } else {
-                android.widget.Toast.makeText(context, "Please set your profile in Dashboard first", android.widget.Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Please enter a valid room code", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private fun showOnlineMenu(user: com.example.tictactoe.network.User) {
-        val options = arrayOf("Create Room", "Join Room")
-        android.app.AlertDialog.Builder(context)
-            .setTitle("Online Menu (Level ${user.level})")
-            .setItems(options) { _, which ->
-                when (which) {
-                    0 -> createRoom(user)
-                    1 -> joinRoomPrompt(user)
-                }
-            }
-            .show()
-    }
+    private fun launchLocalGame(size: Int, isAi: Boolean, isInfinity: Boolean, isArcade: Boolean) {
+        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+        val username = sharedPref.getString("username", "Player 1") ?: "Player 1"
 
-    private fun createRoom(user: com.example.tictactoe.network.User) {
-        val size = when (binding.rgSize.checkedRadioButtonId) {
-            R.id.rb4x4 -> 4
-            R.id.rb5x5 -> 5
-            else -> 3
-        }
-        val isInfinity = binding.switchInfinityMode.isChecked
-
-        val pd = android.app.ProgressDialog(context)
-        pd.setMessage("Creating Room...")
-        pd.show()
-
-        com.example.tictactoe.network.ApiClient.instance.createRoom(
-            com.example.tictactoe.network.RoomCreateRequest(user.id, size, isInfinity)
-        ).enqueue(object : retrofit2.Callback<com.example.tictactoe.network.RoomCreateResponse> {
-            override fun onResponse(
-                call: retrofit2.Call<com.example.tictactoe.network.RoomCreateResponse>,
-                response: retrofit2.Response<com.example.tictactoe.network.RoomCreateResponse>
-            ) {
-                pd.dismiss()
-                if (response.isSuccessful && response.body()?.status == "success") {
-                    val roomCode = response.body()?.room_code ?: ""
-                    launchOnlineGame(user, roomCode, isHost = true, size, isInfinity)
-                } else {
-                    android.widget.Toast.makeText(context, "Failed to create room", android.widget.Toast.LENGTH_SHORT).show()
-                }
-            }
-
-            override fun onFailure(call: retrofit2.Call<com.example.tictactoe.network.RoomCreateResponse>, t: Throwable) {
-                pd.dismiss()
-                android.widget.Toast.makeText(context, "Error: ${t.message}", android.widget.Toast.LENGTH_SHORT).show()
-            }
-        })
-    }
-
-    private fun joinRoomPrompt(user: com.example.tictactoe.network.User) {
-        val input = android.widget.EditText(context)
-        android.app.AlertDialog.Builder(context)
-            .setTitle("Join Room")
-            .setMessage("Enter Room Code:")
-            .setView(input)
-            .setPositiveButton("Join") { _, _ ->
-                val code = input.text.toString().trim().uppercase()
-                if (code.isNotEmpty()) {
-                    joinRoom(user, code)
-                }
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
-    }
-
-    private fun joinRoom(user: com.example.tictactoe.network.User, roomCode: String) {
-        val pd = android.app.ProgressDialog(context)
-        pd.setMessage("Joining Room...")
-        pd.show()
-
-        com.example.tictactoe.network.ApiClient.instance.joinRoom(
-            com.example.tictactoe.network.RoomJoinRequest(user.id, roomCode)
-        ).enqueue(object : retrofit2.Callback<com.example.tictactoe.network.RoomJoinResponse> {
-            override fun onResponse(
-                call: retrofit2.Call<com.example.tictactoe.network.RoomJoinResponse>,
-                response: retrofit2.Response<com.example.tictactoe.network.RoomJoinResponse>
-            ) {
-                pd.dismiss()
-                if (response.isSuccessful && response.body()?.status == "success") {
-                    val size = response.body()?.board_size ?: 3
-                    val isInfinity = response.body()?.infinity_mode ?: false
-                    launchOnlineGame(user, roomCode, isHost = false, size, isInfinity)
-                } else {
-                    var errorMsg = "Unknown Error"
-                    val rawError = response.errorBody()?.string()
-                    if (rawError != null) {
-                        if (rawError.trim().startsWith("<")) {
-                            errorMsg = "Server Error (HTML returned)"
-                        } else {
-                            try {
-                                val json = org.json.JSONObject(rawError)
-                                errorMsg = json.optString("message", "Unknown API Error")
-                            } catch (e: Exception) {
-                                errorMsg = rawError
-                            }
-                        }
-                    } else {
-                        errorMsg = response.body()?.message ?: "Unknown Error"
-                    }
-                    android.widget.Toast.makeText(context, "Join Failed: $errorMsg", android.widget.Toast.LENGTH_LONG).show()
-                }
-            }
-
-            override fun onFailure(call: retrofit2.Call<com.example.tictactoe.network.RoomJoinResponse>, t: Throwable) {
-                pd.dismiss()
-                android.widget.Toast.makeText(context, "Error: ${t.message}", android.widget.Toast.LENGTH_SHORT).show()
-            }
-        })
-    }
-
-    private fun launchOnlineGame(user: com.example.tictactoe.network.User, roomCode: String, isHost: Boolean, size: Int, isInfinity: Boolean) {
         val bundle = Bundle().apply {
-            putBoolean("isOnlineMode", true)
-            putInt("playerId", user.id)
-            putString("roomCode", roomCode)
-            putBoolean("isHost", isHost)
-            putString("username", user.username)
-            putInt("boardSize", size)
+            putString("startingPlayer", "X")
+            putBoolean("isAiMode", isAi)
             putBoolean("isInfinityMode", isInfinity)
-        }
-        findNavController().navigate(R.id.action_welcomeFragment_to_gameFragment, bundle)
-    }
-
-    private fun startGame(startingPlayer: String) {
-        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", android.content.Context.MODE_PRIVATE)
-        val username = sharedPref.getString("username", "") ?: ""
-        
-        val size = when (binding.rgSize.checkedRadioButtonId) {
-            R.id.rb4x4 -> 4
-            R.id.rb5x5 -> 5
-            else -> 3
-        }
-        val isInfinityMode = binding.switchInfinityMode.isChecked
-        val isAiMode = binding.switchAiMode.isChecked
-        val isArcadeMode = binding.switchArcadeMode.isChecked
-
-        sharedPref.edit().apply {
-            putInt("boardSize", size)
-            putBoolean("isInfinityMode", isInfinityMode)
-            putBoolean("isAiMode", isAiMode)
-            putBoolean("isArcadeMode", isArcadeMode)
-            apply()
-        }
-
-        val bundle = Bundle().apply {
-            putString("startingPlayer", startingPlayer)
-            putBoolean("isInfinityMode", isInfinityMode)
-            putBoolean("isAiMode", isAiMode)
-            putBoolean("isArcadeMode", isArcadeMode)
+            putBoolean("isArcadeMode", isArcade)
             putInt("boardSize", size)
             putString("username", username)
+            putBoolean("isOnlineMode", false)
         }
         findNavController().navigate(R.id.action_welcomeFragment_to_gameFragment, bundle)
+    }
+
+    private fun createOnlineRoom(size: Int, isInfinity: Boolean) {
+        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+        val userId = sharedPref.getInt("user_id", -1)
+        val username = sharedPref.getString("username", "Player 1") ?: "Player 1"
+
+        ApiClient.instance.createRoom(RoomCreateRequest(userId, size, isInfinity, "tictactoe"))
+            .enqueue(object : Callback<RoomCreateResponse> {
+                override fun onResponse(call: Call<RoomCreateResponse>, response: Response<RoomCreateResponse>) {
+                    if (response.isSuccessful && response.body()?.status == "success") {
+                        roomCode = response.body()?.room_code ?: ""
+                        showWaitingScreen(roomCode)
+
+                        PusherManager.subscribeToRoom(
+                            roomCode = roomCode,
+                            onGameStarted = {
+                                activity?.runOnUiThread {
+                                    val bundle = Bundle().apply {
+                                        putBoolean("isOnlineMode", true)
+                                        putInt("playerId", userId)
+                                        putString("roomCode", roomCode)
+                                        putBoolean("isHost", true)
+                                        putString("username", username)
+                                        putInt("boardSize", size)
+                                        putBoolean("isInfinityMode", isInfinity)
+                                    }
+                                    findNavController().navigate(R.id.action_welcomeFragment_to_gameFragment, bundle)
+                                }
+                            }
+                        )
+                    } else {
+                        Toast.makeText(context, "Failed to create room", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<RoomCreateResponse>, t: Throwable) {
+                    Toast.makeText(context, "Network Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                }
+            })
+    }
+
+    private fun joinOnlineRoom(userId: Int, code: String) {
+        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+        val username = sharedPref.getString("username", "Player 2") ?: "Player 2"
+
+        ApiClient.instance.joinRoom(RoomJoinRequest(userId, code))
+            .enqueue(object : Callback<RoomJoinResponse> {
+                override fun onResponse(call: Call<RoomJoinResponse>, response: Response<RoomJoinResponse>) {
+                    if (response.isSuccessful && response.body()?.status == "success") {
+                        val size = response.body()?.board_size ?: 3
+                        val isInfinity = response.body()?.infinity_mode ?: false
+
+                        val bundle = Bundle().apply {
+                            putBoolean("isOnlineMode", true)
+                            putInt("playerId", userId)
+                            putString("roomCode", code)
+                            putBoolean("isHost", false)
+                            putString("username", username)
+                            putInt("boardSize", size)
+                            putBoolean("isInfinityMode", isInfinity)
+                        }
+                        findNavController().navigate(R.id.action_welcomeFragment_to_gameFragment, bundle)
+                    } else {
+                        val msg = response.body()?.message ?: "Room not found or full"
+                        Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<RoomJoinResponse>, t: Throwable) {
+                    Toast.makeText(context, "Network Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                }
+            })
+    }
+
+    private fun cancelWaiting() {
+        if (roomCode.isNotEmpty()) {
+            PusherManager.unsubscribeFromRoom(roomCode)
+        }
+        showSetupScreen()
+    }
+
+    private fun showSetupScreen() {
+        binding.setupContainer.visibility = View.VISIBLE
+        binding.waitingContainer.visibility = View.GONE
+    }
+
+    private fun showWaitingScreen(code: String) {
+        binding.tvWaitingRoomCode.text = "ROOM: $code"
+        binding.setupContainer.visibility = View.GONE
+        binding.waitingContainer.visibility = View.VISIBLE
     }
 
     override fun onDestroyView() {

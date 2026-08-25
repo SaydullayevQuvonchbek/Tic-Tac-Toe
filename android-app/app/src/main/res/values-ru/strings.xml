@@ -1,0 +1,53 @@
+<resources>
+    <string name="app_name">Арена Мини-Игр</string>
+
+    <!-- Navigation / Dashboard -->
+    <string name="nav_games">Игры</string>
+    <string name="nav_ranks">Рейтинг</string>
+    <string name="nav_profile">Профиль</string>
+
+    <!-- Profile & Settings -->
+    <string name="profile_title">Мой Профиль</string>
+    <string name="profile_settings">Настройки ⚙️</string>
+    <string name="settings_title">Настройки Приложения</string>
+    <string name="settings_language">Выберите Язык</string>
+    <string name="settings_theme">Тема</string>
+    <string name="theme_dark">🌙 Темная тема</string>
+    <string name="theme_light">☀️ Светлая тема</string>
+    <string name="settings_sound">🔊 Звуковые эффекты</string>
+    <string name="settings_vibration">📳 Вибрация</string>
+    <string name="btn_save">Сохранить</string>
+    <string name="btn_cancel">Отмена</string>
+    <string name="level_label">Уровень</string>
+    <string name="coins_label">Монеты</string>
+    <string name="streak_label">Серия</string>
+    <string name="daily_reward_title">🎁 Ежедневная Награда</string>
+    <string name="claim_reward">Забрать</string>
+
+    <!-- Games Titles -->
+    <string name="game_tictactoe">Крестики-Нолики</string>
+    <string name="game_connect4">4 в Ряд PRO</string>
+    <string name="game_water_sort">Сортировка Воды 💧</string>
+    <string name="game_dots_and_boxes">Точки и Квадраты 🟥</string>
+    <string name="game_gomoku">Гомоку (5 в Ряд) ⚪⚫</string>
+    <string name="game_checkers">Шашки 👑</string>
+    <string name="game_math">Мастер Математики</string>
+    <string name="game_memory">Игра на Память</string>
+    <string name="game_color_match">Цветовая Реакция</string>
+    <string name="game_2048">Головоломка 2048</string>
+
+    <!-- Game Modes & Actions -->
+    <string name="mode_ai">🤖 Игра с Умным Ботом</string>
+    <string name="mode_local">👥 Игра вдвоем (На одном экране)</string>
+    <string name="mode_online">🌐 Онлайн Комната (С другом)</string>
+    <string name="btn_start_game">НАЧАТЬ ИГРУ ▶</string>
+    <string name="btn_create_room">СОЗДАТЬ КОМНАТУ 🏠</string>
+    <string name="btn_join">ВОЙТИ</string>
+    <string name="hint_room_code">Код комнаты</string>
+    <string name="waiting_opponent">Ожидание соперника...</string>
+    <string name="your_turn">Ваш ход! ⚡</string>
+    <string name="opponent_turn">Ход соперника...</string>
+    <string name="bot_turn">🤖 Бот думает...</string>
+    <string name="btn_rematch">ИГРАТЬ СНОВА 🔄</string>
+    <string name="btn_exit_menu">ВЫЙТИ В МЕНЮ 🚪</string>
+</resources>

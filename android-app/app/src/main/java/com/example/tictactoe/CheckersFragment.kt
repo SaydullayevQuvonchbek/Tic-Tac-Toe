@@ -127,6 +127,7 @@ class CheckersFragment : Fragment() {
     private fun startLocalGame() {
         logic.resetBoard()
         binding.checkersBoardView.logic = logic
+        binding.checkersBoardView.isFlipped = (isOnlineMode && myPlayerNumber == 2)
 
         val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
         val username = sharedPref.getString("username", "Player 1") ?: "Player 1"
