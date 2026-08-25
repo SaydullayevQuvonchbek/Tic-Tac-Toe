@@ -1,5 +1,7 @@
 package com.example.tictactoe
 
+import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -31,7 +33,10 @@ class LeaderboardFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = LeaderboardAdapter(emptyList())
+        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+        val myUsername = sharedPref.getString("username", "Player") ?: "Player"
+
+        adapter = LeaderboardAdapter(emptyList(), myUsername)
         binding.rvLeaderboard.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
         binding.rvLeaderboard.adapter = adapter
 
@@ -41,14 +46,62 @@ class LeaderboardFragment : Fragment() {
     private fun fetchLeaderboard() {
         binding.progressBar.visibility = View.VISIBLE
         binding.rvLeaderboard.visibility = View.GONE
+        binding.cardMyRank.visibility = View.GONE
 
         ApiClient.instance.getLeaderboard().enqueue(object : Callback<LeaderboardResponse> {
             override fun onResponse(call: Call<LeaderboardResponse>, response: Response<LeaderboardResponse>) {
                 binding.progressBar.visibility = View.GONE
                 if (response.isSuccessful && response.body()?.status == "success") {
-                    val list = response.body()?.leaderboard ?: emptyList()
-                    adapter.updateData(list)
+                    val fullList = response.body()?.leaderboard ?: emptyList()
+                    val top10 = fullList.take(10)
+
+                    val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+                    val myUsername = sharedPref.getString("username", "Player") ?: "Player"
+                    val myLevel = sharedPref.getInt("level", 1)
+                    val myXp = sharedPref.getInt("xp", 0)
+                    val myWins = sharedPref.getInt("wins", 0)
+
+                    adapter.updateData(top10, myUsername)
                     binding.rvLeaderboard.visibility = View.VISIBLE
+
+                    // Check if current user is in full leaderboard list
+                    val userInList = fullList.firstOrNull { it.username.equals(myUsername, ignoreCase = true) }
+                    val myRank = userInList?.rank
+                    val userXp = userInList?.xp ?: myXp
+                    val userWins = userInList?.wins ?: myWins
+                    val userLevel = userInList?.level ?: myLevel
+
+                    // Display Current User's Pinned Bottom Card
+                    binding.cardMyRank.visibility = View.VISIBLE
+                    binding.tvMyPlayerName.text = "$myUsername"
+                    binding.tvMyStats.text = "$userXp XP • $userWins Wins"
+                    binding.tvMyLevel.text = "Lvl $userLevel"
+
+                    val league = QuestManager.getLeagueTier(userXp)
+                    binding.tvMyLeagueBadge.text = league.first
+                    binding.tvMyLeagueBadge.setTextColor(Color.parseColor(league.second))
+
+                    if (myRank != null && myRank <= 10) {
+                        binding.tvMyRank.text = "#$myRank"
+                        binding.tvMyRank.setTextColor(Color.parseColor("#F59E0B"))
+                        binding.tvMyRankHint.text = "🎉 Awesome! You are ranked #$myRank in the Global Top 10!"
+                        binding.tvMyRankHint.setTextColor(Color.parseColor("#10B981"))
+                    } else if (myRank != null) {
+                        binding.tvMyRank.text = "#$myRank"
+                        binding.tvMyRank.setTextColor(Color.parseColor("#38BDF8"))
+
+                        val rank10Xp = if (top10.size >= 10) top10[9].xp else 0
+                        val neededXp = (rank10Xp - userXp + 1).coerceAtLeast(1)
+                        binding.tvMyRankHint.text = "🔥 You are ranked #$myRank. Earn $neededXp more XP to enter the Top 10!"
+                        binding.tvMyRankHint.setTextColor(Color.parseColor("#F59E0B"))
+                    } else {
+                        val rank10Xp = if (top10.size >= 10) top10[9].xp else 50
+                        val neededXp = (rank10Xp - userXp + 1).coerceAtLeast(1)
+                        binding.tvMyRank.text = if (fullList.isNotEmpty()) "#${fullList.size + 1}+" else "#1"
+                        binding.tvMyRank.setTextColor(Color.parseColor("#94A3B8"))
+                        binding.tvMyRankHint.text = "🔥 Win matches and earn $neededXp more XP to enter the Top 10!"
+                        binding.tvMyRankHint.setTextColor(Color.parseColor("#F59E0B"))
+                    }
                 } else {
                     Toast.makeText(context, "Failed to load leaderboard", Toast.LENGTH_SHORT).show()
                 }
@@ -56,7 +109,7 @@ class LeaderboardFragment : Fragment() {
 
             override fun onFailure(call: Call<LeaderboardResponse>, t: Throwable) {
                 binding.progressBar.visibility = View.GONE
-                Toast.makeText(context, "Network Error", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Network Error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
