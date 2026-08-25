@@ -50,4 +50,15 @@
     <string name="bot_turn">🤖 Bot o\'ylamoqda...</string>
     <string name="btn_rematch">QAYTA O\'YNASH 🔄</string>
     <string name="btn_exit_menu">BOSH SAHIFAGA CHIQISH 🚪</string>
+
+    <!-- Quests & Retention -->
+    <string name="daily_quests_title">🎯 KUNLIK MISSIYALAR</string>
+    <string name="next_quests_in">Keyingi missiyalar: %s</string>
+    <string name="quest_1_title">🎯 Gomoku yoki Shashkada 2 ta o\'yin o\'ynash</string>
+    <string name="quest_2_title">💧 Water Sort da 2 ta yangi bosqichni yutish</string>
+    <string name="quest_3_title">🌐 Online xonada do\'st bilan 1 ta g\'alaba qozonish</string>
+    <string name="btn_claimed">OLINDI ✅</string>
+    <string name="btn_claim">OLISH 🎁</string>
+    <string name="forfeit_opponent_won">Raqib taslim bo\'ldi! Siz g\'alaba qozondingiz! 🏆</string>
+    <string name="forfeit_you_lost">Siz o\'yindan chiqdingiz va mag\'lubiyat yozildi! ❌</string>
 </resources>

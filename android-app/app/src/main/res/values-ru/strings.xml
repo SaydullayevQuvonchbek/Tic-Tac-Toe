@@ -50,4 +50,15 @@
     <string name="bot_turn">🤖 Бот думает...</string>
     <string name="btn_rematch">ИГРАТЬ СНОВА 🔄</string>
     <string name="btn_exit_menu">ВЫЙТИ В МЕНЮ 🚪</string>
+
+    <!-- Quests & Retention -->
+    <string name="daily_quests_title">🎯 ЕЖЕДНЕВНЫЕ ЗАДАНИЯ</string>
+    <string name="next_quests_in">Новые задания через: %s</string>
+    <string name="quest_1_title">🎯 Сыграть 2 игры в Гомоку или Шашки</string>
+    <string name="quest_2_title">💧 Пройти 2 новых уровня в Сортировке Воды</string>
+    <string name="quest_3_title">🌐 Выиграть 1 онлайн матч с другом</string>
+    <string name="btn_claimed">ЗАБРАНО ✅</string>
+    <string name="btn_claim">ЗАБРАТЬ 🎁</string>
+    <string name="forfeit_opponent_won">Соперник сдался! Вы победили! 🏆</string>
+    <string name="forfeit_you_lost">Вы покинули игру и сдались! ❌</string>
 </resources>

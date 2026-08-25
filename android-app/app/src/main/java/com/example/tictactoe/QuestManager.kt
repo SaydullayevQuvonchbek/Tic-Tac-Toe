@@ -2,6 +2,7 @@ package com.example.tictactoe
 
 import android.content.Context
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -25,13 +26,27 @@ object QuestManager {
         return SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
     }
 
+    fun getTimeUntilMidnightString(): String {
+        val now = Calendar.getInstance()
+        val midnight = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 24)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        val diffMillis = midnight.timeInMillis - now.timeInMillis
+        val hours = (diffMillis / (1000 * 60 * 60)) % 24
+        val minutes = (diffMillis / (1000 * 60)) % 60
+        val seconds = (diffMillis / 1000) % 60
+        return String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, seconds)
+    }
+
     fun getDailyQuests(context: Context): List<Quest> {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val today = getTodayDateString()
         val lastDate = prefs.getString("last_quest_date", "")
 
         if (today != lastDate) {
-            // Reset daily quests for new day
             prefs.edit()
                 .putString("last_quest_date", today)
                 .putInt("quest_1_progress", 0)
@@ -53,9 +68,9 @@ object QuestManager {
         val q3Claimed = prefs.getBoolean("quest_3_claimed", false)
 
         return listOf(
-            Quest("q1", "🎯 Gomoku yoki Shashkada 2 ta o'yin o'ynash", q1Progress, 2, 60, 100, q1Claimed),
-            Quest("q2", "💧 Water Sort da 2 ta yangi bosqichni yutish", q2Progress, 2, 50, 80, q2Claimed),
-            Quest("q3", "🌐 Online xonada do'st bilan 1 marta g'alaba qozonish", q3Progress, 1, 100, 150, q3Claimed)
+            Quest("q1", context.getString(R.string.quest_1_title), q1Progress, 2, 60, 100, q1Claimed),
+            Quest("q2", context.getString(R.string.quest_2_title), q2Progress, 2, 50, 80, q2Claimed),
+            Quest("q3", context.getString(R.string.quest_3_title), q3Progress, 1, 100, 150, q3Claimed)
         )
     }
 

@@ -113,9 +113,26 @@ class DashboardFragment : Fragment() {
         }
     }
 
+    private val countdownHandler = android.os.Handler(android.os.Looper.getMainLooper())
+    private val countdownRunnable = object : Runnable {
+        override fun run() {
+            if (_binding != null) {
+                val timeLeft = QuestManager.getTimeUntilMidnightString()
+                binding.tvQuestsCountdown.text = "⏳ $timeLeft"
+                countdownHandler.postDelayed(this, 1000)
+            }
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         loadProfile()
+        countdownHandler.post(countdownRunnable)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        countdownHandler.removeCallbacks(countdownRunnable)
     }
     
     private fun updateGameLocks() {
@@ -263,12 +280,15 @@ class DashboardFragment : Fragment() {
             binding.tvQuest1Title.text = "${q1.title} (${q1.currentProgress}/${q1.target})"
             binding.pbQuest1.max = q1.target
             binding.pbQuest1.progress = q1.currentProgress
+            val claimedText = getString(R.string.btn_claimed)
+            val claimText = getString(R.string.btn_claim)
+
             if (q1.isClaimed) {
-                binding.btnClaimQuest1.text = "DONE ✅"
+                binding.btnClaimQuest1.text = claimedText
                 binding.btnClaimQuest1.isEnabled = false
                 binding.btnClaimQuest1.alpha = 0.5f
             } else if (q1.isCompleted) {
-                binding.btnClaimQuest1.text = "CLAIM 🎁"
+                binding.btnClaimQuest1.text = claimText
                 binding.btnClaimQuest1.isEnabled = true
                 binding.btnClaimQuest1.alpha = 1.0f
             } else {
@@ -282,11 +302,11 @@ class DashboardFragment : Fragment() {
             binding.pbQuest2.max = q2.target
             binding.pbQuest2.progress = q2.currentProgress
             if (q2.isClaimed) {
-                binding.btnClaimQuest2.text = "DONE ✅"
+                binding.btnClaimQuest2.text = claimedText
                 binding.btnClaimQuest2.isEnabled = false
                 binding.btnClaimQuest2.alpha = 0.5f
             } else if (q2.isCompleted) {
-                binding.btnClaimQuest2.text = "CLAIM 🎁"
+                binding.btnClaimQuest2.text = claimText
                 binding.btnClaimQuest2.isEnabled = true
                 binding.btnClaimQuest2.alpha = 1.0f
             } else {
@@ -300,11 +320,11 @@ class DashboardFragment : Fragment() {
             binding.pbQuest3.max = q3.target
             binding.pbQuest3.progress = q3.currentProgress
             if (q3.isClaimed) {
-                binding.btnClaimQuest3.text = "DONE ✅"
+                binding.btnClaimQuest3.text = claimedText
                 binding.btnClaimQuest3.isEnabled = false
                 binding.btnClaimQuest3.alpha = 0.5f
             } else if (q3.isCompleted) {
-                binding.btnClaimQuest3.text = "CLAIM 🎁"
+                binding.btnClaimQuest3.text = claimText
                 binding.btnClaimQuest3.isEnabled = true
                 binding.btnClaimQuest3.alpha = 1.0f
             } else {

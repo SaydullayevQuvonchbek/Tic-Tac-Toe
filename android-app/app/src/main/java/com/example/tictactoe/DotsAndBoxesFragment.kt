@@ -96,7 +96,14 @@ class DotsAndBoxesFragment : Fragment() {
                 .setMessage(if (isOnlineMode) "If you exit, the match will be forfeited. (O'yindan chiqsangiz, mag'lubiyat hisoblanadi)" else "Do you want to exit to setup? (Sozlamalarga qaytishni xohlaysizmi?)")
                 .setPositiveButton("Yes, Exit (Ha)") { _, _ ->
                     if (isOnlineMode && roomCode.isNotEmpty()) {
+                        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+                        val myUserId = sharedPref.getInt("user_id", -1)
+                        ApiClient.instance.makeMove(MoveRequest(roomCode, myUserId, -999, -999, -1)).enqueue(object : Callback<MoveResponse> {
+                            override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) {}
+                            override fun onFailure(call: Call<MoveResponse>, t: Throwable) {}
+                        })
                         PusherManager.unsubscribeFromRoom(roomCode)
+                        Toast.makeText(context, getString(R.string.forfeit_you_lost), Toast.LENGTH_SHORT).show()
                     }
                     showSetupScreen()
                 }
@@ -108,6 +115,30 @@ class DotsAndBoxesFragment : Fragment() {
         } else {
             findNavController().navigateUp()
         }
+    }
+
+    private fun handleOpponentForfeited() {
+        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+        val curWins = sharedPref.getInt("dots_and_boxes_wins", 0) + 1
+        val curCoins = sharedPref.getInt("coins", 0) + 50
+        val curXp = sharedPref.getInt("xp", 0) + 100
+        sharedPref.edit()
+            .putInt("dots_and_boxes_wins", curWins)
+            .putInt("coins", curCoins)
+            .putInt("xp", curXp)
+            .apply()
+
+        val resultBundle = Bundle().apply {
+            putString("resultMessage", getString(R.string.forfeit_opponent_won))
+            putBoolean("isDraw", false)
+            putBoolean("isOnlineMode", true)
+            putString("roomCode", roomCode)
+            putBoolean("isHost", isHost)
+            putString("gameType", "dots_and_boxes")
+            putBoolean("isAiMode", false)
+            putInt("gridSize", logic.gridSize)
+        }
+        findNavController().navigate(R.id.action_dotsAndBoxesFragment_to_resultFragment, resultBundle)
     }
 
     private fun initSetupUI() {
@@ -410,6 +441,11 @@ class DotsAndBoxesFragment : Fragment() {
                         val col = json.optInt("col", -1)
                         val nextTurn = json.optInt("next_turn", 0)
 
+                        if (row == -999 && col == -999) {
+                            handleOpponentForfeited()
+                            return@runOnUiThread
+                        }
+
                         if (row == -99 && col == -99) {
                             // Rematch trigger!
                             logic = DotsAndBoxesLogic(logic.gridSize)
@@ -440,10 +476,7 @@ class DotsAndBoxesFragment : Fragment() {
             },
             onOpponentLeft = {
                 activity?.runOnUiThread {
-                    Toast.makeText(context, "Opponent left! You win! 🎉", Toast.LENGTH_LONG).show()
-                    logic.isGameOver = true
-                    logic.winner = myPlayerNumber
-                    handleGameOver()
+                    handleOpponentForfeited()
                 }
             }
         )

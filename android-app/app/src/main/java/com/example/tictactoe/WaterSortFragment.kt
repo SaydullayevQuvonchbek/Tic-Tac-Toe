@@ -176,7 +176,11 @@ class WaterSortFragment : Fragment() {
         }
     }
 
+    private var isPouring = false
+
     private fun handleTubeClick(index: Int) {
+        if (isPouring) return
+
         if (selectedTubeIndex == -1) {
             // First tap: select source
             if (logic.tubes[index].isNotEmpty()) {
@@ -197,17 +201,26 @@ class WaterSortFragment : Fragment() {
                     val fromView = tubeViews[from]
                     val toView = tubeViews[to]
 
+                    isPouring = true
                     fromView.isSelectedTube = false
                     selectedTubeIndex = -1
 
-                    logic.pour(from, to)
-                    fromView.setWaterColors(logic.tubes[from])
-                    toView.setWaterColors(logic.tubes[to])
-                    binding.tvMoves.text = "Moves: ${logic.movesCount}"
-
-                    if (logic.isWin()) {
-                        handleLevelCompleted()
-                    }
+                    val isTiltRight = to > from
+                    fromView.animatePour(
+                        isTiltRight = isTiltRight,
+                        onHalfWay = {
+                            logic.pour(from, to)
+                            fromView.setWaterColors(logic.tubes[from])
+                            toView.setWaterColors(logic.tubes[to])
+                            binding.tvMoves.text = "Moves: ${logic.movesCount}"
+                        },
+                        onComplete = {
+                            isPouring = false
+                            if (logic.isWin()) {
+                                handleLevelCompleted()
+                            }
+                        }
+                    )
                 } else {
                     // Invalid dest: switch selection if valid source
                     tubeViews[selectedTubeIndex].isSelectedTube = false

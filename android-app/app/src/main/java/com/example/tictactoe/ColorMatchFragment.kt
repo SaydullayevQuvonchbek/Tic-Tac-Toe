@@ -1,5 +1,6 @@
 package com.example.tictactoe
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -26,7 +27,7 @@ class ColorMatchFragment : Fragment() {
     private var combo = 0
     private var isCorrectMatch = false
     private var timer: CountDownTimer? = null
-    private var timeRemaining = 60
+    private var timeRemainingMillis = 30000L
 
     private val colors = listOf(
         Pair("RED", Color.parseColor("#EF4444")),
@@ -67,7 +68,7 @@ class ColorMatchFragment : Fragment() {
     private fun startGame() {
         score = 0
         combo = 0
-        timeRemaining = 30 // Make it faster!
+        timeRemainingMillis = 30000L
         updateScore()
         nextWord()
         startTimer()
@@ -75,13 +76,14 @@ class ColorMatchFragment : Fragment() {
 
     private fun startTimer() {
         timer?.cancel()
-        timer = object : CountDownTimer(timeRemaining * 1000L, 1000) {
+        timer = object : CountDownTimer(timeRemainingMillis, 1000) {
             override fun onTick(millisUntilFinished: Long) {
-                timeRemaining = (millisUntilFinished / 1000).toInt()
-                binding.tvTimer.text = "${timeRemaining}s"
+                timeRemainingMillis = millisUntilFinished
+                binding.tvTimer.text = "${millisUntilFinished / 1000}s"
             }
 
             override fun onFinish() {
+                binding.tvTimer.text = "0s"
                 endGame()
             }
         }.start()
@@ -89,9 +91,7 @@ class ColorMatchFragment : Fragment() {
 
     private fun nextWord() {
         val wordPair = colors.random()
-        
-        // 50% chance to match
-        isCorrectMatch = Math.random() > 0.5
+        isCorrectMatch = Math.random() > 0.45
         val colorPair = if (isCorrectMatch) wordPair else colors.filter { it.first != wordPair.first }.random()
 
         binding.tvColorWord.text = wordPair.first
@@ -101,15 +101,25 @@ class ColorMatchFragment : Fragment() {
     private fun checkAnswer(userSaysYes: Boolean) {
         if (userSaysYes == isCorrectMatch) {
             combo++
-            score += (10 * combo)
-            binding.tvInstruction.text = "Correct! Combo x$combo (+1s)"
+            val multiplier = when {
+                combo >= 10 -> 5
+                combo >= 6  -> 3
+                combo >= 3  -> 2
+                else        -> 1
+            }
+            val ptsGained = 10 * multiplier
+            score += ptsGained
+
+            val comboStr = if (multiplier > 1) " (COMBO x$multiplier! 🔥)" else ""
+            binding.tvInstruction.text = "Correct! +$ptsGained$comboStr (+1s)"
             binding.tvInstruction.setTextColor(Color.parseColor("#34D399"))
-            timeRemaining += 1
+
+            timeRemainingMillis = (timeRemainingMillis + 1000L).coerceAtMost(45000L)
             startTimer()
         } else {
             combo = 0
-            score -= 10
-            binding.tvInstruction.text = "Wrong! Combo Lost"
+            score = (score - 5).coerceAtLeast(0)
+            binding.tvInstruction.text = "Wrong! Combo Lost ❌"
             binding.tvInstruction.setTextColor(Color.parseColor("#EF4444"))
         }
         updateScore()
@@ -117,21 +127,29 @@ class ColorMatchFragment : Fragment() {
     }
 
     private fun updateScore() {
-        binding.tvScore.text = "Score: $score"
+        val comboSuffix = if (combo >= 3) " | 🔥 x${if (combo >= 10) 5 else if (combo >= 6) 3 else 2}" else ""
+        binding.tvScore.text = "Score: $score$comboSuffix"
     }
 
     private fun endGame() {
+        timer?.cancel()
         binding.btnWrong.isEnabled = false
         binding.btnCorrect.isEnabled = false
         binding.tvTimer.text = "0s"
-        
-        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", android.content.Context.MODE_PRIVATE)
+
+        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
         val userId = sharedPref.getInt("user_id", -1)
 
         val prevBest = sharedPref.getInt("color_match_high_score", 0)
         val isNewRecord = score > prevBest
         if (isNewRecord) {
             sharedPref.edit().putInt("color_match_high_score", score).apply()
+        }
+
+        val coinsEarned = (score / 35) * 5
+        if (coinsEarned > 0) {
+            val curCoins = sharedPref.getInt("coins", 0)
+            sharedPref.edit().putInt("coins", curCoins + coinsEarned).apply()
         }
 
         if (userId != -1 && score > 0) {
@@ -150,30 +168,28 @@ class ColorMatchFragment : Fragment() {
                             .putInt("level", resp.current_level)
                             .putInt("xp", resp.new_total_xp)
                             .apply()
-                        showResultDialog(isNewRecord, resp.xp_earned, resp.new_total_xp, resp.level_up, resp.current_level)
+                        showResultDialog(isNewRecord, resp.xp_earned, resp.new_total_xp, resp.level_up, resp.current_level, coinsEarned)
                     } else {
-                        showResultDialog(isNewRecord, 0, 0, false, 0)
+                        showResultDialog(isNewRecord, score / 2, sharedPref.getInt("xp", 0) + score / 2, false, sharedPref.getInt("level", 1), coinsEarned)
                     }
                 }
 
                 override fun onFailure(call: Call<GameScoreResponse>, t: Throwable) {
                     pd.dismiss()
-                    showResultDialog(isNewRecord, 0, 0, false, 0)
+                    showResultDialog(isNewRecord, score / 2, sharedPref.getInt("xp", 0) + score / 2, false, sharedPref.getInt("level", 1), coinsEarned)
                 }
             })
         } else {
-            showResultDialog(isNewRecord, 0, 0, false, 0)
+            showResultDialog(isNewRecord, score / 2, sharedPref.getInt("xp", 0) + score / 2, false, sharedPref.getInt("level", 1), coinsEarned)
         }
     }
 
-    private fun showResultDialog(isNewRecord: Boolean, xpEarned: Int, totalXp: Int, levelUp: Boolean, currentLevel: Int) {
+    private fun showResultDialog(isNewRecord: Boolean, xpEarned: Int, totalXp: Int, levelUp: Boolean, currentLevel: Int, coinsEarned: Int) {
         var msg = "Final Score: $score"
         if (isNewRecord) {
             msg += "\n🎉 NEW HIGH SCORE! 🎉"
         }
-        if (xpEarned > 0) {
-            msg += "\n\nEarned: +$xpEarned XP\nTotal XP: $totalXp"
-        }
+        msg += "\n\n🪙 Coins Earned: +$coinsEarned\n⚡ XP Earned: +$xpEarned\nTotal XP: $totalXp"
         if (levelUp) {
             msg += "\n\n🚀 LEVEL UP! You are now Level $currentLevel 🚀"
         }

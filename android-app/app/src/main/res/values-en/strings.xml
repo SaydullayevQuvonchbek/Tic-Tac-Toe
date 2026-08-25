@@ -50,4 +50,15 @@
     <string name="bot_turn">🤖 Bot Thinking...</string>
     <string name="btn_rematch">REMATCH 🔄</string>
     <string name="btn_exit_menu">EXIT TO MENU 🚪</string>
+
+    <!-- Quests & Retention -->
+    <string name="daily_quests_title">🎯 DAILY QUESTS</string>
+    <string name="next_quests_in">Next Quests in: %s</string>
+    <string name="quest_1_title">🎯 Play 2 matches in Gomoku or Checkers</string>
+    <string name="quest_2_title">💧 Win 2 new levels in Water Sort</string>
+    <string name="quest_3_title">🌐 Win 1 Online Match against a friend</string>
+    <string name="btn_claimed">CLAIMED ✅</string>
+    <string name="btn_claim">CLAIM 🎁</string>
+    <string name="forfeit_opponent_won">Opponent surrendered! You Won! 🏆</string>
+    <string name="forfeit_you_lost">You left the game and forfeited! ❌</string>
 </resources>

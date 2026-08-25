@@ -142,14 +142,46 @@ class GameFragment : Fragment() {
                     .setMessage(if (isOnlineMode) "If you exit, the match will be forfeited. (O'yindan chiqsangiz, mag'lubiyat hisoblanadi)" else "Do you want to exit to the menu? (Menyuga qaytishni xohlaysizmi?)")
                     .setPositiveButton("Yes, Exit (Ha)") { _, _ ->
                         if (isOnlineMode && roomCode.isNotEmpty()) {
+                            com.example.tictactoe.network.ApiClient.instance.makeMove(
+                                com.example.tictactoe.network.MoveRequest(roomCode, playerId, -999, -999, -1)
+                            ).enqueue(object : retrofit2.Callback<com.example.tictactoe.network.MoveResponse> {
+                                override fun onResponse(c: retrofit2.Call<com.example.tictactoe.network.MoveResponse>, r: retrofit2.Response<com.example.tictactoe.network.MoveResponse>) {}
+                                override fun onFailure(c: retrofit2.Call<com.example.tictactoe.network.MoveResponse>, t: Throwable) {}
+                            })
                             com.example.tictactoe.network.PusherManager.unsubscribeFromRoom(roomCode)
                         }
+                        Toast.makeText(context, getString(R.string.forfeit_you_lost), Toast.LENGTH_SHORT).show()
                         findNavController().navigateUp()
                     }
                     .setNegativeButton("Cancel (Yo'q)", null)
                     .show()
             }
         })
+    }
+
+    private fun handleOpponentForfeited() {
+        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", android.content.Context.MODE_PRIVATE)
+        val curWins = sharedPref.getInt("wins", 0) + 1
+        val curCoins = sharedPref.getInt("coins", 0) + 50
+        val curXp = sharedPref.getInt("xp", 0) + 100
+        sharedPref.edit()
+            .putInt("wins", curWins)
+            .putInt("coins", curCoins)
+            .putInt("xp", curXp)
+            .apply()
+
+        val bundle = Bundle().apply {
+            putString("gameType", "tic_tac_toe")
+            putString("resultMessage", getString(R.string.forfeit_opponent_won))
+            putBoolean("isDraw", false)
+            putBoolean("isOnlineMode", true)
+            putString("roomCode", roomCode)
+            putInt("playerId", playerId)
+            putBoolean("isHost", isHost)
+            putString("username", username)
+            putInt("boardSize", boardSize)
+        }
+        findNavController().navigate(R.id.action_gameFragment_to_resultFragment, bundle)
     }
 
     private fun setupPusher() {
@@ -172,6 +204,11 @@ class GameFragment : Fragment() {
                         if (senderId != -1 && senderId != playerId) {
                             val row = json.optInt("row", json.optString("row", "0").toIntOrNull() ?: 0)
                             val col = json.optInt("col", json.optString("col", "0").toIntOrNull() ?: 0)
+
+                            if (row == -999 && col == -999) {
+                                handleOpponentForfeited()
+                                return@runOnUiThread
+                            }
 
                             if (row == -99 && col == -99) {
                                 // Rematch signal!

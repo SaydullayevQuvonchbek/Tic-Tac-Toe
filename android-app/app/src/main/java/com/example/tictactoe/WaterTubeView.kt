@@ -1,5 +1,8 @@
 package com.example.tictactoe
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -10,6 +13,8 @@ import android.graphics.RectF
 import android.graphics.Shader
 import android.util.AttributeSet
 import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.OvershootInterpolator
 
 class WaterTubeView @JvmOverloads constructor(
     context: Context,
@@ -18,10 +23,11 @@ class WaterTubeView @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
 
     val maxCapacity = 4
-    val colors = mutableListOf<Int>() // Bottom to Top: index 0 is bottom, index (size-1) is top
+    val colors = mutableListOf<Int>() // Bottom to Top
     var isSelectedTube = false
         set(value) {
             field = value
+            animateSelection(value)
             invalidate()
         }
 
@@ -34,12 +40,12 @@ class WaterTubeView @JvmOverloads constructor(
     private val tubeSelectedPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
         strokeWidth = 8f
-        color = Color.parseColor("#F59E0B") // Amber glow when selected
+        color = Color.parseColor("#F59E0B") // Amber glow
     }
 
     private val tubeFillPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
-        color = Color.parseColor("#0F172A") // Deep dark glass inside
+        color = Color.parseColor("#0F172A") // Deep dark glass interior
     }
 
     private val liquidPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -49,13 +55,19 @@ class WaterTubeView @JvmOverloads constructor(
     private val glarePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
         strokeWidth = 3f
-        color = Color.argb(90, 255, 255, 255)
+        color = Color.argb(80, 255, 255, 255)
     }
 
     private val tickPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
         strokeWidth = 2f
-        color = Color.argb(60, 255, 255, 255)
+        color = Color.argb(40, 255, 255, 255)
+    }
+
+    private val surfaceShinePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.argb(70, 255, 255, 255)
+        strokeWidth = 2.5f
+        style = Paint.Style.STROKE
     }
 
     private val tubePath = Path()
@@ -67,6 +79,50 @@ class WaterTubeView @JvmOverloads constructor(
         invalidate()
     }
 
+    private fun animateSelection(selected: Boolean) {
+        val targetY = if (selected) -30f else 0f
+        val anim = ObjectAnimator.ofFloat(this, "translationY", translationY, targetY)
+        anim.duration = 180
+        anim.interpolator = if (selected) OvershootInterpolator(1.5f) else AccelerateDecelerateInterpolator()
+        anim.start()
+    }
+
+    fun animatePour(isTiltRight: Boolean, onHalfWay: () -> Unit, onComplete: () -> Unit) {
+        val tiltAngle = if (isTiltRight) 42f else -42f
+        val liftY = -45f
+
+        // Set pivot to top mouth
+        pivotX = if (isTiltRight) width.toFloat() else 0f
+        pivotY = 10f
+
+        val liftAnim = ObjectAnimator.ofFloat(this, "translationY", translationY, liftY).apply { duration = 160 }
+        val tiltAnim = ObjectAnimator.ofFloat(this, "rotation", 0f, tiltAngle).apply { duration = 200 }
+
+        val set1 = AnimatorSet()
+        set1.playTogether(liftAnim, tiltAnim)
+        set1.interpolator = AccelerateDecelerateInterpolator()
+
+        set1.addListener(object : android.animation.AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: android.animation.Animator) {
+                onHalfWay()
+                postDelayed({
+                    val returnTilt = ObjectAnimator.ofFloat(this@WaterTubeView, "rotation", tiltAngle, 0f).apply { duration = 220 }
+                    val returnY = ObjectAnimator.ofFloat(this@WaterTubeView, "translationY", liftY, 0f).apply { duration = 220 }
+                    val set2 = AnimatorSet()
+                    set2.playTogether(returnTilt, returnY)
+                    set2.interpolator = OvershootInterpolator(1.2f)
+                    set2.addListener(object : android.animation.AnimatorListenerAdapter() {
+                        override fun onAnimationEnd(animation: android.animation.Animator) {
+                            onComplete()
+                        }
+                    })
+                    set2.start()
+                }, 180)
+            }
+        })
+        set1.start()
+    }
+
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         val stroke = tubeSelectedPaint.strokeWidth
@@ -75,10 +131,9 @@ class WaterTubeView @JvmOverloads constructor(
 
         val radius = (tubeRect.width()) / 2f
         tubePath.reset()
-        // Top open (small radius), bottom fully rounded
         val radii = floatArrayOf(
-            6f, 6f,         // Top-left
-            6f, 6f,         // Top-right
+            8f, 8f,         // Top-left
+            8f, 8f,         // Top-right
             radius, radius, // Bottom-right
             radius, radius  // Bottom-left
         )
@@ -98,17 +153,38 @@ class WaterTubeView @JvmOverloads constructor(
         val totalHeight = tubeRect.height()
         val segmentHeight = totalHeight / maxCapacity
 
-        // 3. Draw water segments from bottom to top with gradient
-        for (i in 0 until colors.size) {
-            val baseColor = colors[i]
-            val bottom = tubeRect.bottom - (i * segmentHeight)
-            val top = bottom - segmentHeight
+        // Group consecutive identical colors for seamless liquid rendering
+        data class ColorBlock(val color: Int, val startIndex: Int, val count: Int)
+        val blocks = mutableListOf<ColorBlock>()
 
-            // Slightly brighter at top, richer at bottom
+        if (colors.isNotEmpty()) {
+            var currentColor = colors[0]
+            var startIndex = 0
+            var count = 1
+
+            for (i in 1 until colors.size) {
+                if (colors[i] == currentColor) {
+                    count++
+                } else {
+                    blocks.add(ColorBlock(currentColor, startIndex, count))
+                    currentColor = colors[i]
+                    startIndex = i
+                    count = 1
+                }
+            }
+            blocks.add(ColorBlock(currentColor, startIndex, count))
+        }
+
+        // 3. Draw merged seamless liquid blocks
+        for (block in blocks) {
+            val baseColor = block.color
+            val bottom = tubeRect.bottom - (block.startIndex * segmentHeight)
+            val top = bottom - (block.count * segmentHeight)
+
             val shader = LinearGradient(
                 tubeRect.left, top,
                 tubeRect.right, bottom,
-                adjustAlpha(baseColor, 0.85f),
+                adjustAlpha(baseColor, 0.88f),
                 baseColor,
                 Shader.TileMode.CLAMP
             )
@@ -116,19 +192,14 @@ class WaterTubeView @JvmOverloads constructor(
             canvas.drawRect(tubeRect.left, top, tubeRect.right, bottom, liquidPaint)
             liquidPaint.shader = null
 
-            // Subtle surface line
-            val shinePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                color = Color.argb(60, 255, 255, 255)
-                strokeWidth = 2f
-                style = Paint.Style.STROKE
-            }
-            canvas.drawLine(tubeRect.left, top, tubeRect.right, top, shinePaint)
+            // Draw meniscus surface line only at the top of the color block
+            canvas.drawLine(tubeRect.left, top, tubeRect.right, top, surfaceShinePaint)
         }
 
-        // Draw measurement tick marks inside tube
+        // Draw measurement tick marks
         for (i in 1..3) {
             val tickY = tubeRect.bottom - (i * segmentHeight)
-            canvas.drawLine(tubeRect.left + 4f, tickY, tubeRect.left + 12f, tickY, tickPaint)
+            canvas.drawLine(tubeRect.left + 4f, tickY, tubeRect.left + 10f, tickY, tickPaint)
         }
 
         // Draw vertical glass glare reflection line on left side
@@ -146,8 +217,8 @@ class WaterTubeView @JvmOverloads constructor(
 
         // Top lip line
         canvas.drawLine(
-            tubeRect.left - 4f, tubeRect.top,
-            tubeRect.right + 4f, tubeRect.top,
+            tubeRect.left - 3f, tubeRect.top,
+            tubeRect.right + 3f, tubeRect.top,
             paintToUse
         )
     }

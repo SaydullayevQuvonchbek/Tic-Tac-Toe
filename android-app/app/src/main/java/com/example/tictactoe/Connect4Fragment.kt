@@ -94,7 +94,14 @@ class Connect4Fragment : Fragment() {
                 .setMessage(if (isOnlineMode) "If you exit, the match will be forfeited. (O'yindan chiqsangiz, mag'lubiyat hisoblanadi)" else "Do you want to exit to setup? (Sozlamalarga qaytishni xohlaysizmi?)")
                 .setPositiveButton("Yes, Exit (Ha)") { _, _ ->
                     if (isOnlineMode && roomCode.isNotEmpty()) {
+                        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+                        val myUserId = sharedPref.getInt("user_id", -1)
+                        ApiClient.instance.makeMove(MoveRequest(roomCode, myUserId, -999, -999, -1)).enqueue(object : Callback<MoveResponse> {
+                            override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) {}
+                            override fun onFailure(call: Call<MoveResponse>, t: Throwable) {}
+                        })
                         PusherManager.unsubscribeFromRoom(roomCode)
+                        Toast.makeText(context, getString(R.string.forfeit_you_lost), Toast.LENGTH_SHORT).show()
                     }
                     showSetupScreen()
                 }
@@ -106,6 +113,29 @@ class Connect4Fragment : Fragment() {
         } else {
             findNavController().navigateUp()
         }
+    }
+
+    private fun handleOpponentForfeited() {
+        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+        val curWins = sharedPref.getInt("connect4_wins", 0) + 1
+        val curCoins = sharedPref.getInt("coins", 0) + 50
+        val curXp = sharedPref.getInt("xp", 0) + 100
+        sharedPref.edit()
+            .putInt("connect4_wins", curWins)
+            .putInt("coins", curCoins)
+            .putInt("xp", curXp)
+            .apply()
+
+        val bundle = Bundle().apply {
+            putString("gameType", "connect4")
+            putString("resultMessage", getString(R.string.forfeit_opponent_won))
+            putBoolean("isDraw", false)
+            putBoolean("isOnlineMode", true)
+            putString("roomCode", roomCode)
+            putBoolean("isHost", isHost)
+            putBoolean("isAiMode", false)
+        }
+        findNavController().navigate(R.id.action_connect4Fragment_to_resultFragment, bundle)
     }
 
     private fun initSetupUI() {
@@ -263,6 +293,11 @@ class Connect4Fragment : Fragment() {
                         }
 
                         val col = json.optInt("col", json.optString("col", "-1").toIntOrNull() ?: -1)
+                        if (col == -999) {
+                            handleOpponentForfeited()
+                            return@runOnUiThread
+                        }
+
                         if (col == -99) {
                             logic = Connect4Logic()
                             setupBoard()
@@ -292,10 +327,7 @@ class Connect4Fragment : Fragment() {
             },
             onOpponentLeft = {
                 activity?.runOnUiThread {
-                    Toast.makeText(context, "Opponent left! You win! 🎉", Toast.LENGTH_LONG).show()
-                    logic.isGameOver = true
-                    logic.winner = myPlayerNumber
-                    handleGameOver()
+                    handleOpponentForfeited()
                 }
             }
         )

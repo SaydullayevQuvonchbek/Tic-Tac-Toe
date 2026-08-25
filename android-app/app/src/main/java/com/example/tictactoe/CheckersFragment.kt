@@ -97,7 +97,14 @@ class CheckersFragment : Fragment() {
                 .setMessage(if (isOnlineMode) "If you exit, the match will be forfeited. (O'yindan chiqsangiz, mag'lubiyat hisoblanadi)" else "Do you want to exit to setup? (Sozlamalarga qaytishni xohlaysizmi?)")
                 .setPositiveButton("Yes, Exit (Ha)") { _, _ ->
                     if (isOnlineMode && roomCode.isNotEmpty()) {
+                        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+                        val myUserId = sharedPref.getInt("user_id", -1)
+                        ApiClient.instance.makeMove(MoveRequest(roomCode, myUserId, -999, -999, -1)).enqueue(object : Callback<MoveResponse> {
+                            override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) {}
+                            override fun onFailure(call: Call<MoveResponse>, t: Throwable) {}
+                        })
                         PusherManager.unsubscribeFromRoom(roomCode)
+                        Toast.makeText(context, getString(R.string.forfeit_you_lost), Toast.LENGTH_SHORT).show()
                     }
                     showSetupScreen()
                 }
@@ -109,6 +116,32 @@ class CheckersFragment : Fragment() {
         } else {
             findNavController().navigateUp()
         }
+    }
+
+    private fun handleOpponentForfeited() {
+        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+        val curWins = sharedPref.getInt("checkers_wins", 0) + 1
+        val curCoins = sharedPref.getInt("coins", 0) + 50
+        val curXp = sharedPref.getInt("xp", 0) + 100
+        sharedPref.edit()
+            .putInt("checkers_wins", curWins)
+            .putInt("coins", curCoins)
+            .putInt("xp", curXp)
+            .apply()
+
+        QuestManager.recordGamePlayed(requireContext(), "checkers", isOnline = true, isWin = true)
+
+        val resultBundle = Bundle().apply {
+            putString("resultMessage", getString(R.string.forfeit_opponent_won))
+            putBoolean("isDraw", false)
+            putBoolean("isOnlineMode", true)
+            putString("roomCode", roomCode)
+            putBoolean("isHost", isHost)
+            putString("gameType", "checkers")
+            putBoolean("isAiMode", false)
+            putInt("boardSize", currentBoardSize)
+        }
+        findNavController().navigate(R.id.action_checkersFragment_to_resultFragment, resultBundle)
     }
 
     private fun initSetupUI() {
@@ -378,6 +411,11 @@ class CheckersFragment : Fragment() {
                         val row = json.optInt("row", -1)
                         val col = json.optInt("col", -1)
 
+                        if (row == -999 && col == -999) {
+                            handleOpponentForfeited()
+                            return@runOnUiThread
+                        }
+
                         if (row == -99 && col == -99) {
                             logic.resetBoard(currentBoardSize)
                             binding.checkersBoardView.invalidate()
@@ -414,8 +452,7 @@ class CheckersFragment : Fragment() {
             },
             onOpponentLeft = {
                 activity?.runOnUiThread {
-                    Toast.makeText(context, "Opponent left the game", Toast.LENGTH_SHORT).show()
-                    showSetupScreen()
+                    handleOpponentForfeited()
                 }
             }
         )
