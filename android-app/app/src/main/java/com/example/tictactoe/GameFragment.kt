@@ -117,19 +117,16 @@ class GameFragment : Fragment() {
         val isRematch = arguments?.getBoolean("isRematch", false) ?: false
         if (isOnlineMode) {
             setupPusher()
+            isMyTurnOnline = isHost
+            setButtonsEnabled(isMyTurnOnline, boardSize)
+            updateTurnText()
             if (isRematch) {
-                binding.tvTurn.text = if (isHost) "Rematch started! Your turn ($myOnlineSymbol)" else "Rematch started! Opponent's turn"
-                isMyTurnOnline = isHost
-                setButtonsEnabled(isHost, boardSize)
                 com.example.tictactoe.network.ApiClient.instance.makeMove(
                     com.example.tictactoe.network.MoveRequest(roomCode, playerId, -99, -99, -1)
                 ).enqueue(object : retrofit2.Callback<com.example.tictactoe.network.MoveResponse> {
                     override fun onResponse(c: retrofit2.Call<com.example.tictactoe.network.MoveResponse>, r: retrofit2.Response<com.example.tictactoe.network.MoveResponse>) {}
                     override fun onFailure(c: retrofit2.Call<com.example.tictactoe.network.MoveResponse>, t: Throwable) {}
                 })
-            } else {
-                binding.tvTurn.text = if (isHost) "Room: $roomCode. Waiting..." else "Game Started!"
-                setButtonsEnabled(false, boardSize)
             }
         } else {
             // If AI is X, it should make the first move.
@@ -191,10 +188,10 @@ class GameFragment : Fragment() {
         pusherManager.subscribeToRoom(roomCode,
             onGameStarted = { data ->
                 activity?.runOnUiThread {
-                    binding.tvTurn.text = "Opponent joined! Your symbol: $myOnlineSymbol"
-                    if (isMyTurnOnline) {
-                        setButtonsEnabled(true, if (isInfinityMode) infinityGameLogic!!.size else gameLogic!!.size)
-                    }
+                    isMyTurnOnline = isHost
+                    val size = if (isInfinityMode) infinityGameLogic!!.size else gameLogic!!.size
+                    setButtonsEnabled(isMyTurnOnline, size)
+                    updateTurnText()
                 }
             },
             onMoveMade = { data ->
@@ -223,7 +220,7 @@ class GameFragment : Fragment() {
                                 renderBoard(boardSize)
                                 isMyTurnOnline = isHost
                                 setButtonsEnabled(isMyTurnOnline, boardSize)
-                                binding.tvTurn.text = if (isMyTurnOnline) "Rematch: Your turn ($myOnlineSymbol)" else "Rematch: Opponent's turn"
+                                updateTurnText()
                                 return@runOnUiThread
                             }
 
@@ -234,9 +231,10 @@ class GameFragment : Fragment() {
                                 gameLogic!!.makeMove(row, col)
                             }
                             isMyTurnOnline = true
-                            setButtonsEnabled(true, if (isInfinityMode) infinityGameLogic!!.size else gameLogic!!.size)
                             val size = if (isInfinityMode) infinityGameLogic!!.size else gameLogic!!.size
+                            setButtonsEnabled(true, size)
                             renderBoard(size)
+                            updateTurnText()
                             checkOnlineWinner()
                         }
                     } catch (e: Exception) {
@@ -246,16 +244,7 @@ class GameFragment : Fragment() {
             },
             onOpponentLeft = {
                 activity?.runOnUiThread {
-                    android.widget.Toast.makeText(context, "Opponent left! You win!", android.widget.Toast.LENGTH_LONG).show()
-                    val winner = myOnlineSymbol
-                    if (isInfinityMode) {
-                        infinityGameLogic!!.winner = winner
-                        infinityGameLogic!!.isGameOver = true
-                    } else {
-                        gameLogic!!.winner = winner
-                        gameLogic!!.isGameOver = true
-                    }
-                    navigateToResult()
+                    handleOpponentForfeited()
                 }
             }
         )
@@ -396,6 +385,12 @@ class GameFragment : Fragment() {
     }
 
     private fun updateTurnText() {
+        if (isOnlineMode) {
+            val symbol = myOnlineSymbol
+            val oppSymbol = if (symbol == "X") "O" else "X"
+            binding.tvTurn.text = if (isMyTurnOnline) "Your Turn! ($symbol ⚡)" else "Opponent's Turn... ($oppSymbol)"
+            return
+        }
         val cp = if (isInfinityMode) infinityGameLogic!!.currentPlayer else gameLogic!!.currentPlayer
         binding.tvTurn.text = if (username.isNotEmpty() && cp == arguments?.getString("startingPlayer")) "$username's Turn" else "Player $cp's Turn"
         startTimer()
