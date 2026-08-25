@@ -47,11 +47,11 @@ class DashboardFragment : Fragment() {
             if (ensureProfile()) findNavController().navigate(R.id.action_dashboardFragment_to_welcomeFragment)
         }
 
-        binding.cardMath.setOnClickListener {
+        binding.cardMathGame.setOnClickListener {
             if (ensureProfile()) findNavController().navigate(R.id.action_dashboardFragment_to_mathGameFragment)
         }
 
-        binding.cardMemory.setOnClickListener {
+        binding.cardMemoryGame.setOnClickListener {
             handleGameClick("memory_game", 2, 50, binding.tvMemoryGame, "🧠 Memory Game", R.id.action_dashboardFragment_to_memoryGameFragment)
         }
 
