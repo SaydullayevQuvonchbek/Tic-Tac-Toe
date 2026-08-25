@@ -134,6 +134,22 @@ class GameFragment : Fragment() {
             // If AI is X, it should make the first move.
             triggerAiMoveIfNeeded(boardSize)
         }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : androidx.activity.OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                android.app.AlertDialog.Builder(requireContext())
+                    .setTitle("Exit Game? (O'yindan chiqish)")
+                    .setMessage(if (isOnlineMode) "If you exit, the match will be forfeited. (O'yindan chiqsangiz, mag'lubiyat hisoblanadi)" else "Do you want to exit to the menu? (Menyuga qaytishni xohlaysizmi?)")
+                    .setPositiveButton("Yes, Exit (Ha)") { _, _ ->
+                        if (isOnlineMode && roomCode.isNotEmpty()) {
+                            com.example.tictactoe.network.PusherManager.unsubscribeFromRoom(roomCode)
+                        }
+                        findNavController().navigateUp()
+                    }
+                    .setNegativeButton("Cancel (Yo'q)", null)
+                    .show()
+            }
+        })
     }
 
     private fun setupPusher() {

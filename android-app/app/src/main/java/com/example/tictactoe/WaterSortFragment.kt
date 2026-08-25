@@ -52,7 +52,14 @@ class WaterSortFragment : Fragment() {
 
     private fun handleBackNavigation() {
         if (binding.gameplayContainer.visibility == View.VISIBLE) {
-            showSetupScreen()
+            android.app.AlertDialog.Builder(requireContext())
+                .setTitle("Exit Puzzle? (Boshqotirmadan chiqish)")
+                .setMessage("Do you want to exit to the level menu? (Menyuga qaytishni xohlaysizmi?)")
+                .setPositiveButton("Yes, Exit (Ha)") { _, _ ->
+                    showSetupScreen()
+                }
+                .setNegativeButton("Cancel (Yo'q)", null)
+                .show()
         } else {
             findNavController().navigateUp()
         }

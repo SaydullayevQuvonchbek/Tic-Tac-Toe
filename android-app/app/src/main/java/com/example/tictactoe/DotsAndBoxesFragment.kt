@@ -87,7 +87,19 @@ class DotsAndBoxesFragment : Fragment() {
     }
 
     private fun handleBackNavigation() {
-        if (binding.gameplayContainer.visibility == View.VISIBLE || binding.waitingContainer.visibility == View.VISIBLE) {
+        if (binding.gameplayContainer.visibility == View.VISIBLE) {
+            android.app.AlertDialog.Builder(requireContext())
+                .setTitle("Exit Game? (O'yindan chiqish)")
+                .setMessage(if (isOnlineMode) "If you exit, the match will be forfeited. (O'yindan chiqsangiz, mag'lubiyat hisoblanadi)" else "Do you want to exit to setup? (Sozlamalarga qaytishni xohlaysizmi?)")
+                .setPositiveButton("Yes, Exit (Ha)") { _, _ ->
+                    if (isOnlineMode && roomCode.isNotEmpty()) {
+                        PusherManager.unsubscribeFromRoom(roomCode)
+                    }
+                    showSetupScreen()
+                }
+                .setNegativeButton("Cancel (Yo'q)", null)
+                .show()
+        } else if (binding.waitingContainer.visibility == View.VISIBLE) {
             cancelWaiting()
             showSetupScreen()
         } else {
