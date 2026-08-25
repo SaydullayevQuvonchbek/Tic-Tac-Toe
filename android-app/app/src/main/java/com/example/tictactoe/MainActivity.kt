@@ -18,6 +18,9 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val isDark = ThemeHelper.isDarkMode(this)
+        androidx.core.view.WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = !isDark
+
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as androidx.navigation.fragment.NavHostFragment
         val navController = navHostFragment.navController
         androidx.navigation.ui.NavigationUI.setupWithNavController(binding.bottomNav, navController)

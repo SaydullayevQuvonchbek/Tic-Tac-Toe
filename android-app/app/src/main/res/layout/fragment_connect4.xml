@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0F172A">
+    android:background="@color/background_color">
 
     <!-- 1. SETUP CONTAINER (In-Fragment Screen) -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -19,7 +19,7 @@
             android:layout_height="48dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/ic_menu_revert"
-            app:tint="@color/white"
+            app:tint="@color/text_color"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -28,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="🔴 Connect 4 PRO 🟡"
-            android:textColor="@color/white"
+            android:textColor="@color/text_color"
             android:textSize="26sp"
             android:fontFamily="sans-serif-black"
             android:layout_marginTop="16dp"
@@ -40,7 +40,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Select game mode to start:"
-            android:textColor="#94A3B8"
+            android:textColor="@color/text_secondary"
             android:textSize="15sp"
             android:layout_marginTop="4dp"
             app:layout_constraintTop_toBottomOf="@+id/tvSetupTitle"
@@ -59,7 +59,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="🤖 Play vs AI (Bot)"
-                android:textColor="@color/white"
+                android:textColor="@color/text_color"
                 android:textSize="17sp"
                 android:padding="12dp"
                 android:checked="true" />
@@ -69,7 +69,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="👥 2 Players (Pass &amp; Play)"
-                android:textColor="@color/white"
+                android:textColor="@color/text_color"
                 android:textSize="17sp"
                 android:padding="12dp" />
 
@@ -78,7 +78,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="🌐 Create Online Room (Host)"
-                android:textColor="@color/white"
+                android:textColor="@color/text_color"
                 android:textSize="17sp"
                 android:padding="12dp" />
 
@@ -87,7 +87,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="🔗 Join Online Room (Enter Code)"
-                android:textColor="@color/white"
+                android:textColor="@color/text_color"
                 android:textSize="17sp"
                 android:padding="12dp" />
         </RadioGroup>
@@ -106,10 +106,10 @@
                 android:id="@+id/etRoomCode"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
-                android:background="#1E293B"
+                android:background="@drawable/bg_leaderboard_item"
                 android:hint="Enter 4-letter Room Code"
-                android:textColorHint="#64748B"
-                android:textColor="@color/white"
+                android:textColorHint="@color/text_secondary"
+                android:textColor="@color/text_color"
                 android:textAllCaps="true"
                 android:gravity="center"
                 android:textSize="18sp"
@@ -146,7 +146,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="🌐 Room Created!"
-            android:textColor="@color/white"
+            android:textColor="@color/text_color"
             android:textSize="24sp"
             android:textStyle="bold"
             android:layout_marginBottom="8dp"/>
@@ -155,7 +155,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Share this code with your friend:"
-            android:textColor="#94A3B8"
+            android:textColor="@color/text_secondary"
             android:textSize="15sp"
             android:layout_marginBottom="16dp"/>
 
@@ -169,7 +169,7 @@
             android:fontFamily="sans-serif-black"
             android:letterSpacing="0.2"
             android:padding="16dp"
-            android:background="#1E293B"
+            android:background="@drawable/bg_leaderboard_item"
             android:layout_marginBottom="24dp"/>
 
         <ProgressBar
@@ -182,7 +182,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Waiting for friend to join..."
-            android:textColor="#A5B4FC"
+            android:textColor="#6366F1"
             android:textSize="15sp"
             android:layout_marginBottom="32dp"/>
 
@@ -219,7 +219,7 @@
                 android:layout_marginEnd="16dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@android:drawable/ic_menu_revert"
-                app:tint="@color/white" />
+                app:tint="@color/text_color" />
 
             <TextView
                 android:id="@+id/tvTurnIndicator"
@@ -227,7 +227,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Your Turn (🔴)"
-                android:textColor="@color/white"
+                android:textColor="@color/text_color"
                 android:textSize="22sp"
                 android:textStyle="bold" />
 
@@ -268,7 +268,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Tap column to drop tokens. Connect 4 to win!"
-            android:textColor="#94A3B8"
+            android:textColor="@color/text_secondary"
             android:textSize="14sp"
             android:layout_marginTop="16dp"
             app:layout_constraintTop_toBottomOf="@+id/boardCard"

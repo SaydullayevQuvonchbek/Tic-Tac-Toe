@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0F172A">
+    android:background="@color/background_color">
 
     <ImageButton
         android:id="@+id/btnBackColor"
@@ -15,7 +15,7 @@
         android:src="@android:drawable/ic_menu_revert"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/white" />
+        app:tint="@color/text_color" />
 
     <TextView
         android:id="@+id/tvTimer"
@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:text="60s"
-        android:textColor="@color/white"
+        android:textColor="@color/text_color"
         android:textSize="32sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -36,7 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="Score: 0"
-        android:textColor="#FCD34D"
+        android:textColor="#F59E0B"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -48,7 +48,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:text="Does the color match the word?"
-        android:textColor="#94A3B8"
+        android:textColor="@color/text_secondary"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

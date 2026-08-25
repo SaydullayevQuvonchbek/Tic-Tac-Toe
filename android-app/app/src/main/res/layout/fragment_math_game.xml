@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0F172A">
+    android:background="@color/background_color">
 
     <ImageButton
         android:id="@+id/btnBack"
@@ -15,7 +15,7 @@
         android:src="@android:drawable/ic_menu_revert"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/white" />
+        app:tint="@color/text_color" />
 
     <TextView
         android:id="@+id/tvTimer"
@@ -36,7 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:text="Score: 0"
-        android:textColor="#34D399"
+        android:textColor="#10B981"
         android:textSize="20sp"
         android:fontFamily="sans-serif-black"
         app:layout_constraintBottom_toBottomOf="@+id/btnBack"
@@ -48,7 +48,7 @@
         android:layout_width="0dp"
         android:layout_height="150dp"
         android:layout_margin="32dp"
-        app:cardBackgroundColor="#1E293B"
+        app:cardBackgroundColor="@color/card_background"
         app:cardCornerRadius="24dp"
         app:cardElevation="8dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -61,7 +61,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="15 + 23 = ?"
-            android:textColor="@color/white"
+            android:textColor="@color/text_color"
             android:textSize="48sp"
             android:fontFamily="sans-serif-black" />
     </androidx.cardview.widget.CardView>

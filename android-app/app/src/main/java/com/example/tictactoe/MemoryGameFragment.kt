@@ -47,31 +47,48 @@ class MemoryGameFragment : Fragment() {
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : androidx.activity.OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                showExitDialog()
+                handleBackNavigation()
             }
         })
 
-        binding.btnBack.setOnClickListener {
-            showExitDialog()
+        binding.btnSetupBack.setOnClickListener {
+            findNavController().navigateUp()
         }
 
-        showSetupDialog()
+        binding.btnBack.setOnClickListener {
+            handleBackNavigation()
+        }
+
+        initSetupUI()
     }
 
-    private fun showSetupDialog() {
-        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_memory_setup, null)
-        val dialog = AlertDialog.Builder(requireContext())
-            .setView(dialogView)
-            .setCancelable(false)
-            .create()
+    private fun handleBackNavigation() {
+        if (binding.gameplayContainer.visibility == View.VISIBLE) {
+            AlertDialog.Builder(requireContext())
+                .setTitle("Quit Game?")
+                .setMessage("Are you sure you want to exit? Your current progress will be lost.")
+                .setPositiveButton("Exit") { _, _ ->
+                    timer?.cancel()
+                    showSetupScreen()
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
+        } else {
+            findNavController().navigateUp()
+        }
+    }
 
-        val rgTheme = dialogView.findViewById<android.widget.RadioGroup>(R.id.rgTheme)
-        val rgDifficulty = dialogView.findViewById<android.widget.RadioGroup>(R.id.rgDifficulty)
-        val btnStart = dialogView.findViewById<android.widget.Button>(R.id.btnStart)
+    private fun showSetupScreen() {
+        binding.setupContainer.visibility = View.VISIBLE
+        binding.gameplayContainer.visibility = View.GONE
+    }
 
-        btnStart.setOnClickListener {
-            val isAnimals = rgTheme.checkedRadioButtonId == R.id.rbAnimals
-            val (rows, cols) = when (rgDifficulty.checkedRadioButtonId) {
+    private fun initSetupUI() {
+        showSetupScreen()
+
+        binding.btnStartGame.setOnClickListener {
+            val isAnimals = binding.rgTheme.checkedRadioButtonId == R.id.rbAnimals
+            val (rows, cols) = when (binding.rgDifficulty.checkedRadioButtonId) {
                 R.id.rbEasy -> 4 to 2 // 8 cards (4 pairs)
                 R.id.rbMedium -> 4 to 3 // 12 cards (6 pairs)
                 R.id.rbHard -> 4 to 4 // 16 cards (8 pairs)
@@ -79,11 +96,11 @@ class MemoryGameFragment : Fragment() {
                 R.id.rbExpert -> 6 to 5 // 30 cards (15 pairs)
                 else -> 4 to 4
             }
-            dialog.dismiss()
+            binding.setupContainer.visibility = View.GONE
+            binding.gameplayContainer.visibility = View.VISIBLE
             setupBoard(rows, cols, isAnimals)
             startTimer()
         }
-        dialog.show()
     }
 
     private var totalPairs = 8
@@ -271,14 +288,14 @@ class MemoryGameFragment : Fragment() {
                         showResultDialog(resp.xp_earned, resp.new_total_xp, resp.level_up, resp.current_level, true)
                     } else {
                         Toast.makeText(context, "Failed to submit score", Toast.LENGTH_SHORT).show()
-                        findNavController().navigateUp()
+                        showSetupScreen()
                     }
                 }
 
                 override fun onFailure(call: Call<GameScoreResponse>, t: Throwable) {
                     pd.dismiss()
                     Toast.makeText(context, "Network error", Toast.LENGTH_SHORT).show()
-                    findNavController().navigateUp()
+                    showSetupScreen()
                 }
             })
     }
@@ -292,8 +309,8 @@ class MemoryGameFragment : Fragment() {
         AlertDialog.Builder(requireContext())
             .setTitle(if (win) "Victory!" else "Game Over")
             .setMessage(msg)
-            .setPositiveButton("Back to Menu") { _, _ ->
-                findNavController().navigateUp()
+            .setPositiveButton("OK") { _, _ ->
+                showSetupScreen()
             }
             .setCancelable(false)
             .show()

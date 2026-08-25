@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0F172A">
+    android:background="@color/background_color">
 
     <TextView
         android:id="@+id/tvTitle"
@@ -12,7 +12,7 @@
         android:layout_marginTop="24dp"
         android:fontFamily="sans-serif-black"
         android:text="GLOBAL LEADERBOARD"
-        android:textColor="@color/white"
+        android:textColor="@color/text_color"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
