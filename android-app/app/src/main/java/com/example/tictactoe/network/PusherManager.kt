@@ -40,9 +40,9 @@ object PusherManager {
 
     fun subscribeToRoom(
         roomCode: String,
-        onGameStarted: (String) -> Unit,
-        onMoveMade: (String) -> Unit,
-        onOpponentLeft: () -> Unit
+        onGameStarted: (String) -> Unit = {},
+        onMoveMade: (String) -> Unit = {},
+        onOpponentLeft: () -> Unit = {}
     ) {
         connect()
 
