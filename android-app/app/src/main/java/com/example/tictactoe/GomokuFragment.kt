@@ -92,9 +92,9 @@ class GomokuFragment : Fragment() {
     private fun handleBackNavigation() {
         if (binding.gameplayContainer.visibility == View.VISIBLE) {
             android.app.AlertDialog.Builder(requireContext())
-                .setTitle("Exit Game? (O'yindan chiqish)")
-                .setMessage(if (isOnlineMode) "If you exit, the match will be forfeited. (O'yindan chiqsangiz, mag'lubiyat hisoblanadi)" else "Do you want to exit to setup? (Sozlamalarga qaytishni xohlaysizmi?)")
-                .setPositiveButton("Yes, Exit (Ha)") { _, _ ->
+                .setTitle("Exit Game?")
+                .setMessage(if (isOnlineMode) "If you exit, the match will be forfeited." else "Do you want to exit to game setup?")
+                .setPositiveButton("Yes, Exit") { _, _ ->
                     if (isOnlineMode && roomCode.isNotEmpty()) {
                         val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
                         val myUserId = sharedPref.getInt("user_id", -1)
@@ -107,7 +107,7 @@ class GomokuFragment : Fragment() {
                     }
                     showSetupScreen()
                 }
-                .setNegativeButton("Cancel (Yo'q)", null)
+                .setNegativeButton("Cancel", null)
                 .show()
         } else if (binding.waitingContainer.visibility == View.VISIBLE) {
             cancelWaiting()

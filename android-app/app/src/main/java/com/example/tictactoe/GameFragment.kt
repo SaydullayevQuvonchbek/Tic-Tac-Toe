@@ -117,17 +117,19 @@ class GameFragment : Fragment() {
         val isRematch = arguments?.getBoolean("isRematch", false) ?: false
         if (isOnlineMode) {
             setupPusher()
+            if (isRematch) {
+                if (isInfinityMode) {
+                    infinityGameLogic = com.example.tictactoe.InfinityGameLogic(boardSize)
+                    infinityGameLogic?.currentPlayer = "X"
+                } else {
+                    gameLogic = com.example.tictactoe.GameLogic(boardSize)
+                    gameLogic?.currentPlayer = "X"
+                }
+                renderBoard(boardSize)
+            }
             isMyTurnOnline = isHost
             setButtonsEnabled(isMyTurnOnline, boardSize)
             updateTurnText()
-            if (isRematch) {
-                com.example.tictactoe.network.ApiClient.instance.makeMove(
-                    com.example.tictactoe.network.MoveRequest(roomCode, playerId, -99, -99, -1)
-                ).enqueue(object : retrofit2.Callback<com.example.tictactoe.network.MoveResponse> {
-                    override fun onResponse(c: retrofit2.Call<com.example.tictactoe.network.MoveResponse>, r: retrofit2.Response<com.example.tictactoe.network.MoveResponse>) {}
-                    override fun onFailure(c: retrofit2.Call<com.example.tictactoe.network.MoveResponse>, t: Throwable) {}
-                })
-            }
         } else {
             // If AI is X, it should make the first move.
             triggerAiMoveIfNeeded(boardSize)
@@ -136,9 +138,9 @@ class GameFragment : Fragment() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : androidx.activity.OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 android.app.AlertDialog.Builder(requireContext())
-                    .setTitle("Exit Game? (O'yindan chiqish)")
-                    .setMessage(if (isOnlineMode) "If you exit, the match will be forfeited. (O'yindan chiqsangiz, mag'lubiyat hisoblanadi)" else "Do you want to exit to the menu? (Menyuga qaytishni xohlaysizmi?)")
-                    .setPositiveButton("Yes, Exit (Ha)") { _, _ ->
+                    .setTitle("Exit Game?")
+                    .setMessage(if (isOnlineMode) "If you exit, the match will be forfeited." else "Do you want to return to the menu?")
+                    .setPositiveButton("Yes, Exit") { _, _ ->
                         if (isOnlineMode && roomCode.isNotEmpty()) {
                             com.example.tictactoe.network.ApiClient.instance.makeMove(
                                 com.example.tictactoe.network.MoveRequest(roomCode, playerId, -999, -999, -1)
@@ -151,7 +153,7 @@ class GameFragment : Fragment() {
                         Toast.makeText(context, getString(R.string.forfeit_you_lost), Toast.LENGTH_SHORT).show()
                         findNavController().navigateUp()
                     }
-                    .setNegativeButton("Cancel (Yo'q)", null)
+                    .setNegativeButton("Cancel", null)
                     .show()
             }
         })
@@ -448,7 +450,19 @@ class GameFragment : Fragment() {
         val isUserWinner = if (isOnlineMode) winner == myOnlineSymbol else (username.isNotEmpty() && winner == arguments?.getString("startingPlayer")) || (!isAiMode && winner == "X") || (isAiMode && winner == "X")
         if (winner != "Draw" && isUserWinner) {
             val currentWins = sharedPref.getInt("wins", 0) + 1
-            sharedPref.edit().putInt("wins", currentWins).apply()
+            val addCoins = if (isOnlineMode) 50 else 20
+            val addXp = if (isOnlineMode) 100 else 50
+            val currentCoins = sharedPref.getInt("coins", 0) + addCoins
+            val currentXp = sharedPref.getInt("xp", 0) + addXp
+            sharedPref.edit()
+                .putInt("wins", currentWins)
+                .putInt("coins", currentCoins)
+                .putInt("xp", currentXp)
+                .apply()
+
+            QuestManager.recordGamePlayed(requireContext(), "tic_tac_toe", isOnlineMode, true)
+        } else {
+            QuestManager.recordGamePlayed(requireContext(), "tic_tac_toe", isOnlineMode, false)
         }
 
         val bundle = Bundle().apply {

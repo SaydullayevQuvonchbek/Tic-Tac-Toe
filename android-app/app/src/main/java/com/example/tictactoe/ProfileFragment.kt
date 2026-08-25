@@ -77,9 +77,9 @@ class ProfileFragment : Fragment() {
     private fun updateLanguageLabel() {
         val lang = LocaleHelper.getLanguage(requireContext())
         binding.tvCurrentLanguage.text = when (lang) {
-            "en" -> "🇬🇧 English"
             "ru" -> "🇷🇺 Русский"
-            else -> "🇺🇿 O'zbekcha"
+            "uz" -> "🇺🇿 O'zbekcha"
+            else -> "🇬🇧 English"
         }
     }
 

@@ -82,19 +82,10 @@ class CheckersLogic(var size: Int = 8) {
 
     private fun getSimpleMoves(r: Int, c: Int, piece: Int): List<Move> {
         val moves = mutableListOf<Move>()
-        val directions = if (isKing(piece) && size == 10) {
-            // Flying King: can move any distance diagonally
-            listOf(Pair(-1, -1), Pair(-1, 1), Pair(1, -1), Pair(1, 1))
-        } else if (isKing(piece)) {
-            listOf(Pair(-1, -1), Pair(-1, 1), Pair(1, -1), Pair(1, 1))
-        } else if (piece == P1) {
-            listOf(Pair(-1, -1), Pair(-1, 1))
-        } else {
-            listOf(Pair(1, -1), Pair(1, 1))
-        }
+        val directions = listOf(Pair(-1, -1), Pair(-1, 1), Pair(1, -1), Pair(1, 1))
 
-        if (isKing(piece) && size == 10) {
-            // 10x10 Flying King Raycast
+        if (isKing(piece)) {
+            // Flying King (Damka) in both 8x8 and 10x10: Raycast along diagonals
             for ((dr, dc) in directions) {
                 var step = 1
                 while (true) {
@@ -109,7 +100,9 @@ class CheckersLogic(var size: Int = 8) {
                 }
             }
         } else {
-            for ((dr, dc) in directions) {
+            // Regular piece: moves forward only (P1 moves UP, P2 moves DOWN)
+            val forwardDirs = if (piece == P1) listOf(Pair(-1, -1), Pair(-1, 1)) else listOf(Pair(1, -1), Pair(1, 1))
+            for ((dr, dc) in forwardDirs) {
                 val nr = r + dr
                 val nc = c + dc
                 if (nr in 0 until size && nc in 0 until size && board[nr][nc] == EMPTY) {
@@ -125,8 +118,8 @@ class CheckersLogic(var size: Int = 8) {
         val directions = listOf(Pair(-1, -1), Pair(-1, 1), Pair(1, -1), Pair(1, 1))
         val isEnemy = if (isP1(piece)) { p: Int -> isP2(p) } else { p: Int -> isP1(p) }
 
-        if (isKing(piece) && size == 10) {
-            // 10x10 Flying King Capture Raycast
+        if (isKing(piece)) {
+            // Flying King (Damka) Capture Raycast across diagonals
             for ((dr, dc) in directions) {
                 var step = 1
                 var enemyFoundR = -1
@@ -151,7 +144,7 @@ class CheckersLogic(var size: Int = 8) {
                             break
                         }
                     } else {
-                        // After jumping enemy
+                        // After jumping over enemy piece, any empty square is a valid landing spot!
                         if (curPiece == EMPTY) {
                             jumps.add(Move(r, c, cr, cc, true, enemyFoundR, enemyFoundC))
                             step++
@@ -162,7 +155,7 @@ class CheckersLogic(var size: Int = 8) {
                 }
             }
         } else {
-            // Standard piece or 8x8 King Jump
+            // Regular piece can jump over adjacent enemy piece in all 4 diagonal directions
             for ((dr, dc) in directions) {
                 val midR = r + dr
                 val midC = c + dc
