@@ -13,8 +13,10 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.tictactoe.databinding.FragmentDashboardBinding
 import com.example.tictactoe.network.ApiClient
-import com.example.tictactoe.network.ProfileRequest
-import com.example.tictactoe.network.ProfileResponse
+import com.example.tictactoe.network.AuthRequest
+import com.example.tictactoe.network.AuthResponse
+import com.example.tictactoe.network.DailyRewardRequest
+import com.example.tictactoe.network.DailyRewardResponse
 import com.example.tictactoe.network.StoreBuyRequest
 import com.example.tictactoe.network.StoreBuyResponse
 import retrofit2.Call
@@ -164,7 +166,7 @@ class DashboardFragment : Fragment() {
                             override fun onResponse(call: Call<StoreBuyResponse>, response: Response<StoreBuyResponse>) {
                                 pd.dismiss()
                                 if (response.isSuccessful && response.body()?.status == "success") {
-                                    val newCoins = response.body()?.coins ?: (coins - cost)
+                                    val newCoins = response.body()?.new_coin_balance ?: (coins - cost)
                                     sharedPref.edit().apply {
                                         putInt("coins", newCoins)
                                         putBoolean("unlocked_$key", true)
@@ -341,9 +343,9 @@ class DashboardFragment : Fragment() {
         pd.setMessage("Updating profile...")
         pd.show()
 
-        ApiClient.instance.getProfile(ProfileRequest(deviceId, newUsername))
-            .enqueue(object : Callback<ProfileResponse> {
-                override fun onResponse(call: Call<ProfileResponse>, response: Response<ProfileResponse>) {
+        ApiClient.instance.auth(AuthRequest(deviceId, newUsername))
+            .enqueue(object : Callback<AuthResponse> {
+                override fun onResponse(call: Call<AuthResponse>, response: Response<AuthResponse>) {
                     pd.dismiss()
                     if (response.isSuccessful && response.body()?.status == "success") {
                         val user = response.body()?.user
@@ -355,8 +357,10 @@ class DashboardFragment : Fragment() {
                                 putInt("xp", user.xp)
                                 putInt("coins", user.coins)
                                 putInt("streak_count", user.streak_count)
-                                for (item in user.unlocked_items) {
-                                    putBoolean("unlocked_$item", true)
+                                if (user.unlocked_games != null) {
+                                    for (item in user.unlocked_games) {
+                                        putBoolean("unlocked_$item", true)
+                                    }
                                 }
                                 apply()
                             }
@@ -364,11 +368,11 @@ class DashboardFragment : Fragment() {
                             Toast.makeText(context, "Welcome, ${user.username}!", Toast.LENGTH_SHORT).show()
                         }
                     } else {
-                        Toast.makeText(context, response.body()?.message ?: "Failed to update profile", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Failed to update profile", Toast.LENGTH_SHORT).show()
                     }
                 }
 
-                override fun onFailure(call: Call<ProfileResponse>, t: Throwable) {
+                override fun onFailure(call: Call<AuthResponse>, t: Throwable) {
                     pd.dismiss()
                     Toast.makeText(context, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
@@ -384,28 +388,28 @@ class DashboardFragment : Fragment() {
         pd.setMessage("Claiming daily reward...")
         pd.show()
 
-        ApiClient.instance.claimDailyReward(com.example.tictactoe.network.DailyRewardRequest(userId))
-            .enqueue(object : Callback<com.example.tictactoe.network.DailyRewardResponse> {
-                override fun onResponse(call: Call<com.example.tictactoe.network.DailyRewardResponse>, response: Response<com.example.tictactoe.network.DailyRewardResponse>) {
+        ApiClient.instance.claimDailyReward(DailyRewardRequest(userId))
+            .enqueue(object : Callback<DailyRewardResponse> {
+                override fun onResponse(call: Call<DailyRewardResponse>, response: Response<DailyRewardResponse>) {
                     pd.dismiss()
                     if (response.isSuccessful && response.body()?.status == "success") {
-                        val coinsGained = response.body()?.coins_gained ?: 0
-                        val currentStreak = response.body()?.current_streak ?: 0
-                        val totalCoins = response.body()?.total_coins ?: 0
+                        val coinsGained = response.body()?.reward_coins ?: 0
+                        val totalCoins = response.body()?.new_total_coins ?: 0
 
+                        val curStreak = sharedPref.getInt("streak_count", 0) + 1
                         sharedPref.edit().apply {
                             putInt("coins", totalCoins)
-                            putInt("streak_count", currentStreak)
+                            putInt("streak_count", curStreak)
                             apply()
                         }
                         loadProfile()
-                        Toast.makeText(context, "Claimed +$coinsGained Coins! 🔥 Streak: $currentStreak", Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, "Claimed +$coinsGained Coins! 🔥 Streak: $curStreak", Toast.LENGTH_LONG).show()
                     } else {
                         Toast.makeText(context, response.body()?.message ?: "Reward already claimed today!", Toast.LENGTH_SHORT).show()
                     }
                 }
 
-                override fun onFailure(call: Call<com.example.tictactoe.network.DailyRewardResponse>, t: Throwable) {
+                override fun onFailure(call: Call<DailyRewardResponse>, t: Throwable) {
                     pd.dismiss()
                     Toast.makeText(context, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
                 }

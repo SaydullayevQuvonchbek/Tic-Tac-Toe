@@ -10,9 +10,9 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.cardview.widget.CardView
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
@@ -26,7 +26,7 @@ class WaterSortFragment : Fragment() {
 
     private val logic = WaterSortLogic()
     private var selectedTubeIndex = -1
-    private val tubeViews = mutableListOf<TestTubeView>()
+    private val tubeViews = mutableListOf<WaterTubeView>()
 
     private var currentPlayingLevel = 1
     private var unlockedLevel = 1
@@ -156,14 +156,14 @@ class WaterSortFragment : Fragment() {
         val half = (totalTubes + 1) / 2
 
         for (i in 0 until totalTubes) {
-            val tubeView = TestTubeView(requireContext()).apply {
+            val tubeView = WaterTubeView(requireContext()).apply {
                 val density = resources.displayMetrics.density
                 val w = (64 * density).toInt()
                 val h = (170 * density).toInt()
                 layoutParams = LinearLayout.LayoutParams(w, h).apply {
                     setMargins((6 * density).toInt(), 0, (6 * density).toInt(), 0)
                 }
-                setLayers(logic.tubes[i])
+                setWaterColors(logic.tubes[i])
                 setOnClickListener { handleTubeClick(i) }
             }
 
@@ -196,21 +196,17 @@ class WaterSortFragment : Fragment() {
                 if (logic.canPour(from, to)) {
                     val fromView = tubeViews[from]
                     val toView = tubeViews[to]
-                    val colorToPour = logic.tubes[from].last()
 
                     fromView.isSelectedTube = false
                     selectedTubeIndex = -1
 
-                    val isTiltLeft = to < from
-                    fromView.animateTiltAndPour(toView, isTiltLeft, colorToPour) {
-                        logic.pour(from, to)
-                        fromView.setLayers(logic.tubes[from])
-                        toView.setLayers(logic.tubes[to])
-                        binding.tvMoves.text = "Moves: ${logic.movesCount}"
+                    logic.pour(from, to)
+                    fromView.setWaterColors(logic.tubes[from])
+                    toView.setWaterColors(logic.tubes[to])
+                    binding.tvMoves.text = "Moves: ${logic.movesCount}"
 
-                        if (logic.isWin()) {
-                            handleLevelCompleted()
-                        }
+                    if (logic.isWin()) {
+                        handleLevelCompleted()
                     }
                 } else {
                     // Invalid dest: switch selection if valid source
@@ -231,7 +227,7 @@ class WaterSortFragment : Fragment() {
             selectedTubeIndex = -1
             for (i in logic.tubes.indices) {
                 tubeViews[i].isSelectedTube = false
-                tubeViews[i].setLayers(logic.tubes[i])
+                tubeViews[i].setWaterColors(logic.tubes[i])
             }
             binding.tvMoves.text = "Moves: ${logic.movesCount}"
         }
@@ -325,8 +321,7 @@ class WaterSortFragment : Fragment() {
                 holder.cardLevel.setCardBackgroundColor(Color.parseColor("#0F172A"))
 
                 holder.cardLevel.setOnClickListener {
-                    // Locked
-                    android.widget.Toast.makeText(context, "Level $level is locked 🔒. Complete Level ${level - 1} first!", android.widget.Toast.SHORT).show()
+                    Toast.makeText(context, "Level $level is locked 🔒. Complete Level ${level - 1} first!", Toast.LENGTH_SHORT).show()
                 }
             }
         }
