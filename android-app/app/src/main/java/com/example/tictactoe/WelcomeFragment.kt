@@ -46,6 +46,9 @@ class WelcomeFragment : Fragment() {
 
         binding.btnSetupBack.setOnClickListener { findNavController().navigateUp() }
         binding.btnCancelWaiting.setOnClickListener { cancelWaiting() }
+        binding.btnInviteFriend.setOnClickListener {
+            ShareInviteHelper.shareRoomCode(requireContext(), "Tic Tac Toe", roomCode)
+        }
 
         binding.rgMode.setOnCheckedChangeListener { _, checkedId ->
             binding.onlineOptionsContainer.visibility = if (checkedId == R.id.rbOnline) View.VISIBLE else View.GONE

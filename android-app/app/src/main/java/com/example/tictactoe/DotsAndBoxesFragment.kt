@@ -55,6 +55,9 @@ class DotsAndBoxesFragment : Fragment() {
         binding.btnSetupBack.setOnClickListener { findNavController().navigateUp() }
         binding.btnGameplayBack.setOnClickListener { handleBackNavigation() }
         binding.btnCancelWaiting.setOnClickListener { cancelWaiting() }
+        binding.btnInviteFriend.setOnClickListener {
+            ShareInviteHelper.shareRoomCode(requireContext(), "Dots & Boxes", roomCode)
+        }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : androidx.activity.OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {

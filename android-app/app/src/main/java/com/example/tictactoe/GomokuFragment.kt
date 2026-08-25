@@ -55,6 +55,9 @@ class GomokuFragment : Fragment() {
         binding.btnSetupBack.setOnClickListener { findNavController().navigateUp() }
         binding.btnGameplayBack.setOnClickListener { handleBackNavigation() }
         binding.btnCancelWaiting.setOnClickListener { cancelWaiting() }
+        binding.btnInviteFriend.setOnClickListener {
+            ShareInviteHelper.shareRoomCode(requireContext(), "Gomoku (5 in a Row)", roomCode)
+        }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : androidx.activity.OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -251,8 +254,9 @@ class GomokuFragment : Fragment() {
         val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
         val username = sharedPref.getString("username", "You") ?: "You"
 
+        val isUserWinner = if (isOnlineMode) logic.winner == myPlayerNumber else logic.winner == 1
+
         if (logic.winner != 0) {
-            val isUserWinner = if (isOnlineMode) logic.winner == myPlayerNumber else logic.winner == 1
             binding.tvTurnIndicator.text = if (isUserWinner) "$username Won (5 in a Row)! 🎉" else "Game Over!"
         } else {
             binding.tvTurnIndicator.text = "It's a Draw! 🤝"
@@ -263,6 +267,8 @@ class GomokuFragment : Fragment() {
             val wins = sharedPref.getInt("gomoku_wins", 0) + 1
             sharedPref.edit().putInt("gomoku_wins", wins).apply()
         }
+
+        QuestManager.recordGamePlayed(requireContext(), "gomoku", isOnlineMode, isUserWinner)
 
         handler.postDelayed({
             submitScoreAndExit()

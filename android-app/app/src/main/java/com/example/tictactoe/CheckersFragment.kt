@@ -8,12 +8,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.tictactoe.databinding.FragmentCheckersBinding
 import com.example.tictactoe.network.ApiClient
-import com.example.tictactoe.network.GameScoreRequest
-import com.example.tictactoe.network.GameScoreResponse
 import com.example.tictactoe.network.MoveRequest
 import com.example.tictactoe.network.MoveResponse
 import com.example.tictactoe.network.PusherManager
@@ -31,17 +30,21 @@ class CheckersFragment : Fragment() {
     private var _binding: FragmentCheckersBinding? = null
     private val binding get() = _binding!!
 
-    private var logic = CheckersLogic()
-    private var isAiMode = true
+    private val logic = CheckersLogic(8)
+    private var isAiMode = false
     private var isOnlineMode = false
-    private var isHost = false
     private var roomCode = ""
-    private var myPlayerNumber = 1 // 1 = Red (Host/P1), 2 = Black (Joiner/P2)
-    private var isMyTurnOnline = false
+    private var isHost = false
+    private var myPlayerNumber = 1
+    private var isMyTurnOnline = true
+    private var currentBoardSize = 8
 
     private val handler = Handler(Looper.getMainLooper())
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentCheckersBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -49,30 +52,32 @@ class CheckersFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        PusherManager.connect()
         initSetupUI()
 
         binding.btnSetupBack.setOnClickListener { findNavController().navigateUp() }
         binding.btnGameplayBack.setOnClickListener { handleBackNavigation() }
         binding.btnCancelWaiting.setOnClickListener { cancelWaiting() }
+        binding.btnInviteFriend.setOnClickListener {
+            ShareInviteHelper.shareRoomCode(requireContext(), "Shashka (Checkers)", roomCode)
+        }
 
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : androidx.activity.OnBackPressedCallback(true) {
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 handleBackNavigation()
             }
         })
 
-        // Check if arriving from Rematch
         val isRematch = arguments?.getBoolean("isRematch", false) ?: false
         if (isRematch) {
             isOnlineMode = arguments?.getBoolean("isOnlineMode", false) ?: false
             roomCode = arguments?.getString("roomCode", "") ?: ""
             isHost = arguments?.getBoolean("isHost", false) ?: false
             isAiMode = arguments?.getBoolean("isAiMode", false) ?: false
+            currentBoardSize = arguments?.getInt("boardSize", 8) ?: 8
             myPlayerNumber = if (isHost) 1 else 2
             isMyTurnOnline = isHost
 
-            startLocalGame()
+            startLocalGame(currentBoardSize)
             if (isOnlineMode && roomCode.isNotEmpty()) {
                 subscribePusherEvents()
                 val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
@@ -117,11 +122,13 @@ class CheckersFragment : Fragment() {
         binding.btnStartGame.setOnClickListener {
             isAiMode = binding.rbAi.isChecked
             isOnlineMode = false
-            startLocalGame()
+            currentBoardSize = if (binding.rb10x10.isChecked) 10 else 8
+            startLocalGame(currentBoardSize)
         }
 
         binding.btnCreateRoom.setOnClickListener {
-            createOnlineRoom()
+            currentBoardSize = if (binding.rb10x10.isChecked) 10 else 8
+            createOnlineRoom(currentBoardSize)
         }
 
         binding.btnJoinRoom.setOnClickListener {
@@ -136,8 +143,9 @@ class CheckersFragment : Fragment() {
         }
     }
 
-    private fun startLocalGame() {
-        logic.resetBoard()
+    private fun startLocalGame(size: Int) {
+        currentBoardSize = size
+        logic.resetBoard(currentBoardSize)
         binding.checkersBoardView.logic = logic
         binding.checkersBoardView.isFlipped = (isOnlineMode && myPlayerNumber == 2)
 
@@ -170,15 +178,16 @@ class CheckersFragment : Fragment() {
                 binding.checkersBoardView.invalidate()
                 updateScoreboard()
 
-                // Check if continuing multi-jump
-                val keepsTurn = (logic.activeJumpPiece != null && logic.currentPlayer == myPlayerNumber)
-                isMyTurnOnline = keepsTurn
+                val continuesJump = (logic.activeJumpPiece != null)
+                if (!continuesJump) {
+                    isMyTurnOnline = false
+                }
                 updateTurnIndicator()
 
                 val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
                 val userId = sharedPref.getInt("user_id", -1)
-                val encodedFrom = fromR * 10 + fromC
-                val encodedTo = toR * 10 + toC
+                val encodedFrom = fromR * 100 + fromC
+                val encodedTo = toR * 100 + toC
 
                 ApiClient.instance.makeMove(MoveRequest(roomCode, userId, encodedFrom, encodedTo, -1)).enqueue(object : Callback<MoveResponse> {
                     override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) {}
@@ -226,7 +235,6 @@ class CheckersFragment : Fragment() {
                     if (logic.isGameOver) {
                         handleGameOver()
                     } else if (logic.currentPlayer == 2 && logic.activeJumpPiece != null) {
-                        // AI continues multi-jump!
                         triggerAiMove()
                     } else {
                         binding.checkersBoardView.isEnabled = true
@@ -262,76 +270,54 @@ class CheckersFragment : Fragment() {
 
     private fun handleGameOver() {
         val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
-        val username = sharedPref.getString("username", "You") ?: "You"
+        val myUsername = sharedPref.getString("username", "Player 1") ?: "Player 1"
 
-        if (logic.winner != 0) {
-            val isUserWinner = if (isOnlineMode) logic.winner == myPlayerNumber else logic.winner == 1
-            binding.tvTurnIndicator.text = if (isUserWinner) "$username Won (Shashka)! 👑🎉" else "Game Over!"
-        } else {
-            binding.tvTurnIndicator.text = "It's a Draw! 🤝"
+        val winnerName = when {
+            logic.winner == 1 -> if (isOnlineMode) (if (isHost) myUsername else "Opponent") else (if (isAiMode) myUsername else "Player 1")
+            logic.winner == 2 -> if (isOnlineMode) (if (isHost) "Opponent" else myUsername) else (if (isAiMode) "🤖 AI Bot" else "Player 2")
+            else -> "Nobody (Draw)"
         }
 
-        // Track record
-        if (logic.winner == 1 || (isOnlineMode && logic.winner == myPlayerNumber)) {
-            val wins = sharedPref.getInt("checkers_wins", 0) + 1
-            sharedPref.edit().putInt("checkers_wins", wins).apply()
+        val isUserWin = (isOnlineMode && ((isHost && logic.winner == 1) || (!isHost && logic.winner == 2))) ||
+                (!isOnlineMode && logic.winner == 1)
+
+        if (isUserWin) {
+            val currentWins = sharedPref.getInt("checkers_wins", 0)
+            sharedPref.edit().putInt("checkers_wins", currentWins + 1).apply()
         }
 
-        handler.postDelayed({
-            submitScoreAndExit()
-        }, 1800)
-    }
+        QuestManager.recordGamePlayed(requireContext(), "checkers", isOnlineMode, isUserWin)
 
-    private fun submitScoreAndExit() {
-        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
-        val userId = sharedPref.getInt("user_id", -1)
-        val isUserWinner = if (isOnlineMode) logic.winner == myPlayerNumber else logic.winner == 1
-        val score = if (isUserWinner) 50 else if (logic.winner == 0) 10 else 0
-
-        if (userId != -1 && score > 0) {
-            ApiClient.instance.submitGameScore(GameScoreRequest(userId, "checkers", score))
-                .enqueue(object : Callback<GameScoreResponse> {
-                    override fun onResponse(call: Call<GameScoreResponse>, response: Response<GameScoreResponse>) {}
-                    override fun onFailure(call: Call<GameScoreResponse>, t: Throwable) {}
-                })
-        }
-
-        val bundle = Bundle().apply {
-            putString("gameType", "checkers")
-            val winMsg = if (isOnlineMode) {
-                if (logic.winner == myPlayerNumber) "You Won! 👑🎉" else if (logic.winner == 0) "It's a Draw!" else "You Lost!"
-            } else if (isAiMode) {
-                if (logic.winner == 1) "You Won! 👑🎉" else if (logic.winner == 2) "Bot Won!" else "It's a Draw!"
-            } else {
-                if (logic.winner == 1) "Player 1 (Red) Wins! 👑" else if (logic.winner == 2) "Player 2 (Black) Wins! 👑" else "It's a Draw!"
-            }
-            putString("resultMessage", winMsg)
+        val resultBundle = Bundle().apply {
+            putString("resultMessage", if (logic.winner == 0) "Draw!" else "$winnerName Won!")
             putBoolean("isDraw", logic.winner == 0)
-            putBoolean("isAiMode", isAiMode)
             putBoolean("isOnlineMode", isOnlineMode)
             putString("roomCode", roomCode)
             putBoolean("isHost", isHost)
+            putString("gameType", "checkers")
+            putBoolean("isAiMode", isAiMode)
+            putInt("boardSize", currentBoardSize)
         }
-        findNavController().navigate(R.id.action_checkersFragment_to_resultFragment, bundle)
+
+        findNavController().navigate(R.id.action_checkersFragment_to_resultFragment, resultBundle)
     }
 
-    // Online Multiplayer Sockets & Rooms
-    private fun createOnlineRoom() {
+    private fun createOnlineRoom(size: Int) {
         val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
         val userId = sharedPref.getInt("user_id", -1)
 
-        ApiClient.instance.createRoom(RoomCreateRequest(userId, 8, false, "checkers"))
+        ApiClient.instance.createRoom(RoomCreateRequest(userId, size, false, "checkers"))
             .enqueue(object : Callback<RoomCreateResponse> {
                 override fun onResponse(call: Call<RoomCreateResponse>, response: Response<RoomCreateResponse>) {
                     if (response.isSuccessful && response.body()?.status == "success") {
                         roomCode = response.body()?.room_code ?: ""
-                        isOnlineMode = true
                         isHost = true
                         myPlayerNumber = 1
+                        isOnlineMode = true
                         isMyTurnOnline = true
 
-                        subscribePusherEvents()
                         showWaitingScreen(roomCode)
+                        subscribePusherEvents()
                     } else {
                         Toast.makeText(context, "Failed to create room", Toast.LENGTH_SHORT).show()
                     }
@@ -349,14 +335,14 @@ class CheckersFragment : Fragment() {
                 override fun onResponse(call: Call<RoomJoinResponse>, response: Response<RoomJoinResponse>) {
                     if (response.isSuccessful && response.body()?.status == "success") {
                         roomCode = code
-                        isOnlineMode = true
                         isHost = false
                         myPlayerNumber = 2
+                        isOnlineMode = true
                         isMyTurnOnline = false
+                        currentBoardSize = response.body()?.board_size ?: 8
 
+                        startLocalGame(currentBoardSize)
                         subscribePusherEvents()
-                        startLocalGame()
-                        Toast.makeText(context, "Connected! Match started!", Toast.LENGTH_SHORT).show()
                     } else {
                         val msg = response.body()?.message ?: "Room not found or full"
                         Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
@@ -374,8 +360,7 @@ class CheckersFragment : Fragment() {
             roomCode = roomCode,
             onGameStarted = {
                 activity?.runOnUiThread {
-                    startLocalGame()
-                    Toast.makeText(context, "Match started! 🔥", Toast.LENGTH_SHORT).show()
+                    startLocalGame(currentBoardSize)
                 }
             },
             onMoveMade = { eventData ->
@@ -386,7 +371,6 @@ class CheckersFragment : Fragment() {
                         val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
                         val myUserId = sharedPref.getInt("user_id", -1)
 
-                        // Ignore our own move echoed back
                         if (senderId != -1 && myUserId != -1 && senderId == myUserId) {
                             return@runOnUiThread
                         }
@@ -395,32 +379,32 @@ class CheckersFragment : Fragment() {
                         val col = json.optInt("col", -1)
 
                         if (row == -99 && col == -99) {
-                            // Rematch trigger!
-                            logic.resetBoard()
-                            binding.checkersBoardView.logic = logic
+                            logic.resetBoard(currentBoardSize)
+                            binding.checkersBoardView.invalidate()
                             isMyTurnOnline = isHost
                             updateScoreboard()
                             updateTurnIndicator()
-                            Toast.makeText(context, "Rematch started! 🔥", Toast.LENGTH_SHORT).show()
                             return@runOnUiThread
                         }
 
-                        val fromR = row / 10
-                        val fromC = row % 10
-                        val toR = col / 10
-                        val toC = col % 10
+                        val fromR = if (row >= 100) row / 100 else row / 10
+                        val fromC = if (row >= 100) row % 100 else row % 10
+                        val toR = if (col >= 100) col / 100 else col / 10
+                        val toC = if (col >= 100) col % 100 else col % 10
 
-                        if (fromR in 0..7 && fromC in 0..7 && toR in 0..7 && toC in 0..7) {
-                            val moved = logic.makeMove(fromR, fromC, toR, toC)
-                            if (moved) {
-                                binding.checkersBoardView.invalidate()
-                                updateScoreboard()
-                                isMyTurnOnline = (logic.currentPlayer == myPlayerNumber)
-                                updateTurnIndicator()
+                        val moved = logic.makeMove(fromR, fromC, toR, toC)
+                        if (moved) {
+                            binding.checkersBoardView.invalidate()
+                            updateScoreboard()
 
-                                if (logic.isGameOver) {
-                                    handleGameOver()
-                                }
+                            val continuesJump = (logic.activeJumpPiece != null)
+                            if (!continuesJump) {
+                                isMyTurnOnline = true
+                            }
+                            updateTurnIndicator()
+
+                            if (logic.isGameOver) {
+                                handleGameOver()
                             }
                         }
                     } catch (e: Exception) {
@@ -430,10 +414,8 @@ class CheckersFragment : Fragment() {
             },
             onOpponentLeft = {
                 activity?.runOnUiThread {
-                    Toast.makeText(context, "Opponent left! You win! 🎉", Toast.LENGTH_LONG).show()
-                    logic.isGameOver = true
-                    logic.winner = myPlayerNumber
-                    handleGameOver()
+                    Toast.makeText(context, "Opponent left the game", Toast.LENGTH_SHORT).show()
+                    showSetupScreen()
                 }
             }
         )
@@ -467,7 +449,6 @@ class CheckersFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        handler.removeCallbacksAndMessages(null)
         _binding = null
     }
 }

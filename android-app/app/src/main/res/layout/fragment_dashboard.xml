@@ -89,11 +89,21 @@
                             android:id="@+id/tvCoins"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
+                            android:layout_marginStart="12dp"
                             android:text="🪙 0"
                             android:textColor="#FCD34D"
                             android:textStyle="bold"
                             android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/tvLeagueBadge"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:text="🥉 Bronze"
+                            android:textColor="#38BDF8"
+                            android:textStyle="bold"
+                            android:textSize="13sp" />
                     </LinearLayout>
 
                     <ImageButton
@@ -158,6 +168,171 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
+            <!-- Daily Quests Hub Card -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardDailyQuests"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="#1E293B"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="6dp"
+                app:layout_constraintTop_toBottomOf="@+id/cardDailyReward">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-black"
+                        android:text="🎯 KUNLIK MISSIYALAR (DAILY QUESTS)"
+                        android:textColor="@color/white"
+                        android:textSize="15sp" />
+
+                    <!-- Quest 1 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tvQuest1Title"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="🎯 Gomoku/Shashka (0/2)"
+                                android:textColor="@color/white"
+                                android:textSize="13sp"
+                                android:textStyle="bold" />
+
+                            <ProgressBar
+                                android:id="@+id/pbQuest1"
+                                style="?android:attr/progressBarStyleHorizontal"
+                                android:layout_width="match_parent"
+                                android:layout_height="8dp"
+                                android:layout_marginTop="4dp"
+                                android:max="2"
+                                android:progress="0"
+                                android:progressTint="#10B981" />
+                        </LinearLayout>
+
+                        <Button
+                            android:id="@+id/btnClaimQuest1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="38dp"
+                            android:layout_marginStart="12dp"
+                            android:text="+60 🪙"
+                            android:textColor="@color/white"
+                            android:textSize="12sp"
+                            app:backgroundTint="#059669"
+                            app:cornerRadius="10dp" />
+                    </LinearLayout>
+
+                    <!-- Quest 2 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tvQuest2Title"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="💧 Water Sort (0/2)"
+                                android:textColor="@color/white"
+                                android:textSize="13sp"
+                                android:textStyle="bold" />
+
+                            <ProgressBar
+                                android:id="@+id/pbQuest2"
+                                style="?android:attr/progressBarStyleHorizontal"
+                                android:layout_width="match_parent"
+                                android:layout_height="8dp"
+                                android:layout_marginTop="4dp"
+                                android:max="2"
+                                android:progress="0"
+                                android:progressTint="#06B6D4" />
+                        </LinearLayout>
+
+                        <Button
+                            android:id="@+id/btnClaimQuest2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="38dp"
+                            android:layout_marginStart="12dp"
+                            android:text="+50 🪙"
+                            android:textColor="@color/white"
+                            android:textSize="12sp"
+                            app:backgroundTint="#059669"
+                            app:cornerRadius="10dp" />
+                    </LinearLayout>
+
+                    <!-- Quest 3 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tvQuest3Title"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="🌐 Online Match (0/1)"
+                                android:textColor="@color/white"
+                                android:textSize="13sp"
+                                android:textStyle="bold" />
+
+                            <ProgressBar
+                                android:id="@+id/pbQuest3"
+                                style="?android:attr/progressBarStyleHorizontal"
+                                android:layout_width="match_parent"
+                                android:layout_height="8dp"
+                                android:layout_marginTop="4dp"
+                                android:max="1"
+                                android:progress="0"
+                                android:progressTint="#F59E0B" />
+                        </LinearLayout>
+
+                        <Button
+                            android:id="@+id/btnClaimQuest3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="38dp"
+                            android:layout_marginStart="12dp"
+                            android:text="+100 🪙"
+                            android:textColor="@color/white"
+                            android:textSize="12sp"
+                            app:backgroundTint="#059669"
+                            app:cornerRadius="10dp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
             <TextView
                 android:id="@+id/tvTitle"
                 android:layout_width="wrap_content"
@@ -169,7 +344,7 @@
                 android:textSize="24sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cardDailyReward" />
+                app:layout_constraintTop_toBottomOf="@+id/cardDailyQuests" />
 
             <!-- Game Cards -->
             <LinearLayout

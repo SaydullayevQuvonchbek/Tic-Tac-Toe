@@ -1,18 +1,22 @@
 package com.example.tictactoe
 
+import android.app.AlertDialog
+import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.tictactoe.databinding.FragmentDashboardBinding
 import com.example.tictactoe.network.ApiClient
-import com.example.tictactoe.network.AuthRequest
-import com.example.tictactoe.network.AuthResponse
+import com.example.tictactoe.network.ProfileRequest
+import com.example.tictactoe.network.ProfileResponse
+import com.example.tictactoe.network.StoreBuyRequest
+import com.example.tictactoe.network.StoreBuyResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -33,46 +37,40 @@ class DashboardFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        loadProfile()
-
         binding.btnEditProfile.setOnClickListener {
             showEditProfileDialog()
         }
 
         binding.cardTicTacToe.setOnClickListener {
-            if (ensureProfile()) {
-                findNavController().navigate(R.id.action_dashboardFragment_to_welcomeFragment)
-            }
+            if (ensureProfile()) findNavController().navigate(R.id.action_dashboardFragment_to_welcomeFragment)
         }
 
-        binding.cardMathGame.setOnClickListener {
-            if (ensureProfile()) {
-                findNavController().navigate(R.id.action_dashboardFragment_to_mathGameFragment)
-            }
+        binding.cardMath.setOnClickListener {
+            if (ensureProfile()) findNavController().navigate(R.id.action_dashboardFragment_to_mathGameFragment)
         }
 
-        binding.cardMemoryGame.setOnClickListener {
+        binding.cardMemory.setOnClickListener {
             handleGameClick("memory_game", 2, 50, binding.tvMemoryGame, "🧠 Memory Game", R.id.action_dashboardFragment_to_memoryGameFragment)
         }
-        
+
         binding.cardColorMatch.setOnClickListener {
             handleGameClick("color_match", 3, 100, binding.tvColorMatch, "🎨 Color Match", R.id.action_dashboardFragment_to_colorMatchFragment)
         }
 
-        binding.card2048.setOnClickListener {
-            handleGameClick("game_2048", 5, 250, binding.tv2048, "🔢 2048 Puzzle", R.id.action_dashboardFragment_to_game2048Fragment)
+        binding.cardWaterSort.setOnClickListener {
+            handleGameClick("water_sort", 3, 120, binding.tvWaterSort, "🧪 Water Sort 💧", R.id.action_dashboardFragment_to_waterSortFragment)
         }
 
         binding.cardConnect4.setOnClickListener {
-            handleGameClick("connect4", 4, 200, binding.tvConnect4, "🔴 Connect 4 🟡", R.id.action_dashboardFragment_to_connect4Fragment)
+            handleGameClick("connect4", 4, 150, binding.tvConnect4, "🔴 Connect 4 🟡", R.id.action_dashboardFragment_to_connect4Fragment)
         }
 
-        binding.cardWaterSort.setOnClickListener {
-            handleGameClick("water_sort", 3, 150, binding.tvWaterSort, "🧪 Water Sort 💧", R.id.action_dashboardFragment_to_waterSortFragment)
+        binding.card2048.setOnClickListener {
+            handleGameClick("game_2048", 5, 200, binding.tv2048, "🔢 2048 Puzzle", R.id.action_dashboardFragment_to_game2048Fragment)
         }
 
         binding.cardDotsAndBoxes.setOnClickListener {
-            handleGameClick("dots_and_boxes", 2, 100, binding.tvDotsAndBoxes, "🟥 Dots &amp; Boxes", R.id.action_dashboardFragment_to_dotsAndBoxesFragment)
+            handleGameClick("dots_and_boxes", 2, 100, binding.tvDotsAndBoxes, "🟥 Dots & Boxes", R.id.action_dashboardFragment_to_dotsAndBoxesFragment)
         }
 
         binding.cardGomoku.setOnClickListener {
@@ -86,6 +84,31 @@ class DashboardFragment : Fragment() {
         binding.cardDailyReward.setOnClickListener {
             if (ensureProfile()) claimDailyReward()
         }
+
+        initQuestsClickListeners()
+    }
+
+    private fun initQuestsClickListeners() {
+        binding.btnClaimQuest1.setOnClickListener {
+            if (QuestManager.claimQuest(requireContext(), "q1")) {
+                Toast.makeText(context, "🎁 +60 Coins & +100 XP Claimed!", Toast.LENGTH_SHORT).show()
+                loadProfile()
+            }
+        }
+
+        binding.btnClaimQuest2.setOnClickListener {
+            if (QuestManager.claimQuest(requireContext(), "q2")) {
+                Toast.makeText(context, "🎁 +50 Coins & +80 XP Claimed!", Toast.LENGTH_SHORT).show()
+                loadProfile()
+            }
+        }
+
+        binding.btnClaimQuest3.setOnClickListener {
+            if (QuestManager.claimQuest(requireContext(), "q3")) {
+                Toast.makeText(context, "🎁 +100 Coins & +150 XP Claimed!", Toast.LENGTH_SHORT).show()
+                loadProfile()
+            }
+        }
     }
 
     override fun onResume() {
@@ -94,7 +117,7 @@ class DashboardFragment : Fragment() {
     }
     
     private fun updateGameLocks() {
-        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", android.content.Context.MODE_PRIVATE)
+        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
         val level = sharedPref.getInt("level", 1)
         
         fun updateLock(key: String, reqLevel: Int, tv: android.widget.TextView, title: String) {
@@ -106,7 +129,7 @@ class DashboardFragment : Fragment() {
             }
         }
         
-        updateLock("dots_and_boxes", 2, binding.tvDotsAndBoxes, "🟥 Dots &amp; Boxes")
+        updateLock("dots_and_boxes", 2, binding.tvDotsAndBoxes, "🟥 Dots & Boxes")
         updateLock("gomoku", 3, binding.tvGomoku, "⚪⚫ Gomoku (5 in a Row)")
         updateLock("checkers", 4, binding.tvCheckers, "👑 Shashka (Checkers)")
         updateLock("memory_game", 2, binding.tvMemoryGame, "🧠 Memory Game")
@@ -119,7 +142,7 @@ class DashboardFragment : Fragment() {
     private fun handleGameClick(key: String, reqLevel: Int, cost: Int, tv: android.widget.TextView, title: String, actionId: Int) {
         if (!ensureProfile()) return
         
-        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", android.content.Context.MODE_PRIVATE)
+        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
         val level = sharedPref.getInt("level", 1)
         val coins = sharedPref.getInt("coins", 0)
         val userId = sharedPref.getInt("user_id", -1)
@@ -137,29 +160,31 @@ class DashboardFragment : Fragment() {
                         pd.setMessage("Unlocking game...")
                         pd.show()
                         
-                        ApiClient.instance.buyItem(com.example.tictactoe.network.StoreBuyRequest(userId, key, cost))
-                            .enqueue(object : retrofit2.Callback<com.example.tictactoe.network.StoreBuyResponse> {
-                                override fun onResponse(call: retrofit2.Call<com.example.tictactoe.network.StoreBuyResponse>, response: retrofit2.Response<com.example.tictactoe.network.StoreBuyResponse>) {
-                                    pd.dismiss()
-                                    if (response.isSuccessful && response.body()?.status == "success") {
-                                        val newBal = response.body()?.new_coin_balance ?: (coins - cost)
-                                        sharedPref.edit()
-                                            .putInt("coins", newBal)
-                                            .putBoolean("unlocked_$key", true)
-                                            .apply()
-                                        loadProfile()
-                                        Toast.makeText(context, "Game Unlocked!", Toast.LENGTH_SHORT).show()
-                                    } else {
-                                        Toast.makeText(context, response.body()?.message ?: "Could not buy item", Toast.LENGTH_SHORT).show()
+                        ApiClient.instance.buyItem(StoreBuyRequest(userId, key, cost)).enqueue(object : Callback<StoreBuyResponse> {
+                            override fun onResponse(call: Call<StoreBuyResponse>, response: Response<StoreBuyResponse>) {
+                                pd.dismiss()
+                                if (response.isSuccessful && response.body()?.status == "success") {
+                                    val newCoins = response.body()?.coins ?: (coins - cost)
+                                    sharedPref.edit().apply {
+                                        putInt("coins", newCoins)
+                                        putBoolean("unlocked_$key", true)
+                                        apply()
                                     }
+                                    loadProfile()
+                                    Toast.makeText(context, "$title Unlocked! 🎉", Toast.LENGTH_SHORT).show()
+                                    findNavController().navigate(actionId)
+                                } else {
+                                    Toast.makeText(context, response.body()?.message ?: "Failed to buy item", Toast.LENGTH_SHORT).show()
                                 }
-                                override fun onFailure(call: retrofit2.Call<com.example.tictactoe.network.StoreBuyResponse>, t: Throwable) {
-                                    pd.dismiss()
-                                    Toast.makeText(context, "Network Error", Toast.LENGTH_SHORT).show()
-                                }
-                            })
+                            }
+
+                            override fun onFailure(call: Call<StoreBuyResponse>, t: Throwable) {
+                                pd.dismiss()
+                                Toast.makeText(context, "Network Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                            }
+                        })
                     } else {
-                        Toast.makeText(context, "Not enough coins!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Not enough coins! You have $coins 🪙", Toast.LENGTH_SHORT).show()
                     }
                 }
                 .setNegativeButton("Cancel", null)
@@ -168,7 +193,7 @@ class DashboardFragment : Fragment() {
     }
 
     private fun ensureProfile(): Boolean {
-        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", android.content.Context.MODE_PRIVATE)
+        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
         val username = sharedPref.getString("username", "") ?: ""
         if (username.isEmpty()) {
             showEditProfileDialog()
@@ -178,7 +203,7 @@ class DashboardFragment : Fragment() {
     }
 
     private fun loadProfile() {
-        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", android.content.Context.MODE_PRIVATE)
+        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
         val username = sharedPref.getString("username", "") ?: ""
         val level = sharedPref.getInt("level", 1)
         val xp = sharedPref.getInt("xp", 0)
@@ -190,7 +215,13 @@ class DashboardFragment : Fragment() {
             binding.tvLevelInfo.text = "Level $level | $xp XP"
             binding.tvStreak.text = "🔥 $streak"
             binding.tvCoins.text = "🪙 $coins"
+
+            val league = QuestManager.getLeagueTier(xp)
+            binding.tvLeagueBadge.text = league.first
+            binding.tvLeagueBadge.setTextColor(Color.parseColor(league.second))
+
             updateGameLocks()
+            updateDailyQuestsUI()
 
             // Update Best Records
             val wins = sharedPref.getInt("wins", 0)
@@ -199,7 +230,7 @@ class DashboardFragment : Fragment() {
             val colorScore = sharedPref.getInt("color_match_high_score", 0)
             val score2048 = sharedPref.getInt("game_2048_high_score", 0)
             val connect4Wins = sharedPref.getInt("connect4_wins", 0)
-            val waterMoves = sharedPref.getInt("water_sort_best_moves", 0)
+            val waterUnlocked = sharedPref.getInt("water_sort_unlocked_level", 1)
             val dotsWins = sharedPref.getInt("dots_and_boxes_wins", 0)
             val gomokuWins = sharedPref.getInt("gomoku_wins", 0)
             val checkersWins = sharedPref.getInt("checkers_wins", 0)
@@ -207,10 +238,10 @@ class DashboardFragment : Fragment() {
             binding.tvRecordTicTacToe.text = "🏆 Wins: $wins"
             binding.tvRecordMath.text = if (mathScore > 0) "⭐ Best: $mathScore pts" else "⭐ Quick Math Quiz"
             binding.tvRecordMemory.text = if (memoryScore > 0) "⭐ Best: $memoryScore pts" else "⭐ Quickest Solve"
-            binding.tvRecordColorMatch.text = if (colorScore > 0) "⭐ High Score: $colorScore" else "⭐ Speed &amp; Focus"
+            binding.tvRecordColorMatch.text = if (colorScore > 0) "⭐ High Score: $colorScore" else "⭐ Speed & Focus"
             binding.tvRecord2048.text = if (score2048 > 0) "⭐ Best: $score2048" else "⭐ Reach 2048 Tile"
             binding.tvRecordConnect4.text = "🏆 Wins: $connect4Wins"
-            binding.tvRecordWaterSort.text = if (waterMoves > 0) "⭐ Best: $waterMoves moves" else "⭐ Color Sorting Puzzle"
+            binding.tvRecordWaterSort.text = "⭐ Level $waterUnlocked / 50"
             binding.tvRecordDotsAndBoxes.text = "🏆 Wins: $dotsWins"
             binding.tvRecordGomoku.text = "🏆 Wins: $gomokuWins"
             binding.tvRecordCheckers.text = "🏆 Wins: $checkersWins"
@@ -220,6 +251,65 @@ class DashboardFragment : Fragment() {
             binding.tvStreak.text = "🔥 0"
             binding.tvCoins.text = "🪙 0"
             showEditProfileDialog()
+        }
+    }
+
+    private fun updateDailyQuestsUI() {
+        val quests = QuestManager.getDailyQuests(requireContext())
+        if (quests.size >= 3) {
+            val q1 = quests[0]
+            binding.tvQuest1Title.text = "${q1.title} (${q1.currentProgress}/${q1.target})"
+            binding.pbQuest1.max = q1.target
+            binding.pbQuest1.progress = q1.currentProgress
+            if (q1.isClaimed) {
+                binding.btnClaimQuest1.text = "DONE ✅"
+                binding.btnClaimQuest1.isEnabled = false
+                binding.btnClaimQuest1.alpha = 0.5f
+            } else if (q1.isCompleted) {
+                binding.btnClaimQuest1.text = "CLAIM 🎁"
+                binding.btnClaimQuest1.isEnabled = true
+                binding.btnClaimQuest1.alpha = 1.0f
+            } else {
+                binding.btnClaimQuest1.text = "+${q1.coinReward} 🪙"
+                binding.btnClaimQuest1.isEnabled = false
+                binding.btnClaimQuest1.alpha = 0.7f
+            }
+
+            val q2 = quests[1]
+            binding.tvQuest2Title.text = "${q2.title} (${q2.currentProgress}/${q2.target})"
+            binding.pbQuest2.max = q2.target
+            binding.pbQuest2.progress = q2.currentProgress
+            if (q2.isClaimed) {
+                binding.btnClaimQuest2.text = "DONE ✅"
+                binding.btnClaimQuest2.isEnabled = false
+                binding.btnClaimQuest2.alpha = 0.5f
+            } else if (q2.isCompleted) {
+                binding.btnClaimQuest2.text = "CLAIM 🎁"
+                binding.btnClaimQuest2.isEnabled = true
+                binding.btnClaimQuest2.alpha = 1.0f
+            } else {
+                binding.btnClaimQuest2.text = "+${q2.coinReward} 🪙"
+                binding.btnClaimQuest2.isEnabled = false
+                binding.btnClaimQuest2.alpha = 0.7f
+            }
+
+            val q3 = quests[2]
+            binding.tvQuest3Title.text = "${q3.title} (${q3.currentProgress}/${q3.target})"
+            binding.pbQuest3.max = q3.target
+            binding.pbQuest3.progress = q3.currentProgress
+            if (q3.isClaimed) {
+                binding.btnClaimQuest3.text = "DONE ✅"
+                binding.btnClaimQuest3.isEnabled = false
+                binding.btnClaimQuest3.alpha = 0.5f
+            } else if (q3.isCompleted) {
+                binding.btnClaimQuest3.text = "CLAIM 🎁"
+                binding.btnClaimQuest3.isEnabled = true
+                binding.btnClaimQuest3.alpha = 1.0f
+            } else {
+                binding.btnClaimQuest3.text = "+${q3.coinReward} 🪙"
+                binding.btnClaimQuest3.isEnabled = false
+                binding.btnClaimQuest3.alpha = 0.7f
+            }
         }
     }
 
@@ -238,107 +328,88 @@ class DashboardFragment : Fragment() {
                     Toast.makeText(context, "Username cannot be empty", Toast.LENGTH_SHORT).show()
                 }
             }
-            .setNegativeButton("Cancel", null)
             .setCancelable(false)
             .show()
     }
 
     private fun updateProfileOnServer(newUsername: String) {
+        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+        val deviceId = sharedPref.getString("device_id", "") ?: java.util.UUID.randomUUID().toString()
+        sharedPref.edit().putString("device_id", deviceId).apply()
+
         val pd = android.app.ProgressDialog(context)
-        pd.setMessage("Updating Profile...")
+        pd.setMessage("Updating profile...")
         pd.show()
 
-        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", android.content.Context.MODE_PRIVATE)
-        var deviceId = sharedPref.getString("device_id", "") ?: ""
-        if (deviceId.isEmpty()) {
-            deviceId = java.util.UUID.randomUUID().toString()
-            sharedPref.edit().putString("device_id", deviceId).apply()
-        }
-
-        ApiClient.instance.auth(AuthRequest(deviceId, newUsername))
-            .enqueue(object : Callback<AuthResponse> {
-                override fun onResponse(call: Call<AuthResponse>, response: Response<AuthResponse>) {
+        ApiClient.instance.getProfile(ProfileRequest(deviceId, newUsername))
+            .enqueue(object : Callback<ProfileResponse> {
+                override fun onResponse(call: Call<ProfileResponse>, response: Response<ProfileResponse>) {
                     pd.dismiss()
                     if (response.isSuccessful && response.body()?.status == "success") {
                         val user = response.body()?.user
                         if (user != null) {
-                            val editor = sharedPref.edit()
-                                .putString("username", user.username)
-                                .putInt("user_id", user.id)
-                                .putInt("level", user.level)
-                                .putInt("xp", user.xp)
-                                .putInt("coins", user.coins)
-                                .putInt("streak_count", user.streak_count)
-                            
-                            user.unlocked_games?.forEach { game ->
-                                editor.putBoolean("unlocked_$game", true)
+                            sharedPref.edit().apply {
+                                putInt("user_id", user.id)
+                                putString("username", user.username)
+                                putInt("level", user.level)
+                                putInt("xp", user.xp)
+                                putInt("coins", user.coins)
+                                putInt("streak_count", user.streak_count)
+                                for (item in user.unlocked_items) {
+                                    putBoolean("unlocked_$item", true)
+                                }
+                                apply()
                             }
-                            
-                            editor.apply()
                             loadProfile()
-                            Toast.makeText(context, "Profile Updated!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Welcome, ${user.username}!", Toast.LENGTH_SHORT).show()
                         }
                     } else {
-                        var errorMsg = "Update failed"
-                        val rawError = response.errorBody()?.string()
-                        if (rawError != null && rawError.contains("message")) {
-                            try {
-                                errorMsg = org.json.JSONObject(rawError).optString("message", "Username is already taken")
-                            } catch (e: Exception) {}
-                        }
-                        Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show()
-                        showEditProfileDialog() // Re-prompt
+                        Toast.makeText(context, response.body()?.message ?: "Failed to update profile", Toast.LENGTH_SHORT).show()
                     }
                 }
 
-                override fun onFailure(call: Call<AuthResponse>, t: Throwable) {
+                override fun onFailure(call: Call<ProfileResponse>, t: Throwable) {
                     pd.dismiss()
-                    Toast.makeText(context, "Network Error", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
             })
     }
-    
-    private fun claimDailyReward() {
-        val pd = android.app.ProgressDialog(context)
-        pd.setMessage("Checking reward...")
-        pd.show()
-        
-        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", android.content.Context.MODE_PRIVATE)
-        val userId = sharedPref.getInt("user_id", -1)
 
-        ApiClient.instance.claimDailyReward(com.example.tictactoe.network.DailyRewardRequest(userId)).enqueue(object : retrofit2.Callback<com.example.tictactoe.network.DailyRewardResponse> {
-            override fun onResponse(call: retrofit2.Call<com.example.tictactoe.network.DailyRewardResponse>, response: retrofit2.Response<com.example.tictactoe.network.DailyRewardResponse>) {
-                pd.dismiss()
-                if (response.isSuccessful && response.body()?.status == "success") {
-                    val reward = response.body()?.reward_coins ?: 0
-                    val total = response.body()?.new_total_coins ?: 0
-                    
-                    sharedPref.edit().putInt("coins", total).apply()
-                    loadProfile()
-                    
-                    AlertDialog.Builder(requireContext())
-                        .setTitle("🎁 Reward Claimed!")
-                        .setMessage("You received $reward coins!\nTotal Coins: $total")
-                        .setPositiveButton("Awesome!", null)
-                        .show()
-                } else {
-                    var errorMsg = "Could not claim"
-                    val rawError = response.errorBody()?.string()
-                    if (rawError != null && rawError.contains("message")) {
-                        try {
-                            errorMsg = org.json.JSONObject(rawError).optString("message", "Already claimed today.")
-                        } catch (e: Exception) {}
+    private fun claimDailyReward() {
+        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+        val userId = sharedPref.getInt("user_id", -1)
+        if (userId == -1) return
+
+        val pd = android.app.ProgressDialog(context)
+        pd.setMessage("Claiming daily reward...")
+        pd.show()
+
+        ApiClient.instance.claimDailyReward(com.example.tictactoe.network.DailyRewardRequest(userId))
+            .enqueue(object : Callback<com.example.tictactoe.network.DailyRewardResponse> {
+                override fun onResponse(call: Call<com.example.tictactoe.network.DailyRewardResponse>, response: Response<com.example.tictactoe.network.DailyRewardResponse>) {
+                    pd.dismiss()
+                    if (response.isSuccessful && response.body()?.status == "success") {
+                        val coinsGained = response.body()?.coins_gained ?: 0
+                        val currentStreak = response.body()?.current_streak ?: 0
+                        val totalCoins = response.body()?.total_coins ?: 0
+
+                        sharedPref.edit().apply {
+                            putInt("coins", totalCoins)
+                            putInt("streak_count", currentStreak)
+                            apply()
+                        }
+                        loadProfile()
+                        Toast.makeText(context, "Claimed +$coinsGained Coins! 🔥 Streak: $currentStreak", Toast.LENGTH_LONG).show()
                     } else {
-                        errorMsg = response.body()?.message ?: "Already claimed today."
+                        Toast.makeText(context, response.body()?.message ?: "Reward already claimed today!", Toast.LENGTH_SHORT).show()
                     }
-                    Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show()
                 }
-            }
-            override fun onFailure(call: retrofit2.Call<com.example.tictactoe.network.DailyRewardResponse>, t: Throwable) {
-                pd.dismiss()
-                Toast.makeText(context, "Network Error: ${t.message}", Toast.LENGTH_SHORT).show()
-            }
-        })
+
+                override fun onFailure(call: Call<com.example.tictactoe.network.DailyRewardResponse>, t: Throwable) {
+                    pd.dismiss()
+                    Toast.makeText(context, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                }
+            })
     }
 
     override fun onDestroyView() {
