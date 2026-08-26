@@ -14,7 +14,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="24dp">
+            android:padding="20dp">
 
             <!-- Profile Header -->
             <androidx.cardview.widget.CardView
@@ -22,7 +22,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardBackgroundColor="#312E81"
-                app:cardCornerRadius="16dp"
+                app:cardCornerRadius="18dp"
                 app:cardElevation="8dp"
                 app:layout_constraintTop_toTopOf="parent">
 
@@ -33,8 +33,8 @@
 
                     <ImageView
                         android:id="@+id/ivAvatar"
-                        android:layout_width="64dp"
-                        android:layout_height="64dp"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
                         android:src="@android:drawable/ic_menu_myplaces"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
@@ -65,8 +65,8 @@
                         app:layout_constraintEnd_toStartOf="@+id/btnEditProfile"
                         app:layout_constraintStart_toEndOf="@+id/ivAvatar"
                         app:layout_constraintTop_toBottomOf="@+id/tvUsername" />
-                        
-                    <!-- Streak and Coins -->
+
+                    <!-- Streak, Coins and League -->
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -75,7 +75,7 @@
                         android:layout_marginStart="16dp"
                         app:layout_constraintStart_toEndOf="@+id/ivAvatar"
                         app:layout_constraintTop_toBottomOf="@+id/tvLevelInfo">
-                        
+
                         <TextView
                             android:id="@+id/tvStreak"
                             android:layout_width="wrap_content"
@@ -83,27 +83,27 @@
                             android:text="🔥 0"
                             android:textColor="#F59E0B"
                             android:textStyle="bold"
-                            android:textSize="14sp" />
-                            
+                            android:textSize="13sp" />
+
                         <TextView
                             android:id="@+id/tvCoins"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="12dp"
+                            android:layout_marginStart="10dp"
                             android:text="🪙 0"
                             android:textColor="#FCD34D"
                             android:textStyle="bold"
-                            android:textSize="14sp" />
+                            android:textSize="13sp" />
 
                         <TextView
                             android:id="@+id/tvLeagueBadge"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="12dp"
+                            android:layout_marginStart="10dp"
                             android:text="🥉 Bronze"
                             android:textColor="#38BDF8"
                             android:textStyle="bold"
-                            android:textSize="13sp" />
+                            android:textSize="12sp" />
                     </LinearLayout>
 
                     <ImageButton
@@ -124,46 +124,46 @@
                 android:id="@+id/cardDailyReward"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="14dp"
                 app:cardBackgroundColor="#F59E0B"
                 app:cardCornerRadius="16dp"
-                app:cardElevation="8dp"
+                app:cardElevation="6dp"
                 app:layout_constraintTop_toBottomOf="@+id/cardProfile">
-                
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="16dp"
+                    android:padding="14dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical">
-                    
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="🎁"
-                        android:textSize="32sp" />
-                        
+                        android:textSize="28sp" />
+
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
+                        android:layout_marginStart="14dp"
                         android:orientation="vertical">
-                        
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Daily Reward"
                             android:textColor="@color/white"
                             android:textStyle="bold"
-                            android:textSize="18sp" />
-                            
+                            android:textSize="16sp" />
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Tap to claim your daily bonus!"
                             android:textColor="#FEF3C7"
-                            android:textSize="14sp" />
+                            android:textSize="13sp" />
                     </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -173,17 +173,17 @@
                 android:id="@+id/cardDailyQuests"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="14dp"
                 app:cardBackgroundColor="@color/card_background"
                 app:cardCornerRadius="16dp"
-                app:cardElevation="6dp"
+                app:cardElevation="4dp"
                 app:layout_constraintTop_toBottomOf="@+id/cardDailyReward">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="14dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -199,7 +199,7 @@
                             android:fontFamily="sans-serif-black"
                             android:text="@string/daily_quests_title"
                             android:textColor="@color/text_color"
-                            android:textSize="15sp" />
+                            android:textSize="14sp" />
 
                         <TextView
                             android:id="@+id/tvQuestsCountdown"
@@ -215,7 +215,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
+                        android:layout_marginTop="10dp"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
 
@@ -231,14 +231,14 @@
                                 android:layout_height="wrap_content"
                                 android:text="🎯 Gomoku/Shashka (0/2)"
                                 android:textColor="@color/text_color"
-                                android:textSize="13sp"
+                                android:textSize="12sp"
                                 android:textStyle="bold" />
 
                             <ProgressBar
                                 android:id="@+id/pbQuest1"
                                 style="?android:attr/progressBarStyleHorizontal"
                                 android:layout_width="match_parent"
-                                android:layout_height="8dp"
+                                android:layout_height="6dp"
                                 android:layout_marginTop="4dp"
                                 android:max="2"
                                 android:progress="0"
@@ -248,20 +248,20 @@
                         <Button
                             android:id="@+id/btnClaimQuest1"
                             android:layout_width="wrap_content"
-                            android:layout_height="38dp"
-                            android:layout_marginStart="12dp"
+                            android:layout_height="34dp"
+                            android:layout_marginStart="10dp"
                             android:text="+60 🪙"
                             android:textColor="@color/white"
-                            android:textSize="12sp"
+                            android:textSize="11sp"
                             app:backgroundTint="#059669"
-                            app:cornerRadius="10dp" />
+                            app:cornerRadius="8dp" />
                     </LinearLayout>
 
                     <!-- Quest 2 -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="8dp"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
 
@@ -277,14 +277,14 @@
                                 android:layout_height="wrap_content"
                                 android:text="💧 Water Sort (0/2)"
                                 android:textColor="@color/text_color"
-                                android:textSize="13sp"
+                                android:textSize="12sp"
                                 android:textStyle="bold" />
 
                             <ProgressBar
                                 android:id="@+id/pbQuest2"
                                 style="?android:attr/progressBarStyleHorizontal"
                                 android:layout_width="match_parent"
-                                android:layout_height="8dp"
+                                android:layout_height="6dp"
                                 android:layout_marginTop="4dp"
                                 android:max="2"
                                 android:progress="0"
@@ -294,20 +294,20 @@
                         <Button
                             android:id="@+id/btnClaimQuest2"
                             android:layout_width="wrap_content"
-                            android:layout_height="38dp"
-                            android:layout_marginStart="12dp"
+                            android:layout_height="34dp"
+                            android:layout_marginStart="10dp"
                             android:text="+50 🪙"
                             android:textColor="@color/white"
-                            android:textSize="12sp"
+                            android:textSize="11sp"
                             app:backgroundTint="#059669"
-                            app:cornerRadius="10dp" />
+                            app:cornerRadius="8dp" />
                     </LinearLayout>
 
                     <!-- Quest 3 -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="8dp"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
 
@@ -323,14 +323,14 @@
                                 android:layout_height="wrap_content"
                                 android:text="🌐 Online Match (0/1)"
                                 android:textColor="@color/text_color"
-                                android:textSize="13sp"
+                                android:textSize="12sp"
                                 android:textStyle="bold" />
 
                             <ProgressBar
                                 android:id="@+id/pbQuest3"
                                 style="?android:attr/progressBarStyleHorizontal"
                                 android:layout_width="match_parent"
-                                android:layout_height="8dp"
+                                android:layout_height="6dp"
                                 android:layout_marginTop="4dp"
                                 android:max="1"
                                 android:progress="0"
@@ -340,294 +340,270 @@
                         <Button
                             android:id="@+id/btnClaimQuest3"
                             android:layout_width="wrap_content"
-                            android:layout_height="38dp"
-                            android:layout_marginStart="12dp"
+                            android:layout_height="34dp"
+                            android:layout_marginStart="10dp"
                             android:text="+100 🪙"
                             android:textColor="@color/white"
-                            android:textSize="12sp"
+                            android:textSize="11sp"
                             app:backgroundTint="#059669"
-                            app:cornerRadius="10dp" />
+                            app:cornerRadius="8dp" />
                     </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <TextView
-                android:id="@+id/tvTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:fontFamily="sans-serif-black"
-                android:text="MINI GAMES HUB"
-                android:textColor="@color/text_color"
-                android:textSize="24sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cardDailyQuests" />
-
-            <!-- Game Cards -->
+            <!-- Section 1: ⚔️ 1v1 BATTLE ARENA -->
             <LinearLayout
+                android:id="@+id/layoutBattleArena"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:orientation="vertical"
-                app:layout_constraintTop_toBottomOf="@+id/tvTitle">
+                app:layout_constraintTop_toBottomOf="@+id/cardDailyQuests">
 
-                <!-- Tic Tac Toe Card -->
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cardTicTacToe"
+                <TextView
+                    android:id="@+id/tvSectionMultiplayer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-black"
+                    android:text="⚔️ 1v1 BATTLE ARENA"
+                    android:textColor="@color/text_color"
+                    android:textSize="16sp"
+                    android:letterSpacing="0.03" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="10dp"
+                    android:text="Online &amp; Local Multiplayer Board Games"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp" />
+
+                <!-- Row 1: Shashka & Tic Tac Toe -->
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="96dp"
-                    android:layout_marginBottom="16dp"
-                    app:cardBackgroundColor="#009688"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="4dp">
-                    
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:orientation="vertical">
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="10dp">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="🎮 Tic Tac Toe PRO"
-                            android:textColor="@color/white"
-                            android:textSize="20sp"
-                            android:fontFamily="sans-serif-black"/>
+                    <!-- Checkers / Shashka Card -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cardCheckers"
+                        android:layout_width="0dp"
+                        android:layout_height="120dp"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="5dp"
+                        app:cardBackgroundColor="#B91C1C"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="4dp">
 
-                        <TextView
-                            android:id="@+id/tvRecordTicTacToe"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="🏆 Wins: 0"
-                            android:textColor="#E0F2F1"
-                            android:textSize="13sp"/>
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:padding="10dp">
 
-                <!-- Math Game Card -->
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cardMathGame"
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="👑"
+                                android:textSize="26sp" />
+
+                            <TextView
+                                android:id="@+id/tvCheckers"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:fontFamily="sans-serif-black"
+                                android:gravity="center"
+                                android:maxLines="1"
+                                android:ellipsize="end"
+                                android:text="👑 Shashka (Checkers)"
+                                android:textColor="@color/white"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:id="@+id/tvRecordCheckers"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:gravity="center"
+                                android:maxLines="1"
+                                android:ellipsize="end"
+                                android:text="🏆 Wins: 0"
+                                android:textColor="#FEE2E2"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Tic Tac Toe Card -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cardTicTacToe"
+                        android:layout_width="0dp"
+                        android:layout_height="120dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="5dp"
+                        app:cardBackgroundColor="#009688"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="4dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:padding="10dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="❌⭕"
+                                android:textSize="24sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:fontFamily="sans-serif-black"
+                                android:gravity="center"
+                                android:maxLines="1"
+                                android:ellipsize="end"
+                                android:text="Tic Tac Toe PRO"
+                                android:textColor="@color/white"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:id="@+id/tvRecordTicTacToe"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:gravity="center"
+                                android:maxLines="1"
+                                android:ellipsize="end"
+                                android:text="🏆 Wins: 0"
+                                android:textColor="#E0F2F1"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+                </LinearLayout>
+
+                <!-- Row 2: Connect 4 & Gomoku -->
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="96dp"
-                    android:layout_marginBottom="16dp"
-                    app:cardBackgroundColor="#FF9800"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="4dp">
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="10dp">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:orientation="vertical">
+                    <!-- Connect 4 Card -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cardConnect4"
+                        android:layout_width="0dp"
+                        android:layout_height="120dp"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="5dp"
+                        app:cardBackgroundColor="#1D4ED8"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="4dp">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="✖️ Math Master"
-                            android:textColor="@color/white"
-                            android:textSize="20sp"
-                            android:fontFamily="sans-serif-black"/>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:padding="10dp">
 
-                        <TextView
-                            android:id="@+id/tvRecordMath"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="⭐ Best Score: 0 pts"
-                            android:textColor="#FFF3E0"
-                            android:textSize="13sp"/>
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="🔴🟡"
+                                android:textSize="24sp" />
 
-                <!-- Memory Game Card -->
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cardMemoryGame"
-                    android:layout_width="match_parent"
-                    android:layout_height="96dp"
-                    android:layout_marginBottom="16dp"
-                    app:cardBackgroundColor="#E91E63"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="4dp">
+                            <TextView
+                                android:id="@+id/tvConnect4"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:fontFamily="sans-serif-black"
+                                android:gravity="center"
+                                android:maxLines="1"
+                                android:ellipsize="end"
+                                android:text="🔴 Connect 4 🟡"
+                                android:textColor="@color/white"
+                                android:textSize="14sp" />
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:orientation="vertical">
+                            <TextView
+                                android:id="@+id/tvRecordConnect4"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:gravity="center"
+                                android:maxLines="1"
+                                android:ellipsize="end"
+                                android:text="🏆 Wins: 0"
+                                android:textColor="#DBEAFE"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
 
-                        <TextView
-                            android:id="@+id/tvMemoryGame"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="🔒 🧠 Memory Game"
-                            android:textColor="@color/white"
-                            android:textSize="20sp"
-                            android:fontFamily="sans-serif-black"/>
+                    <!-- Gomoku Card -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cardGomoku"
+                        android:layout_width="0dp"
+                        android:layout_height="120dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="5dp"
+                        app:cardBackgroundColor="#475569"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="4dp">
 
-                        <TextView
-                            android:id="@+id/tvRecordMemory"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="⭐ Quickest Solve"
-                            android:textColor="#FCE4EC"
-                            android:textSize="13sp"/>
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:padding="10dp">
 
-                <!-- Color Match Card -->
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cardColorMatch"
-                    android:layout_width="match_parent"
-                    android:layout_height="96dp"
-                    android:layout_marginBottom="16dp"
-                    app:cardBackgroundColor="#9C27B0"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="4dp">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="⚪⚫"
+                                android:textSize="24sp" />
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:orientation="vertical">
+                            <TextView
+                                android:id="@+id/tvGomoku"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:fontFamily="sans-serif-black"
+                                android:gravity="center"
+                                android:maxLines="1"
+                                android:ellipsize="end"
+                                android:text="⚪⚫ Gomoku"
+                                android:textColor="@color/white"
+                                android:textSize="14sp" />
 
-                        <TextView
-                            android:id="@+id/tvColorMatch"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="🔒 🎨 Color Match"
-                            android:textColor="@color/white"
-                            android:textSize="20sp"
-                            android:fontFamily="sans-serif-black"/>
+                            <TextView
+                                android:id="@+id/tvRecordGomoku"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:gravity="center"
+                                android:maxLines="1"
+                                android:ellipsize="end"
+                                android:text="🏆 Wins: 0"
+                                android:textColor="#E2E8F0"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+                </LinearLayout>
 
-                        <TextView
-                            android:id="@+id/tvRecordColorMatch"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="⭐ High Score: 0"
-                            android:textColor="#F3E5F5"
-                            android:textSize="13sp"/>
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
-
-                <!-- 2048 Card -->
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/card2048"
-                    android:layout_width="match_parent"
-                    android:layout_height="96dp"
-                    android:layout_marginBottom="16dp"
-                    app:cardBackgroundColor="#00BCD4"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="4dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/tv2048"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="🔒 🔢 2048 Puzzle"
-                            android:textColor="@color/white"
-                            android:textSize="20sp"
-                            android:fontFamily="sans-serif-black"/>
-
-                        <TextView
-                            android:id="@+id/tvRecord2048"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="⭐ Best Tile: 2048"
-                            android:textColor="#E0F7FA"
-                            android:textSize="13sp"/>
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
-                
-                <!-- Connect 4 Card -->
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cardConnect4"
-                    android:layout_width="match_parent"
-                    android:layout_height="96dp"
-                    android:layout_marginBottom="16dp"
-                    app:cardBackgroundColor="#1D4ED8"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="4dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/tvConnect4"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="🔒 🔴 Connect 4 🟡"
-                            android:textColor="@color/white"
-                            android:textSize="20sp"
-                            android:fontFamily="sans-serif-black"/>
-
-                        <TextView
-                            android:id="@+id/tvRecordConnect4"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="🏆 Wins: 0"
-                            android:textColor="#DBEAFE"
-                            android:textSize="13sp"/>
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
-
-                <!-- Water Sort Card -->
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cardWaterSort"
-                    android:layout_width="match_parent"
-                    android:layout_height="96dp"
-                    android:layout_marginBottom="16dp"
-                    app:cardBackgroundColor="#0D9488"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="4dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/tvWaterSort"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="🔒 🧪 Water Sort 💧"
-                            android:textColor="@color/white"
-                            android:textSize="20sp"
-                            android:fontFamily="sans-serif-black"/>
-
-                        <TextView
-                            android:id="@+id/tvRecordWaterSort"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="⭐ Best: 0 moves"
-                            android:textColor="#CCFBF1"
-                            android:textSize="13sp"/>
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
-
-                <!-- Dots and Boxes Card -->
+                <!-- Row 3: Dots & Boxes (Span full wide card) -->
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardDotsAndBoxes"
                     android:layout_width="match_parent"
-                    android:layout_height="96dp"
-                    android:layout_marginBottom="16dp"
+                    android:layout_height="80dp"
+                    android:layout_marginBottom="20dp"
                     app:cardBackgroundColor="#E11D48"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="4dp">
@@ -635,100 +611,372 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:orientation="vertical">
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="16dp">
 
                         <TextView
-                            android:id="@+id/tvDotsAndBoxes"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="🔒 🟥 Dots &amp; Boxes"
-                            android:textColor="@color/white"
-                            android:textSize="20sp"
-                            android:fontFamily="sans-serif-black"/>
+                            android:text="🟥"
+                            android:textSize="28sp" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="14dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tvDotsAndBoxes"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="sans-serif-black"
+                                android:text="🟥 Dots &amp; Boxes"
+                                android:textColor="@color/white"
+                                android:textSize="15sp" />
+
+                            <TextView
+                                android:id="@+id/tvRecordDotsAndBoxes"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="🏆 Wins: 0"
+                                android:textColor="#FFE4E6"
+                                android:textSize="11sp" />
+                        </LinearLayout>
 
                         <TextView
-                            android:id="@+id/tvRecordDotsAndBoxes"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="🏆 Wins: 0"
-                            android:textColor="#FFE4E6"
-                            android:textSize="13sp"/>
+                            android:text="PLAY ▶"
+                            android:textColor="#FECDD3"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
-                <!-- Gomoku Card -->
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cardGomoku"
+
+                <!-- Section 2: 🧠 BRAIN & PUZZLES -->
+                <TextView
+                    android:id="@+id/tvSectionBrain"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-black"
+                    android:text="🧠 BRAIN &amp; PUZZLES"
+                    android:textColor="@color/text_color"
+                    android:textSize="16sp"
+                    android:letterSpacing="0.03" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="10dp"
+                    android:text="30-Level Campaigns &amp; Logic Strategy"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp" />
+
+                <!-- Row 1: Water Sort & Memory Matrix -->
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="96dp"
-                    android:layout_marginBottom="16dp"
-                    app:cardBackgroundColor="#475569"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="10dp">
+
+                    <!-- Water Sort Card -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cardWaterSort"
+                        android:layout_width="0dp"
+                        android:layout_height="120dp"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="5dp"
+                        app:cardBackgroundColor="#0D9488"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="4dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:padding="10dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="🧪💧"
+                                android:textSize="24sp" />
+
+                            <TextView
+                                android:id="@+id/tvWaterSort"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:fontFamily="sans-serif-black"
+                                android:gravity="center"
+                                android:maxLines="1"
+                                android:ellipsize="end"
+                                android:text="🧪 Water Sort 💧"
+                                android:textColor="@color/white"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:id="@+id/tvRecordWaterSort"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:gravity="center"
+                                android:maxLines="1"
+                                android:ellipsize="end"
+                                android:text="⭐ 30 Levels"
+                                android:textColor="#CCFBF1"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Memory Matrix Card -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cardMemoryGame"
+                        android:layout_width="0dp"
+                        android:layout_height="120dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="5dp"
+                        app:cardBackgroundColor="#E91E63"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="4dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:padding="10dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="🧠"
+                                android:textSize="26sp" />
+
+                            <TextView
+                                android:id="@+id/tvMemoryGame"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:fontFamily="sans-serif-black"
+                                android:gravity="center"
+                                android:maxLines="1"
+                                android:ellipsize="end"
+                                android:text="🧠 Memory Game"
+                                android:textColor="@color/white"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:id="@+id/tvRecordMemory"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:gravity="center"
+                                android:maxLines="1"
+                                android:ellipsize="end"
+                                android:text="⭐ 30 Levels"
+                                android:textColor="#FCE4EC"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+                </LinearLayout>
+
+                <!-- Row 2: 2048 Puzzle (Wide card) -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card2048"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:layout_marginBottom="20dp"
+                    app:cardBackgroundColor="#0284C7"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="4dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:orientation="vertical">
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="16dp">
 
                         <TextView
-                            android:id="@+id/tvGomoku"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="🔒 ⚪⚫ Gomoku (5 in a Row)"
-                            android:textColor="@color/white"
-                            android:textSize="20sp"
-                            android:fontFamily="sans-serif-black"/>
+                            android:text="🔢"
+                            android:textSize="28sp" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="14dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tv2048"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="sans-serif-black"
+                                android:text="🔢 2048 Puzzle"
+                                android:textColor="@color/white"
+                                android:textSize="15sp" />
+
+                            <TextView
+                                android:id="@+id/tvRecord2048"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="⭐ Best Tile: 2048"
+                                android:textColor="#E0F2FE"
+                                android:textSize="11sp" />
+                        </LinearLayout>
 
                         <TextView
-                            android:id="@+id/tvRecordGomoku"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="🏆 Wins: 0"
-                            android:textColor="#E2E8F0"
-                            android:textSize="13sp"/>
+                            android:text="PLAY ▶"
+                            android:textColor="#BAE6FD"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
-                <!-- Checkers / Shashka Card -->
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cardCheckers"
+
+                <!-- Section 3: ⚡ SPEED & FOCUS -->
+                <TextView
+                    android:id="@+id/tvSectionSpeed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-black"
+                    android:text="⚡ SPEED &amp; FOCUS"
+                    android:textColor="@color/text_color"
+                    android:textSize="16sp"
+                    android:letterSpacing="0.03" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="10dp"
+                    android:text="Quick Reflexes &amp; High Score Challenges"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp" />
+
+                <!-- Row 1: Math Master & Color Match -->
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="96dp"
-                    android:layout_marginBottom="16dp"
-                    app:cardBackgroundColor="#B91C1C"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="4dp">
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="20dp">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:orientation="vertical">
+                    <!-- Math Game Card -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cardMathGame"
+                        android:layout_width="0dp"
+                        android:layout_height="120dp"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="5dp"
+                        app:cardBackgroundColor="#EA580C"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="4dp">
 
-                        <TextView
-                            android:id="@+id/tvCheckers"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="🔒 👑 Shashka (Checkers)"
-                            android:textColor="@color/white"
-                            android:textSize="20sp"
-                            android:fontFamily="sans-serif-black"/>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:padding="10dp">
 
-                        <TextView
-                            android:id="@+id/tvRecordCheckers"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="🏆 Wins: 0"
-                            android:textColor="#FEE2E2"
-                            android:textSize="13sp"/>
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="✖️➗"
+                                android:textSize="24sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:fontFamily="sans-serif-black"
+                                android:gravity="center"
+                                android:maxLines="1"
+                                android:ellipsize="end"
+                                android:text="✖️ Math Master"
+                                android:textColor="@color/white"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:id="@+id/tvRecordMath"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:gravity="center"
+                                android:maxLines="1"
+                                android:ellipsize="end"
+                                android:text="⭐ Best: 0 pts"
+                                android:textColor="#FFEDD5"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Color Match Card -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cardColorMatch"
+                        android:layout_width="0dp"
+                        android:layout_height="120dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="5dp"
+                        app:cardBackgroundColor="#9333EA"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="4dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:padding="10dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="🎨"
+                                android:textSize="26sp" />
+
+                            <TextView
+                                android:id="@+id/tvColorMatch"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:fontFamily="sans-serif-black"
+                                android:gravity="center"
+                                android:maxLines="1"
+                                android:ellipsize="end"
+                                android:text="🎨 Color Match"
+                                android:textColor="@color/white"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:id="@+id/tvRecordColorMatch"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:gravity="center"
+                                android:maxLines="1"
+                                android:ellipsize="end"
+                                android:text="⭐ High Score: 0"
+                                android:textColor="#F3E8FF"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+                </LinearLayout>
+
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
