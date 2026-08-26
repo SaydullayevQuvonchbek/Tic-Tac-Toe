@@ -219,6 +219,9 @@ class MemoryGameFragment : Fragment() {
     private fun onCardClicked(card: CardView) {
         if (isProcessing || card.alpha < 1f || card == firstCard) return
 
+        HapticHelper.performClick(requireContext())
+        SoundHelper.playMoveSound(requireContext())
+
         flipCard(card, true)
 
         if (firstCard == null) {
@@ -232,6 +235,9 @@ class MemoryGameFragment : Fragment() {
 
             if (firstEmoji == secondEmoji) {
                 // Match
+                HapticHelper.performHeavyImpact(requireContext())
+                SoundHelper.playCaptureSound(requireContext())
+
                 binding.root.postDelayed({
                     firstCard?.animate()?.alpha(0f)?.setDuration(250)?.start()
                     secondCard?.animate()?.alpha(0f)?.setDuration(250)?.start()
@@ -279,24 +285,28 @@ class MemoryGameFragment : Fragment() {
     private fun startTimer(seconds: Int) {
         totalTimeSeconds = seconds
         timeRemainingSeconds = seconds
-        timer?.cancel()
+        binding.tvTimer.text = "Time: ${timeRemainingSeconds}s"
 
+        timer?.cancel()
         timer = object : CountDownTimer((seconds * 1000).toLong(), 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 timeRemainingSeconds = (millisUntilFinished / 1000).toInt()
-                binding.tvTimer.text = "⏳ ${timeRemainingSeconds}s"
+                binding.tvTimer.text = "Time: ${timeRemainingSeconds}s"
             }
 
             override fun onFinish() {
-                binding.tvTimer.text = "⏳ 0s"
+                timeRemainingSeconds = 0
+                binding.tvTimer.text = "Time: 0s"
                 endGame(false)
             }
         }.start()
     }
 
-    private fun endGame(win: Boolean) {
+    private fun endGame(won: Boolean) {
         timer?.cancel()
-        if (win) {
+        isProcessing = true
+
+        if (won) {
             val ratio = timeRemainingSeconds.toFloat() / totalTimeSeconds.toFloat()
             val stars = when {
                 ratio >= 0.40f -> 3
@@ -310,6 +320,10 @@ class MemoryGameFragment : Fragment() {
             }
 
             saveLevelWin(currentPlayingLevel, stars)
+
+            ConfettiView.show(binding.root as ViewGroup)
+            HapticHelper.performVictory(requireContext())
+            SoundHelper.playVictorySound(requireContext())
 
             val starStr = "⭐".repeat(stars)
             var msg = "🎉 Level $currentPlayingLevel Complete!\n\nRating: $starStr\nReward: +$rewardCoins Coins 🪙 | +${rewardCoins * 2} XP ⚡"

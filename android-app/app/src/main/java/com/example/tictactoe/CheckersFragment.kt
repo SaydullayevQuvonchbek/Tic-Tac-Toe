@@ -13,6 +13,8 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.tictactoe.databinding.FragmentCheckersBinding
 import com.example.tictactoe.network.ApiClient
+import com.example.tictactoe.network.EmoteRequest
+import com.example.tictactoe.network.EmoteResponse
 import com.example.tictactoe.network.MoveRequest
 import com.example.tictactoe.network.MoveResponse
 import com.example.tictactoe.network.PusherManager
@@ -192,6 +194,25 @@ class CheckersFragment : Fragment() {
         updateTurnIndicator()
         showGameplayScreen()
 
+        binding.layoutEmotesCheckers.removeAllViews()
+        val emoteBar = EmoteHelper.createEmoteBar(requireContext()) { emote ->
+            EmoteHelper.showFloatingEmote(binding.root as ViewGroup, emote, isOpponent = false)
+            if (isOnlineMode) {
+                val emoteIndex = EmoteHelper.EMOTES.indexOf(emote)
+                val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+                val userId = sharedPref.getInt("user_id", -1)
+                ApiClient.instance.makeMove(MoveRequest(roomCode, userId, -888, emoteIndex, -1)).enqueue(object : Callback<MoveResponse> {
+                    override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) {}
+                    override fun onFailure(call: Call<MoveResponse>, t: Throwable) {}
+                })
+                ApiClient.instance.sendEmote(EmoteRequest(roomCode, userId, emote)).enqueue(object : Callback<EmoteResponse> {
+                    override fun onResponse(call: Call<EmoteResponse>, response: Response<EmoteResponse>) {}
+                    override fun onFailure(call: Call<EmoteResponse>, t: Throwable) {}
+                })
+            }
+        }
+        binding.layoutEmotesCheckers.addView(emoteBar)
+
         binding.checkersBoardView.onMoveExecutedListener = { fromR, fromC, toR, toC ->
             handleMove(fromR, fromC, toR, toC)
         }
@@ -199,6 +220,9 @@ class CheckersFragment : Fragment() {
 
     private fun handleMove(fromR: Int, fromC: Int, toR: Int, toC: Int) {
         if (logic.isGameOver) return
+
+        HapticHelper.performHeavyImpact(requireContext())
+        SoundHelper.playCaptureSound(requireContext())
 
         if (isOnlineMode) {
             if (!isMyTurnOnline) {
@@ -411,6 +435,12 @@ class CheckersFragment : Fragment() {
                         val row = json.optInt("row", -1)
                         val col = json.optInt("col", -1)
 
+                        if (row == -888) {
+                            val emote = EmoteHelper.EMOTES.getOrNull(col) ?: "🔥"
+                            EmoteHelper.showFloatingEmote(binding.root as ViewGroup, emote, isOpponent = true)
+                            return@runOnUiThread
+                        }
+
                         if (row == -999 && col == -999) {
                             handleOpponentForfeited()
                             return@runOnUiThread
@@ -453,6 +483,20 @@ class CheckersFragment : Fragment() {
             onOpponentLeft = {
                 activity?.runOnUiThread {
                     handleOpponentForfeited()
+                }
+            },
+            onEmoteReceived = { eventData ->
+                activity?.runOnUiThread {
+                    try {
+                        val json = JSONObject(eventData)
+                        val senderId = json.optInt("player_id", -1)
+                        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+                        val myUserId = sharedPref.getInt("user_id", -1)
+                        if (senderId != -1 && myUserId != -1 && senderId == myUserId) return@runOnUiThread
+
+                        val emote = json.optString("emote", "🔥")
+                        EmoteHelper.showFloatingEmote(binding.root as ViewGroup, emote, isOpponent = true)
+                    } catch (_: Exception) {}
                 }
             }
         )

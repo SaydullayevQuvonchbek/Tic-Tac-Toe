@@ -13,6 +13,8 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.tictactoe.databinding.FragmentConnect4Binding
 import com.example.tictactoe.network.ApiClient
+import com.example.tictactoe.network.EmoteRequest
+import com.example.tictactoe.network.EmoteResponse
 import com.example.tictactoe.network.GameScoreRequest
 import com.example.tictactoe.network.GameScoreResponse
 import com.example.tictactoe.network.MoveRequest
@@ -211,6 +213,25 @@ class Connect4Fragment : Fragment() {
         showGameplayScreen()
         setupBoard()
         updateTurnIndicator()
+
+        binding.layoutEmotesConnect4.removeAllViews()
+        val emoteBar = EmoteHelper.createEmoteBar(requireContext()) { emote ->
+            EmoteHelper.showFloatingEmote(binding.root as ViewGroup, emote, isOpponent = false)
+            if (isOnlineMode) {
+                val emoteIndex = EmoteHelper.EMOTES.indexOf(emote)
+                val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+                val userId = sharedPref.getInt("user_id", -1)
+                ApiClient.instance.makeMove(MoveRequest(roomCode, userId, -888, emoteIndex, -1)).enqueue(object : Callback<MoveResponse> {
+                    override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) {}
+                    override fun onFailure(call: Call<MoveResponse>, t: Throwable) {}
+                })
+                ApiClient.instance.sendEmote(EmoteRequest(roomCode, userId, emote)).enqueue(object : Callback<EmoteResponse> {
+                    override fun onResponse(call: Call<EmoteResponse>, response: Response<EmoteResponse>) {}
+                    override fun onFailure(call: Call<EmoteResponse>, t: Throwable) {}
+                })
+            }
+        }
+        binding.layoutEmotesConnect4.addView(emoteBar)
     }
 
     private fun cancelWaiting() {
@@ -292,13 +313,22 @@ class Connect4Fragment : Fragment() {
                             return@runOnUiThread
                         }
 
+                        val row = json.optInt("row", -1)
                         val col = json.optInt("col", json.optString("col", "-1").toIntOrNull() ?: -1)
-                        if (col == -999) {
+
+                        if (row == -888 || col == -888) {
+                            val emoteIdx = if (col in 0..10) col else 0
+                            val emote = EmoteHelper.EMOTES.getOrNull(emoteIdx) ?: "🔥"
+                            EmoteHelper.showFloatingEmote(binding.root as ViewGroup, emote, isOpponent = true)
+                            return@runOnUiThread
+                        }
+
+                        if (col == -999 || row == -999) {
                             handleOpponentForfeited()
                             return@runOnUiThread
                         }
 
-                        if (col == -99) {
+                        if (col == -99 || row == -99) {
                             logic = Connect4Logic()
                             setupBoard()
                             isMyTurnOnline = isHost
@@ -328,6 +358,20 @@ class Connect4Fragment : Fragment() {
             onOpponentLeft = {
                 activity?.runOnUiThread {
                     handleOpponentForfeited()
+                }
+            },
+            onEmoteReceived = { eventData ->
+                activity?.runOnUiThread {
+                    try {
+                        val json = JSONObject(eventData)
+                        val senderId = json.optInt("player_id", -1)
+                        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+                        val myUserId = sharedPref.getInt("user_id", -1)
+                        if (senderId != -1 && myUserId != -1 && senderId == myUserId) return@runOnUiThread
+
+                        val emote = json.optString("emote", "🔥")
+                        EmoteHelper.showFloatingEmote(binding.root as ViewGroup, emote, isOpponent = true)
+                    } catch (_: Exception) {}
                 }
             }
         )
@@ -423,6 +467,9 @@ class Connect4Fragment : Fragment() {
     private fun animateTokenDrop(row: Int, col: Int, player: Int) {
         val img = cellViews[row][col] ?: return
         val color = if (player == 1) "#EF4444" else "#FBBF24"
+
+        HapticHelper.performClick(requireContext())
+        SoundHelper.playMoveSound(requireContext())
 
         img.translationY = -1000f
         img.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor(color))

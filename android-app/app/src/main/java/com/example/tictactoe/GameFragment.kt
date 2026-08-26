@@ -9,6 +9,14 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.tictactoe.databinding.FragmentGameBinding
+import com.example.tictactoe.network.ApiClient
+import com.example.tictactoe.network.EmoteRequest
+import com.example.tictactoe.network.EmoteResponse
+import com.example.tictactoe.network.MoveRequest
+import com.example.tictactoe.network.MoveResponse
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class GameFragment : Fragment() {
 
@@ -113,6 +121,22 @@ class GameFragment : Fragment() {
             }
         }
         renderBoard(boardSize)
+
+        val emoteBar = EmoteHelper.createEmoteBar(requireContext()) { emote ->
+            EmoteHelper.showFloatingEmote(binding.root as ViewGroup, emote, isOpponent = false)
+            if (isOnlineMode) {
+                val emoteIndex = EmoteHelper.EMOTES.indexOf(emote)
+                ApiClient.instance.makeMove(MoveRequest(roomCode, playerId, -888, emoteIndex, -1)).enqueue(object : Callback<MoveResponse> {
+                    override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) {}
+                    override fun onFailure(call: Call<MoveResponse>, t: Throwable) {}
+                })
+                ApiClient.instance.sendEmote(EmoteRequest(roomCode, playerId, emote)).enqueue(object : Callback<EmoteResponse> {
+                    override fun onResponse(call: Call<EmoteResponse>, response: Response<EmoteResponse>) {}
+                    override fun onFailure(call: Call<EmoteResponse>, t: Throwable) {}
+                })
+            }
+        }
+        binding.layoutEmotes.addView(emoteBar)
 
         val isRematch = arguments?.getBoolean("isRematch", false) ?: false
         if (isOnlineMode) {

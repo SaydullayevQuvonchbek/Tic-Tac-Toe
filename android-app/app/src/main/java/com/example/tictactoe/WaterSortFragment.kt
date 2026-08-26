@@ -197,6 +197,9 @@ class WaterSortFragment : Fragment() {
                 val from = selectedTubeIndex
                 val to = index
 
+                HapticHelper.performClick(requireContext())
+                SoundHelper.playMoveSound(requireContext())
+
                 if (logic.canPour(from, to)) {
                     val fromView = tubeViews[from]
                     val toView = tubeViews[to]
@@ -237,6 +240,7 @@ class WaterSortFragment : Fragment() {
 
     private fun handleUndo() {
         if (logic.undo()) {
+            HapticHelper.performClick(requireContext())
             selectedTubeIndex = -1
             for (i in logic.tubes.indices) {
                 tubeViews[i].isSelectedTube = false
@@ -250,6 +254,10 @@ class WaterSortFragment : Fragment() {
         val stars = logic.calculateStars(logic.movesCount, currentPlayingLevel)
         saveLevelWin(currentPlayingLevel, stars)
         updateTotalStarsBadge()
+
+        ConfettiView.show(binding.root as ViewGroup)
+        HapticHelper.performVictory(requireContext())
+        SoundHelper.playVictorySound(requireContext())
 
         val starsStr = "⭐".repeat(stars) + "☆".repeat(3 - stars)
         val coinsEarned = when (stars) { 3 -> 60; 2 -> 40; else -> 25 }

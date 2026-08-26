@@ -42,7 +42,8 @@ object PusherManager {
         roomCode: String,
         onGameStarted: (String) -> Unit = {},
         onMoveMade: (String) -> Unit = {},
-        onOpponentLeft: () -> Unit = {}
+        onOpponentLeft: () -> Unit = {},
+        onEmoteReceived: (String) -> Unit = {}
     ) {
         connect()
 
@@ -76,6 +77,10 @@ object PusherManager {
                     normalizedName.contains("start") || normalizedName.contains("rematch") || normalizedName.contains("restart") -> {
                         Log.d(TAG, "Dispatched -> onGameStarted")
                         onGameStarted(data)
+                    }
+                    normalizedName.contains("emote") -> {
+                        Log.d(TAG, "Dispatched -> onEmoteReceived")
+                        onEmoteReceived(data)
                     }
                     normalizedName.contains("move") -> {
                         Log.d(TAG, "Dispatched -> onMoveMade")

@@ -33,6 +33,13 @@ data class GameScoreResponse(val status: String, val xp_earned: Int, val new_tot
 data class LeaderboardPlayer(val rank: Int, val username: String, val level: Int, val xp: Int, val wins: Int)
 data class LeaderboardResponse(val status: String, val leaderboard: List<LeaderboardPlayer>?)
 
+data class EmoteRequest(val room_code: String, val player_id: Int, val emote: String)
+data class EmoteResponse(val status: String)
+
+data class MatchmakingRequest(val player_id: Int, val game_type: String)
+data class MatchmakingOpponent(val id: Int, val username: String, val level: Int, val avatar: String?)
+data class MatchmakingResponse(val status: String, val room_code: String?, val is_host: Boolean?, val opponent: MatchmakingOpponent?)
+
 interface ApiService {
     @GET("leaderboard")
     fun getLeaderboard(): Call<LeaderboardResponse>
@@ -47,6 +54,12 @@ interface ApiService {
 
     @POST("room/move")
     fun makeMove(@Body req: MoveRequest): Call<MoveResponse>
+
+    @POST("room/emote")
+    fun sendEmote(@Body req: EmoteRequest): Call<EmoteResponse>
+
+    @POST("matchmaking/find")
+    fun findMatch(@Body req: MatchmakingRequest): Call<MatchmakingResponse>
 
     @POST("match/result")
     fun matchResult(@Body req: MatchResultRequest): Call<MatchResultResponse>

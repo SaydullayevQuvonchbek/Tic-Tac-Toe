@@ -73,7 +73,7 @@ class ResultFragment : Fragment() {
             binding.tvSubMessage.text = "Congrats on being the undisputed champion!"
             binding.btnAction.text = if (isOnlineMode) "REMATCH 🔄" else "RESTART"
             
-            // Trigger Confetti
+            // Trigger Confetti & Victory Audio/Haptics
             val party = Party(
                 speed = 0f,
                 maxSpeed = 30f,
@@ -84,6 +84,9 @@ class ResultFragment : Fragment() {
                 position = Position.Relative(0.5, 0.3)
             )
             binding.konfettiView.start(party)
+            ConfettiView.show(binding.root as ViewGroup)
+            HapticHelper.performVictory(requireContext())
+            SoundHelper.playVictorySound(requireContext())
         }
 
         if (isOnlineMode && roomCode.isNotEmpty()) {

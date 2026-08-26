@@ -87,6 +87,15 @@ class DashboardFragment : Fragment() {
             if (ensureProfile()) claimDailyReward()
         }
 
+        binding.cardLuckyWheel.setOnClickListener {
+            if (ensureProfile()) {
+                LuckyWheelDialog(requireContext()) { coins, xp ->
+                    loadProfile()
+                    Toast.makeText(context, "🎁 Claimed +$coins 🪙 and +$xp ⚡!", Toast.LENGTH_SHORT).show()
+                }.show()
+            }
+        }
+
         initQuestsClickListeners()
     }
 
