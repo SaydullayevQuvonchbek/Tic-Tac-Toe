@@ -8,9 +8,17 @@ import android.os.VibratorManager
 
 object HapticHelper {
 
-    private fun isVibrationEnabled(context: Context): Boolean {
+    fun isVibrationEnabled(context: Context): Boolean {
         val prefs = context.getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
-        return prefs.getBoolean("vibration_enabled", true)
+        return prefs.getBoolean("vibration_enabled", true) && prefs.getBoolean("haptics_enabled", true)
+    }
+
+    fun setVibrationEnabled(context: Context, enabled: Boolean) {
+        val prefs = context.getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+        prefs.edit()
+            .putBoolean("vibration_enabled", enabled)
+            .putBoolean("haptics_enabled", enabled)
+            .apply()
     }
 
     private fun getVibrator(context: Context): Vibrator {

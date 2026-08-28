@@ -43,6 +43,24 @@ class DashboardFragment : Fragment() {
             showEditProfileDialog()
         }
 
+        binding.btnQuickSound.setOnClickListener {
+            val nextState = !SoundHelper.isSoundEnabled(requireContext())
+            SoundHelper.setSoundEnabled(requireContext(), nextState)
+            updateQuickTogglesUI()
+            if (nextState) SoundHelper.playMoveSound(requireContext())
+            Toast.makeText(context, if (nextState) "🔊 Sound ON" else "🔇 Sound OFF", Toast.LENGTH_SHORT).show()
+        }
+
+        binding.btnQuickVibration.setOnClickListener {
+            val nextState = !HapticHelper.isVibrationEnabled(requireContext())
+            HapticHelper.setVibrationEnabled(requireContext(), nextState)
+            updateQuickTogglesUI()
+            if (nextState) HapticHelper.performClick(requireContext())
+            Toast.makeText(context, if (nextState) "📳 Vibration ON" else "📴 Vibration OFF", Toast.LENGTH_SHORT).show()
+        }
+
+        updateQuickTogglesUI()
+
         binding.cardTicTacToe.setOnClickListener {
             if (ensureProfile()) findNavController().navigate(R.id.action_dashboardFragment_to_welcomeFragment)
         }
@@ -225,6 +243,18 @@ class DashboardFragment : Fragment() {
         }
     }
 
+    private fun updateQuickTogglesUI() {
+        if (_binding == null) return
+        val soundOn = SoundHelper.isSoundEnabled(requireContext())
+        val vibOn = HapticHelper.isVibrationEnabled(requireContext())
+
+        binding.btnQuickSound.text = if (soundOn) "🔊" else "🔇"
+        binding.btnQuickSound.alpha = if (soundOn) 1.0f else 0.45f
+
+        binding.btnQuickVibration.text = if (vibOn) "📳" else "📴"
+        binding.btnQuickVibration.alpha = if (vibOn) 1.0f else 0.45f
+    }
+
     private fun ensureProfile(): Boolean {
         val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
         val username = sharedPref.getString("username", "") ?: ""
@@ -255,6 +285,7 @@ class DashboardFragment : Fragment() {
 
             updateGameLocks()
             updateDailyQuestsUI()
+            updateQuickTogglesUI()
 
             // Update Best Records
             val wins = sharedPref.getInt("wins", 0)

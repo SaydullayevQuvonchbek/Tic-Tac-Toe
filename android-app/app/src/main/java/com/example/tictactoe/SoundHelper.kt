@@ -14,9 +14,17 @@ object SoundHelper {
         } catch (_: Exception) {}
     }
 
-    private fun isSoundEnabled(context: Context): Boolean {
+    fun isSoundEnabled(context: Context): Boolean {
         val prefs = context.getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
-        return prefs.getBoolean("sound_enabled", true)
+        return prefs.getBoolean("sound_enabled", true) && prefs.getBoolean("sound_effects_enabled", true)
+    }
+
+    fun setSoundEnabled(context: Context, enabled: Boolean) {
+        val prefs = context.getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+        prefs.edit()
+            .putBoolean("sound_enabled", enabled)
+            .putBoolean("sound_effects_enabled", enabled)
+            .apply()
     }
 
     /**

@@ -60,17 +60,17 @@ class ProfileFragment : Fragment() {
         }
 
         // 3. Sound Effects
-        val isSound = sharedPref.getBoolean("sound_effects_enabled", true)
-        binding.switchSound.isChecked = isSound
+        binding.switchSound.isChecked = SoundHelper.isSoundEnabled(requireContext())
         binding.switchSound.setOnCheckedChangeListener { _, isChecked ->
-            sharedPref.edit().putBoolean("sound_effects_enabled", isChecked).apply()
+            SoundHelper.setSoundEnabled(requireContext(), isChecked)
+            if (isChecked) SoundHelper.playMoveSound(requireContext())
         }
 
         // 4. Vibration
-        val isVibration = sharedPref.getBoolean("vibration_enabled", true)
-        binding.switchVibration.isChecked = isVibration
+        binding.switchVibration.isChecked = HapticHelper.isVibrationEnabled(requireContext())
         binding.switchVibration.setOnCheckedChangeListener { _, isChecked ->
-            sharedPref.edit().putBoolean("vibration_enabled", isChecked).apply()
+            HapticHelper.setVibrationEnabled(requireContext(), isChecked)
+            if (isChecked) HapticHelper.performClick(requireContext())
         }
     }
 

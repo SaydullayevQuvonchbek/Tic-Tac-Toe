@@ -307,7 +307,7 @@ class CheckersBoardView @JvmOverloads constructor(
             selectedR = -1
             selectedC = -1
             validMoves = emptyList()
-            performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+            HapticHelper.performClick(context)
             onMoveExecutedListener?.invoke(fromR, fromC, r, c)
             invalidate()
             return
@@ -319,7 +319,7 @@ class CheckersBoardView @JvmOverloads constructor(
             selectedR = r
             selectedC = c
             validMoves = moves
-            performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+            HapticHelper.performClick(context)
 
             val allJumps = l.getAllValidMovesForPlayer(l.currentPlayer).filter { it.isJump }
             if (allJumps.isNotEmpty() && moves.isEmpty()) {
