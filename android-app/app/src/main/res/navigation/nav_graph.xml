@@ -40,6 +40,9 @@
         <action
             android:id="@+id/action_dashboardFragment_to_checkersFragment"
             app:destination="@id/checkersFragment" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_dropNumberFragment"
+            app:destination="@id/dropNumberFragment" />
     </fragment>
 
     <fragment
@@ -204,5 +207,11 @@
             android:id="@+id/action_checkersFragment_to_resultFragment"
             app:destination="@id/resultFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/dropNumberFragment"
+        android:name="com.example.tictactoe.DropNumberFragment"
+        android:label="Drop Number"
+        tools:layout="@layout/fragment_drop_number" />
 
 </navigation>

@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_color">
+
+    <!-- Header -->
+    <ImageButton
+        android:id="@+id/btnDropBack"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@android:drawable/ic_menu_revert"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/text_color" />
+
+    <TextView
+        android:id="@+id/tvDropTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-black"
+        android:text="🎯 Drop &amp; Merge 2048"
+        android:textColor="@color/text_color"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/btnDropBack"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btnDropBack" />
+
+    <ImageButton
+        android:id="@+id/btnRestart"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginEnd="16dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@android:drawable/ic_menu_rotate"
+        app:layout_constraintBottom_toBottomOf="@+id/btnDropBack"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btnDropBack"
+        app:tint="@color/text_color" />
+
+    <!-- Stats Bar -->
+    <LinearLayout
+        android:id="@+id/layoutDropStats"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="14dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/btnDropBack">
+
+        <TextView
+            android:id="@+id/tvDropScore"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/bg_leaderboard_item"
+            android:fontFamily="sans-serif-black"
+            android:padding="8dp"
+            android:gravity="center"
+            android:text="Score: 0"
+            android:textColor="#38BDF8"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/tvTargetTile"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_leaderboard_item"
+            android:fontFamily="sans-serif-black"
+            android:padding="8dp"
+            android:gravity="center"
+            android:text="🎯 Target: 2048"
+            android:textColor="#F59E0B"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+    <!-- Drop Board Canvas -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardBoard"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginBottom="14dp"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="6dp"
+        app:layout_constraintBottom_toTopOf="@+id/shooterContainer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layoutDropStats">
+
+        <com.example.tictactoe.DropNumberView
+            android:id="@+id/dropBoardView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </androidx.cardview.widget.CardView>
+
+    <!-- Bottom Shooter & Next Tile Container -->
+    <LinearLayout
+        android:id="@+id/shooterContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-bold"
+                android:text="SHOOT TILE"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tvCurrentShooter"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/bg_circle"
+                android:backgroundTint="#F97316"
+                android:fontFamily="sans-serif-black"
+                android:gravity="center"
+                android:text="16"
+                android:textColor="@color/white"
+                android:textSize="24sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="36dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-bold"
+                android:text="NEXT"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tvNextShooter"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/bg_circle"
+                android:backgroundTint="#FB923C"
+                android:fontFamily="sans-serif-black"
+                android:gravity="center"
+                android:text="8"
+                android:textColor="@color/white"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnBomb"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_marginStart="32dp"
+            android:text="💣 Bomb (25 🪙)"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            app:backgroundTint="#8B5CF6"
+            app:cornerRadius="12dp" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

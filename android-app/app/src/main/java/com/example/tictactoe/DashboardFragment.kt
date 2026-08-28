@@ -68,7 +68,11 @@ class DashboardFragment : Fragment() {
         }
 
         binding.card2048.setOnClickListener {
-            handleGameClick("game_2048", 5, 200, binding.tv2048, "🔢 2048 Puzzle", R.id.action_dashboardFragment_to_game2048Fragment)
+            handleGameClick("game_2048", 5, 200, binding.tv2048, "🔢 2048 Classic", R.id.action_dashboardFragment_to_game2048Fragment)
+        }
+
+        binding.cardDropNumber.setOnClickListener {
+            handleGameClick("drop_number", 3, 120, binding.tvDropNumber, "🎯 Drop & Merge 2048", R.id.action_dashboardFragment_to_dropNumberFragment)
         }
 
         binding.cardDotsAndBoxes.setOnClickListener {
@@ -164,7 +168,8 @@ class DashboardFragment : Fragment() {
         updateLock("color_match", 3, binding.tvColorMatch, "🎨 Color Match")
         updateLock("water_sort", 3, binding.tvWaterSort, "🧪 Water Sort 💧")
         updateLock("connect4", 4, binding.tvConnect4, "🔴 Connect 4 🟡")
-        updateLock("game_2048", 5, binding.tv2048, "🔢 2048 Puzzle")
+        updateLock("game_2048", 5, binding.tv2048, "🔢 2048 Classic")
+        updateLock("drop_number", 3, binding.tvDropNumber, "🎯 Drop 2048")
     }
 
     private fun handleGameClick(key: String, reqLevel: Int, cost: Int, tv: android.widget.TextView, title: String, actionId: Int) {

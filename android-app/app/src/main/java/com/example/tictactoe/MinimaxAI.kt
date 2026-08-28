@@ -7,8 +7,23 @@ class MinimaxAI {
 
     fun findBestMove(board: Array<Array<String>>, aiPlayer: String, size: Int): Pair<Int, Int>? {
         if (size > 3) {
-            // Minimax is too slow for 4x4 or 5x5 without alpha-beta and depth limit.
-            // Pick a random empty spot.
+            val opponent = if (aiPlayer == "X") "O" else "X"
+            val winNeeded = if (size == 5) 4 else size
+
+            // 1. Check if AI can win in 1 move
+            val winMove = findImmediateWinningMove(board, aiPlayer, size, winNeeded)
+            if (winMove != null) return winMove
+
+            // 2. Check if opponent can win in 1 move and block it
+            val blockMove = findImmediateWinningMove(board, opponent, size, winNeeded)
+            if (blockMove != null) return blockMove
+
+            // 3. Prefer center cells if empty
+            val center = size / 2
+            if (board[center][center] == "") return Pair(center, center)
+            if (board[center - 1][center] == "") return Pair(center - 1, center)
+
+            // 4. Pick random empty spot
             val emptySpots = mutableListOf<Pair<Int, Int>>()
             for (i in 0 until size) {
                 for (j in 0 until size) {
@@ -23,7 +38,6 @@ class MinimaxAI {
 
         var bestVal = -1000
         var bestMove: Pair<Int, Int>? = null
-        
         val opponent = if (aiPlayer == "X") "O" else "X"
 
         for (i in 0 until size) {
@@ -41,6 +55,64 @@ class MinimaxAI {
             }
         }
         return bestMove
+    }
+
+    private fun findImmediateWinningMove(board: Array<Array<String>>, player: String, size: Int, winNeeded: Int): Pair<Int, Int>? {
+        for (r in 0 until size) {
+            for (c in 0 until size) {
+                if (board[r][c] == "") {
+                    board[r][c] = player
+                    val isWin = checkWinCondition(board, player, size, winNeeded)
+                    board[r][c] = ""
+                    if (isWin) return Pair(r, c)
+                }
+            }
+        }
+        return null
+    }
+
+    private fun checkWinCondition(board: Array<Array<String>>, player: String, size: Int, needed: Int): Boolean {
+        // Horizontal
+        for (r in 0 until size) {
+            for (c in 0..size - needed) {
+                var count = 0
+                for (k in 0 until needed) {
+                    if (board[r][c + k] == player) count++
+                }
+                if (count == needed) return true
+            }
+        }
+        // Vertical
+        for (c in 0 until size) {
+            for (r in 0..size - needed) {
+                var count = 0
+                for (k in 0 until needed) {
+                    if (board[r + k][c] == player) count++
+                }
+                if (count == needed) return true
+            }
+        }
+        // Diagonal down-right
+        for (r in 0..size - needed) {
+            for (c in 0..size - needed) {
+                var count = 0
+                for (k in 0 until needed) {
+                    if (board[r + k][c + k] == player) count++
+                }
+                if (count == needed) return true
+            }
+        }
+        // Diagonal up-right
+        for (r in needed - 1 until size) {
+            for (c in 0..size - needed) {
+                var count = 0
+                for (k in 0 until needed) {
+                    if (board[r - k][c + k] == player) count++
+                }
+                if (count == needed) return true
+            }
+        }
+        return false
     }
 
     private fun minimax(board: Array<Array<String>>, depth: Int, isMax: Boolean, aiPlayer: String, opponent: String, size: Int): Int {

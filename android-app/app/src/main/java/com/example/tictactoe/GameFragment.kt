@@ -14,6 +14,8 @@ import com.example.tictactoe.network.EmoteRequest
 import com.example.tictactoe.network.EmoteResponse
 import com.example.tictactoe.network.MoveRequest
 import com.example.tictactoe.network.MoveResponse
+import com.example.tictactoe.network.PusherManager
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -92,29 +94,33 @@ class GameFragment : Fragment() {
 
         updateTurnText()
 
-        val gridLayout = view.findViewById<android.widget.GridLayout>(R.id.gridLayout)
+        binding.btnGameBack.setOnClickListener {
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
+
+        val gridLayout = binding.gridLayout
         gridLayout.columnCount = boardSize
         gridLayout.rowCount = boardSize
 
         val displayMetrics = resources.displayMetrics
-        val screenWidth = displayMetrics.widthPixels - (64 * displayMetrics.density) // 32dp margin on each side
-        val sizePx = (screenWidth / boardSize).toInt() - (8 * displayMetrics.density).toInt() // subtract margin
+        val screenWidth = displayMetrics.widthPixels - (48 * displayMetrics.density)
+        val sizePx = (screenWidth / boardSize).toInt() - (8 * displayMetrics.density).toInt()
 
         buttons = Array(boardSize) { r ->
             Array(boardSize) { c ->
                 val button = Button(requireContext())
                 val marginPx = (4 * resources.displayMetrics.density).toInt()
-                
+
                 val params = android.widget.GridLayout.LayoutParams()
                 params.width = sizePx
                 params.height = sizePx
                 params.setMargins(marginPx, marginPx, marginPx, marginPx)
                 button.layoutParams = params
-                
+
                 button.backgroundTintList = android.content.res.ColorStateList.valueOf(0xFFF5F5F5.toInt())
                 button.textSize = if (boardSize == 5) 24f else 36f
                 button.setTextColor(0xFF333333.toInt()) // Default text color
-                
+
                 button.setOnClickListener { onCellClicked(r, c) }
                 gridLayout.addView(button)
                 button
@@ -166,13 +172,13 @@ class GameFragment : Fragment() {
                     .setMessage(if (isOnlineMode) "If you exit, the match will be forfeited." else "Do you want to return to the menu?")
                     .setPositiveButton("Yes, Exit") { _, _ ->
                         if (isOnlineMode && roomCode.isNotEmpty()) {
-                            com.example.tictactoe.network.ApiClient.instance.makeMove(
-                                com.example.tictactoe.network.MoveRequest(roomCode, playerId, -999, -999, -1)
-                            ).enqueue(object : retrofit2.Callback<com.example.tictactoe.network.MoveResponse> {
-                                override fun onResponse(c: retrofit2.Call<com.example.tictactoe.network.MoveResponse>, r: retrofit2.Response<com.example.tictactoe.network.MoveResponse>) {}
-                                override fun onFailure(c: retrofit2.Call<com.example.tictactoe.network.MoveResponse>, t: Throwable) {}
+                            ApiClient.instance.makeMove(
+                                MoveRequest(roomCode, playerId, -999, -999, -1)
+                            ).enqueue(object : Callback<MoveResponse> {
+                                override fun onResponse(c: Call<MoveResponse>, r: Response<MoveResponse>) {}
+                                override fun onFailure(c: Call<MoveResponse>, t: Throwable) {}
                             })
-                            com.example.tictactoe.network.PusherManager.unsubscribeFromRoom(roomCode)
+                            PusherManager.unsubscribeFromRoom(roomCode)
                         }
                         Toast.makeText(context, getString(R.string.forfeit_you_lost), Toast.LENGTH_SHORT).show()
                         findNavController().navigateUp()
@@ -209,10 +215,10 @@ class GameFragment : Fragment() {
     }
 
     private fun setupPusher() {
-        val pusherManager = com.example.tictactoe.network.PusherManager
+        val pusherManager = PusherManager
         pusherManager.connect()
         pusherManager.subscribeToRoom(roomCode,
-            onGameStarted = { data ->
+            onGameStarted = { data: String ->
                 activity?.runOnUiThread {
                     isMyTurnOnline = isHost
                     val size = if (isInfinityMode) infinityGameLogic!!.size else gameLogic!!.size
@@ -220,14 +226,21 @@ class GameFragment : Fragment() {
                     updateTurnText()
                 }
             },
-            onMoveMade = { data ->
+            onMoveMade = { data: String ->
                 activity?.runOnUiThread {
                     try {
-                        val json = org.json.JSONObject(data)
+                        val json = JSONObject(data)
                         val senderId = json.optInt("player_id", json.optString("player_id", "-1").toIntOrNull() ?: -1)
                         if (senderId != -1 && senderId != playerId) {
                             val row = json.optInt("row", json.optString("row", "0").toIntOrNull() ?: 0)
                             val col = json.optInt("col", json.optString("col", "0").toIntOrNull() ?: 0)
+
+                            if (row == -888 || col == -888) {
+                                val emoteIdx = if (col in 0..10) col else 0
+                                val emote = EmoteHelper.EMOTES.getOrNull(emoteIdx) ?: "🔥"
+                                EmoteHelper.showFloatingEmote(binding.root as ViewGroup, emote, isOpponent = true)
+                                return@runOnUiThread
+                            }
 
                             if (row == -999 && col == -999) {
                                 handleOpponentForfeited()
@@ -237,10 +250,10 @@ class GameFragment : Fragment() {
                             if (row == -99 && col == -99) {
                                 // Rematch signal!
                                 if (isInfinityMode) {
-                                    infinityGameLogic = com.example.tictactoe.InfinityGameLogic(boardSize)
+                                    infinityGameLogic = InfinityGameLogic(boardSize)
                                     infinityGameLogic?.currentPlayer = "X"
                                 } else {
-                                    gameLogic = com.example.tictactoe.GameLogic(boardSize)
+                                    gameLogic = GameLogic(boardSize)
                                     gameLogic?.currentPlayer = "X"
                                 }
                                 renderBoard(boardSize)
@@ -251,6 +264,9 @@ class GameFragment : Fragment() {
                             }
 
                             // Opponent made a move
+                            HapticHelper.performClick(requireContext())
+                            SoundHelper.playMoveSound(requireContext())
+
                             if (isInfinityMode) {
                                 infinityGameLogic!!.makeMove(row, col)
                             } else {
@@ -271,6 +287,17 @@ class GameFragment : Fragment() {
             onOpponentLeft = {
                 activity?.runOnUiThread {
                     handleOpponentForfeited()
+                }
+            },
+            onEmoteReceived = { eventData: String ->
+                activity?.runOnUiThread {
+                    try {
+                        val json = JSONObject(eventData)
+                        val senderId = json.optInt("player_id", -1)
+                        if (senderId != -1 && senderId == playerId) return@runOnUiThread
+                        val emote = json.optString("emote", "🔥")
+                        EmoteHelper.showFloatingEmote(binding.root as ViewGroup, emote, isOpponent = true)
+                    } catch (_: Exception) {}
                 }
             }
         )

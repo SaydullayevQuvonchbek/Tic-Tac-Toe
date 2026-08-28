@@ -42,44 +42,37 @@ class LuckyWheelDialog(
         val rootLayout = findViewById<ViewGroup>(R.id.dialogWheelRoot)
 
         if (isFreeAvailable) {
-            tvResult.text = "🎁 1 FREE SPIN AVAILABLE TODAY!"
+            tvResult.text = "🎁 Bugungi 100% BEPUL sovgangiz tayyor!"
             tvResult.setTextColor(Color.parseColor("#10B981"))
-            btnSpin.text = "SPIN FREE NOW! 🎰"
+            btnSpin.text = "AYLANTIRISH (BEPUL) 🎰"
+            btnSpin.isEnabled = true
         } else {
-            val userCoins = prefs.getInt("coins", 0)
-            tvResult.text = "✨ Extra Spin: 50 Coins (You have: $userCoins 🪙)"
-            tvResult.setTextColor(Color.parseColor("#F59E0B"))
-            btnSpin.text = "SPIN (50 🪙)"
+            tvResult.text = "✅ Bugungi bepul sovg'angizni oldingiz! Ertaga qaytib keling 🎁"
+            tvResult.setTextColor(Color.parseColor("#94A3B8"))
+            btnSpin.text = "ERTAGA OCHILADI 🔒"
+            btnSpin.isEnabled = false
+            btnSpin.alpha = 0.6f
         }
 
         btnClose.setOnClickListener { dismiss() }
 
         btnSpin.setOnClickListener {
             val curFree = today != prefs.getString("last_lucky_wheel_date", "")
-            val curCoins = prefs.getInt("coins", 0)
-
-            if (!curFree && curCoins < 50) {
-                Toast.makeText(context, "Not enough coins for extra spin! (Needs 50 🪙)", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
             if (!curFree) {
-                // Deduct 50 coins for extra spin
-                prefs.edit().putInt("coins", curCoins - 50).apply()
+                Toast.makeText(context, "Sovg'a kuniga faqat 1 marta beriladi! Ertaga yana kiring 🎁", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
 
             btnSpin.isEnabled = false
             btnClose.isEnabled = false
-            tvResult.text = "🎡 Good Luck! Spinning..."
+            tvResult.text = "🎡 Omad tilaymiz! Sovg'a aniqlanmoqda..."
 
             HapticHelper.performClick(context)
             SoundHelper.playRewardSound(context)
 
             wheelView.startSpin { item ->
                 // Record free spin date
-                if (curFree) {
-                    prefs.edit().putString("last_lucky_wheel_date", today).apply()
-                }
+                prefs.edit().putString("last_lucky_wheel_date", today).apply()
 
                 // Award prize
                 val updatedCoins = prefs.getInt("coins", 0) + item.coinAmount
@@ -89,13 +82,13 @@ class LuckyWheelDialog(
                     .putInt("xp", updatedXp)
                     .apply()
 
-                tvResult.text = "🎉 YOU WON: ${item.label} (${item.sublabel})!"
+                tvResult.text = "🎉 TABRIKLAYMIZ: ${item.label} (${item.sublabel})!"
                 tvResult.setTextColor(Color.parseColor("#10B981"))
 
                 // Confetti Explosion
                 ConfettiView.show(rootLayout)
 
-                btnSpin.text = "CLAIM REWARD! 🎁"
+                btnSpin.text = "QABUL QILISH! 🎁"
                 btnSpin.isEnabled = true
                 btnClose.isEnabled = true
 
