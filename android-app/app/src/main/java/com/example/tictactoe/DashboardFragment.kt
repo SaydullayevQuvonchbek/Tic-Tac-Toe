@@ -263,9 +263,10 @@ class DashboardFragment : Fragment() {
             val gomokuWins = sharedPref.getInt("gomoku_wins", 0)
             val checkersWins = sharedPref.getInt("checkers_wins", 0)
 
+            val mathUnlocked = sharedPref.getInt("math_unlocked_level", 1)
             binding.tvRecordTicTacToe.text = "🏆 Wins: $wins"
-            binding.tvRecordMath.text = if (mathScore > 0) "⭐ Best: $mathScore pts" else "⭐ Quick Math Quiz"
-            binding.tvRecordMemory.text = if (memoryScore > 0) "⭐ Best: $memoryScore pts" else "⭐ Quickest Solve"
+            binding.tvRecordMath.text = "⭐ Level $mathUnlocked / 30"
+            binding.tvRecordMemory.text = if (memoryScore > 0) "⭐ Best: $memoryScore pts" else "⭐ 30 Levels"
             binding.tvRecordColorMatch.text = if (colorScore > 0) "⭐ High Score: $colorScore" else "⭐ Speed & Focus"
             binding.tvRecord2048.text = if (score2048 > 0) "⭐ Best: $score2048" else "⭐ Reach 2048 Tile"
             binding.tvRecordConnect4.text = "🏆 Wins: $connect4Wins"

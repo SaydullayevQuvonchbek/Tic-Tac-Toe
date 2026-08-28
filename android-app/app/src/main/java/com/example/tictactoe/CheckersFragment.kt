@@ -155,9 +155,27 @@ class CheckersFragment : Fragment() {
         }
 
         binding.btnStartGame.setOnClickListener {
+            currentBoardSize = if (binding.rb10x10.isChecked) 10 else 8
+
+            if (binding.rbQuickMatch.isChecked) {
+                MatchmakingHelper.startQuickMatch(requireContext(), "checkers", currentBoardSize) { code, host, oppName, isBot ->
+                    roomCode = code
+                    isHost = host
+                    isOnlineMode = !isBot
+                    isAiMode = isBot
+                    myPlayerNumber = if (isHost) 1 else 2
+                    isMyTurnOnline = isHost
+
+                    startLocalGame(currentBoardSize)
+                    if (isOnlineMode && roomCode.isNotEmpty()) {
+                        subscribePusherEvents()
+                    }
+                }
+                return@setOnClickListener
+            }
+
             isAiMode = binding.rbAi.isChecked
             isOnlineMode = false
-            currentBoardSize = if (binding.rb10x10.isChecked) 10 else 8
             startLocalGame(currentBoardSize)
         }
 

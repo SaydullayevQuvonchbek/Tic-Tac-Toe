@@ -156,6 +156,21 @@ class Connect4Fragment : Fragment() {
             val userId = sharedPref.getInt("user_id", -1)
 
             when (binding.rgSetupMode.checkedRadioButtonId) {
+                R.id.rbQuickMatch -> {
+                    MatchmakingHelper.startQuickMatch(requireContext(), "connect4", 6) { code, host, oppName, isBot ->
+                        roomCode = code
+                        isHost = host
+                        isOnlineMode = !isBot
+                        isAiMode = isBot
+                        myPlayerNumber = if (isHost) 1 else 2
+                        isMyTurnOnline = isHost
+
+                        startLocalGame()
+                        if (isOnlineMode && roomCode.isNotEmpty()) {
+                            subscribePusherEvents()
+                        }
+                    }
+                }
                 R.id.rbVsAi -> {
                     isAiMode = true
                     isOnlineMode = false

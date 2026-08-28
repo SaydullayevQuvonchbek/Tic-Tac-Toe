@@ -5,129 +5,282 @@
     android:layout_height="match_parent"
     android:background="@color/background_color">
 
-    <ImageButton
-        android:id="@+id/btnBack"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@android:drawable/ic_menu_revert"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/text_color" />
+    <!-- ========================================== -->
+    <!-- 1. SETUP / CAMPAIGN MAP CONTAINER          -->
+    <!-- ========================================== -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/setupContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="20dp"
+        android:visibility="visible">
 
-    <TextView
-        android:id="@+id/tvTimer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="30s"
-        android:textColor="#F43F5E"
-        android:textSize="32sp"
-        android:fontFamily="sans-serif-black"
-        app:layout_constraintBottom_toBottomOf="@+id/btnBack"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/btnBack" />
-        
-    <TextView
-        android:id="@+id/tvScore"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:text="Score: 0"
-        android:textColor="#10B981"
-        android:textSize="20sp"
-        android:fontFamily="sans-serif-black"
-        app:layout_constraintBottom_toBottomOf="@+id/btnBack"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/btnBack" />
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardQuestion"
-        android:layout_width="0dp"
-        android:layout_height="150dp"
-        android:layout_margin="32dp"
-        app:cardBackgroundColor="@color/card_background"
-        app:cardCornerRadius="24dp"
-        app:cardElevation="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnBack">
+        <ImageButton
+            android:id="@+id/btnSetupBack"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_revert"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/text_color" />
 
         <TextView
-            android:id="@+id/tvQuestion"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="15 + 23 = ?"
+            android:id="@+id/tvSetupTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-black"
+            android:text="✖️ Math Master"
             android:textColor="@color/text_color"
-            android:textSize="48sp"
-            android:fontFamily="sans-serif-black" />
-    </androidx.cardview.widget.CardView>
+            android:textSize="22sp"
+            app:layout_constraintBottom_toBottomOf="@+id/btnSetupBack"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/btnSetupBack" />
 
-    <GridLayout
-        android:id="@+id/gridAnswers"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="32dp"
-        android:columnCount="2"
-        android:rowCount="2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardQuestion">
+        <!-- Total Stars Badge -->
+        <TextView
+            android:id="@+id/tvTotalStars"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_leaderboard_item"
+            android:fontFamily="sans-serif-black"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="6dp"
+            android:text="⭐ 0 / 90"
+            android:textColor="#F59E0B"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@+id/btnSetupBack"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/btnSetupBack" />
 
+        <!-- Continue Button -->
         <Button
-            android:id="@+id/btnAns1"
-            android:layout_width="0dp"
-            android:layout_height="80dp"
-            android:layout_columnWeight="1"
-            android:layout_margin="8dp"
-            android:backgroundTint="#3B82F6"
-            android:textSize="24sp"
-            android:text="38" />
+            android:id="@+id/btnContinueLevel"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginTop="16dp"
+            android:fontFamily="sans-serif-black"
+            android:text="CONTINUE LEVEL 1 ▶"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:backgroundTint="#EA580C"
+            app:cornerRadius="14dp"
+            app:layout_constraintTop_toBottomOf="@+id/tvSetupTitle" />
 
-        <Button
-            android:id="@+id/btnAns2"
-            android:layout_width="0dp"
-            android:layout_height="80dp"
-            android:layout_columnWeight="1"
-            android:layout_margin="8dp"
-            android:backgroundTint="#3B82F6"
-            android:textSize="24sp"
-            android:text="42" />
+        <!-- 30-Level Grid RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvLevels"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="16dp"
+            android:clipToPadding="false"
+            android:paddingBottom="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnContinueLevel" />
 
-        <Button
-            android:id="@+id/btnAns3"
-            android:layout_width="0dp"
-            android:layout_height="80dp"
-            android:layout_columnWeight="1"
-            android:layout_margin="8dp"
-            android:backgroundTint="#3B82F6"
-            android:textSize="24sp"
-            android:text="35" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <Button
-            android:id="@+id/btnAns4"
-            android:layout_width="0dp"
-            android:layout_height="80dp"
-            android:layout_columnWeight="1"
-            android:layout_margin="8dp"
-            android:backgroundTint="#3B82F6"
-            android:textSize="24sp"
-            android:text="40" />
+    <!-- ========================================== -->
+    <!-- 2. GAMEPLAY CONTAINER                      -->
+    <!-- ========================================== -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/gameplayContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="20dp"
+        android:visibility="gone">
 
-    </GridLayout>
+        <ImageButton
+            android:id="@+id/btnGameplayBack"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_revert"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/text_color" />
 
-    <TextView
-        android:id="@+id/tvFeedback"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:textSize="24sp"
-        android:fontFamily="sans-serif-black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/gridAnswers" />
+        <TextView
+            android:id="@+id/tvLevelTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-black"
+            android:text="Level 1"
+            android:textColor="@color/text_color"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="@+id/btnGameplayBack"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/btnGameplayBack" />
+
+        <!-- Timer & Target -->
+        <LinearLayout
+            android:id="@+id/statsRow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:orientation="horizontal"
+            android:gravity="center"
+            app:layout_constraintTop_toBottomOf="@+id/btnGameplayBack">
+
+            <TextView
+                android:id="@+id/tvTimer"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-black"
+                android:text="⏳ 20s"
+                android:textColor="#EF4444"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/tvTarget"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-black"
+                android:gravity="end"
+                android:text="🎯 0/5 Correct"
+                android:textColor="#10B981"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <!-- Question Card -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardQuestion"
+            android:layout_width="match_parent"
+            android:layout_height="140dp"
+            android:layout_marginTop="20dp"
+            app:cardBackgroundColor="@color/card_background"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="6dp"
+            app:layout_constraintTop_toBottomOf="@+id/statsRow">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvQuestion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-black"
+                    android:text="15 + 23 = ?"
+                    android:textColor="@color/text_color"
+                    android:textSize="40sp" />
+
+                <TextView
+                    android:id="@+id/tvFeedback"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:fontFamily="sans-serif-bold"
+                    android:text="Choose correct answer"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Answer Grid -->
+        <GridLayout
+            android:id="@+id/gridAnswers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:columnCount="2"
+            android:rowCount="2"
+            app:layout_constraintTop_toBottomOf="@+id/cardQuestion">
+
+            <Button
+                android:id="@+id/btnAns1"
+                android:layout_width="0dp"
+                android:layout_height="72dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="6dp"
+                android:fontFamily="sans-serif-black"
+                android:text="38"
+                android:textColor="@color/white"
+                android:textSize="22sp"
+                app:backgroundTint="#3B82F6"
+                app:cornerRadius="14dp" />
+
+            <Button
+                android:id="@+id/btnAns2"
+                android:layout_width="0dp"
+                android:layout_height="72dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="6dp"
+                android:fontFamily="sans-serif-black"
+                android:text="42"
+                android:textColor="@color/white"
+                android:textSize="22sp"
+                app:backgroundTint="#3B82F6"
+                app:cornerRadius="14dp" />
+
+            <Button
+                android:id="@+id/btnAns3"
+                android:layout_width="0dp"
+                android:layout_height="72dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="6dp"
+                android:fontFamily="sans-serif-black"
+                android:text="35"
+                android:textColor="@color/white"
+                android:textSize="22sp"
+                app:backgroundTint="#3B82F6"
+                app:cornerRadius="14dp" />
+
+            <Button
+                android:id="@+id/btnAns4"
+                android:layout_width="0dp"
+                android:layout_height="72dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="6dp"
+                android:fontFamily="sans-serif-black"
+                android:text="40"
+                android:textColor="@color/white"
+                android:textSize="22sp"
+                app:backgroundTint="#3B82F6"
+                app:cornerRadius="14dp" />
+        </GridLayout>
+
+        <!-- Power-Ups Bar (Coin Sinks) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <Button
+                android:id="@+id/btn5050"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="48dp"
+                android:layout_marginEnd="6dp"
+                android:text="💣 50/50 (20 🪙)"
+                android:textColor="@color/white"
+                android:textSize="13sp"
+                app:backgroundTint="#8B5CF6"
+                app:cornerRadius="12dp" />
+
+            <Button
+                android:id="@+id/btnAddTime"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="48dp"
+                android:layout_marginStart="6dp"
+                android:text="⏱️ +15s (30 🪙)"
+                android:textColor="@color/white"
+                android:textSize="13sp"
+                app:backgroundTint="#F59E0B"
+                app:cornerRadius="12dp" />
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

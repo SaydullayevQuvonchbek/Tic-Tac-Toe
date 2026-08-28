@@ -61,10 +61,33 @@ class WelcomeFragment : Fragment() {
                 R.id.rb5x5 -> 5
                 else -> 3
             }
-            val isAiMode = binding.rbAi.isChecked
             val isInfinityMode = binding.switchInfinityMode.isChecked
             val isArcadeMode = binding.switchArcadeMode.isChecked
 
+            if (binding.rbQuickMatch.isChecked) {
+                val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+                val userId = sharedPref.getInt("user_id", -1)
+                val username = sharedPref.getString("username", "Player 1") ?: "Player 1"
+
+                MatchmakingHelper.startQuickMatch(requireContext(), "tictactoe", size) { code, host, oppName, isBot ->
+                    val bundle = Bundle().apply {
+                        putBoolean("isOnlineMode", !isBot)
+                        putBoolean("isAiMode", isBot)
+                        putInt("playerId", userId)
+                        putString("roomCode", code)
+                        putBoolean("isHost", host)
+                        putString("username", username)
+                        putInt("boardSize", size)
+                        putBoolean("isInfinityMode", isInfinityMode)
+                        putBoolean("isArcadeMode", isArcadeMode)
+                        putString("startingPlayer", "X")
+                    }
+                    findNavController().navigate(R.id.action_welcomeFragment_to_gameFragment, bundle)
+                }
+                return@setOnClickListener
+            }
+
+            val isAiMode = binding.rbAi.isChecked
             launchLocalGame(size, isAiMode, isInfinityMode, isArcadeMode)
         }
 

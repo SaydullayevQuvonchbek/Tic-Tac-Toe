@@ -72,10 +72,19 @@
                     android:orientation="vertical">
 
                     <RadioButton
-                        android:id="@+id/rbAi"
+                        android:id="@+id/rbQuickMatch"
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
                         android:checked="true"
+                        android:text="⚡ 1-Tap Quick Match (Auto Opponent)"
+                        android:textColor="#38BDF8"
+                        android:textStyle="bold"
+                        android:textSize="15sp" />
+
+                    <RadioButton
+                        android:id="@+id/rbAi"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
                         android:text="🤖 Play vs Smart AI Bot"
                         android:textColor="@color/text_color"
                         android:textSize="15sp" />
@@ -92,7 +101,7 @@
                         android:id="@+id/rbOnline"
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
-                        android:text="🌐 Online Multiplayer (Room Code)"
+                        android:text="🌐 Custom Room Code"
                         android:textColor="@color/text_color"
                         android:textSize="15sp" />
                 </RadioGroup>
