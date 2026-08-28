@@ -54,7 +54,10 @@ object EmoteHelper {
         EmoteItem("🦁", "Lion Roar", 80, true),
         EmoteItem("🏆", "Gold Trophy", 100, true),
         EmoteItem("💣", "Time Bomb", 75, true),
-        EmoteItem("🧙", "Wizard Magic", 120, true)
+        EmoteItem("🧙", "Wizard Magic", 120, true),
+
+        // Secret Impossible Troll Emote
+        EmoteItem("🖕", "Fake You :xd", 999999999, true)
     )
 
     // Flat list of strings for quick lookup
@@ -160,6 +163,21 @@ object EmoteHelper {
         val prefs = context.getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
         val coins = prefs.getInt("coins", 0)
         val userId = prefs.getInt("user_id", -1)
+
+        if (item.cost >= 999999) {
+            // Hilarious Impossible Troll Easter Egg
+            AlertDialog.Builder(context)
+                .setTitle("🚫 O'zingcha ayyormisan? 😜")
+                .setMessage("Bu maxfiy 'Fake You' belgisi faqat afsonaviy o'yinchilarning tushiga kiradi!\n\nNarxi: 999,999,999 🪙\n\nSotib olishning umuman iloji yo'q, behuda urinma! :xd")
+                .setPositiveButton("Baribir Urinish 💸") { _, _ ->
+                    HapticHelper.performHeavyImpact(context)
+                    SoundHelper.playCaptureSound(context)
+                    Toast.makeText(context, "❌ Xatolik 404: Pul ham, asab ham yetmaydi! 🤣", Toast.LENGTH_LONG).show()
+                }
+                .setNegativeButton("Tushundim 😂", null)
+                .show()
+            return
+        }
 
         AlertDialog.Builder(context)
             .setTitle("✨ Premium Emote: ${item.emoji} ${item.name}")
