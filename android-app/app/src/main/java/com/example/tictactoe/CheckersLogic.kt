@@ -239,6 +239,44 @@ class CheckersLogic(var size: Int = 8) {
         return true
     }
 
+    fun applyNetworkMove(fromR: Int, fromC: Int, toR: Int, toC: Int): Boolean {
+        if (makeMove(fromR, fromC, toR, toC)) {
+            return true
+        }
+
+        // Authoritative fallback: force-apply the move across the board
+        val piece = board[fromR][fromC]
+        if (piece == EMPTY) return false
+
+        board[fromR][fromC] = EMPTY
+        board[toR][toC] = piece
+
+        // Promotion
+        if (piece == P1 && toR == 0) {
+            board[toR][toC] = P1_KING
+        } else if (piece == P2 && toR == size - 1) {
+            board[toR][toC] = P2_KING
+        }
+
+        // Remove any jumped enemy piece along the diagonal path
+        val dr = if (toR > fromR) 1 else -1
+        val dc = if (toC > fromC) 1 else -1
+        var cr = fromR + dr
+        var cc = fromC + dc
+        while (cr != toR && cc != toC) {
+            if (cr in 0 until size && cc in 0 until size) {
+                board[cr][cc] = EMPTY
+            }
+            cr += dr
+            cc += dc
+        }
+
+        activeJumpPiece = null
+        currentPlayer = if (isP1(piece)) 2 else 1
+        checkGameOver()
+        return true
+    }
+
     fun checkGameOver() {
         val p1Pieces = countPieces(1)
         val p2Pieces = countPieces(2)

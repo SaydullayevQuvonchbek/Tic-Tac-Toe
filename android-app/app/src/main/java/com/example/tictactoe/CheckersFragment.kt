@@ -441,8 +441,13 @@ class CheckersFragment : Fragment() {
             onMoveMade = { eventData ->
                 activity?.runOnUiThread {
                     try {
-                        val json = JSONObject(eventData)
-                        val senderId = json.optInt("player_id", -1)
+                        var json = JSONObject(eventData)
+                        if (json.has("data")) {
+                            val d = json.get("data")
+                            if (d is String) json = JSONObject(d)
+                            else if (d is JSONObject) json = d
+                        }
+                        val senderId = json.optInt("player_id", json.optString("player_id", "-1").toIntOrNull() ?: -1)
                         val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
                         val myUserId = sharedPref.getInt("user_id", -1)
 
@@ -450,12 +455,13 @@ class CheckersFragment : Fragment() {
                             return@runOnUiThread
                         }
 
-                        val row = json.optInt("row", -1)
-                        val col = json.optInt("col", -1)
+                        val row = json.optInt("row", json.optString("row", "-1").toIntOrNull() ?: -1)
+                        val col = json.optInt("col", json.optString("col", "-1").toIntOrNull() ?: -1)
 
                         if (row == -888) {
                             val emote = EmoteHelper.EMOTES.getOrNull(col) ?: "🔥"
                             EmoteHelper.showFloatingEmote(binding.root as ViewGroup, emote, isOpponent = true)
+                            HapticHelper.performClick(requireContext())
                             return@runOnUiThread
                         }
 
@@ -478,8 +484,10 @@ class CheckersFragment : Fragment() {
                         val toR = if (col >= 100) col / 100 else col / 10
                         val toC = if (col >= 100) col % 100 else col % 10
 
-                        val moved = logic.makeMove(fromR, fromC, toR, toC)
+                        val moved = logic.applyNetworkMove(fromR, fromC, toR, toC)
                         if (moved) {
+                            HapticHelper.performClick(requireContext())
+                            SoundHelper.playMoveSound(requireContext())
                             binding.checkersBoardView.invalidate()
                             updateScoreboard()
 
