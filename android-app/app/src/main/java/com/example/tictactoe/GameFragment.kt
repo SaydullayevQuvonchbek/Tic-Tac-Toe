@@ -292,11 +292,17 @@ class GameFragment : Fragment() {
             onEmoteReceived = { eventData: String ->
                 activity?.runOnUiThread {
                     try {
-                        val json = JSONObject(eventData)
-                        val senderId = json.optInt("player_id", -1)
+                        var json = JSONObject(eventData)
+                        if (json.has("data") && json.get("data") is String) {
+                            json = JSONObject(json.getString("data"))
+                        }
+                        val senderId = json.optInt("player_id", json.optString("player_id", "-1").toIntOrNull() ?: -1)
                         if (senderId != -1 && senderId == playerId) return@runOnUiThread
                         val emote = json.optString("emote", "🔥")
-                        EmoteHelper.showFloatingEmote(binding.root as ViewGroup, emote, isOpponent = true)
+                        if (emote.isNotEmpty()) {
+                            EmoteHelper.showFloatingEmote(binding.root as ViewGroup, emote, isOpponent = true)
+                            HapticHelper.performClick(requireContext())
+                        }
                     } catch (_: Exception) {}
                 }
             }

@@ -274,25 +274,6 @@ class CheckersLogic(var size: Int = 8) {
     }
 
     fun getAiMove(): Move? {
-        val moves = getAllValidMovesForPlayer(2)
-        if (moves.isEmpty()) return null
-
-        val jumps = moves.filter { it.isJump }
-        if (jumps.isNotEmpty()) {
-            return jumps.maxByOrNull {
-                var score = 10
-                if (it.toR == size - 1) score += 20 // Promotion jump!
-                score
-            } ?: jumps.random()
-        }
-
-        return moves.maxByOrNull { move ->
-            var score = 0
-            val piece = board[move.fromR][move.fromC]
-            if (piece == P2 && move.toR == size - 1) score += 25
-            if (move.toC in 2..(size - 3) && move.toR in 3..(size - 4)) score += 5
-            if (move.fromR == 0) score -= 3
-            score
-        } ?: moves.random()
+        return CheckersAI.findBestMove(this, 2, maxDepth = 5)
     }
 }

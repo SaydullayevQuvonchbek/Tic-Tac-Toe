@@ -13,6 +13,7 @@ import android.util.AttributeSet
 import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
 import android.view.View
+import android.widget.Toast
 import kotlin.math.min
 
 class CheckersBoardView @JvmOverloads constructor(
@@ -22,10 +23,7 @@ class CheckersBoardView @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
 
     var isFlipped: Boolean = false
-        set(value) {
-            field = value
-            invalidate()
-        }
+    var onMoveExecutedListener: ((fromR: Int, fromC: Int, toR: Int, toC: Int) -> Unit)? = null
 
     var logic: CheckersLogic? = null
         set(value) {
@@ -37,8 +35,6 @@ class CheckersBoardView @JvmOverloads constructor(
             invalidate()
         }
 
-    var onMoveExecutedListener: ((fromR: Int, fromC: Int, toR: Int, toC: Int) -> Unit)? = null
-
     // Selection State
     var selectedR = -1
     var selectedC = -1
@@ -46,20 +42,26 @@ class CheckersBoardView @JvmOverloads constructor(
 
     // Paints
     private val lightSquarePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#E2E8F0")
+        color = Color.parseColor("#F0D9B5") // Classic Light Wood
     }
 
     private val darkSquarePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#334155")
+        color = Color.parseColor("#B58863") // Classic Rich Walnut Wood
+    }
+
+    private val selectedRingPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#38BDF8") // Bright Cyan Glow
+        style = Paint.Style.STROKE
+        strokeWidth = 10f
     }
 
     private val selectedSquarePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#80F59E0B") // Translucent Amber
+        color = Color.parseColor("#6638BDF8")
         style = Paint.Style.FILL
     }
 
     private val validMoveIndicatorPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#9910B981") // Translucent Emerald
+        color = Color.parseColor("#CC10B981") // Translucent Emerald
         style = Paint.Style.FILL
     }
 
@@ -76,13 +78,25 @@ class CheckersBoardView @JvmOverloads constructor(
     }
 
     private val mandatoryCaptureHaloPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#EF4444")
+        color = Color.parseColor("#F59E0B") // Golden Glow for Mandatory Jump Pieces
         style = Paint.Style.STROKE
         strokeWidth = 8f
     }
 
     private val p1PiecePaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val p2PiecePaint = Paint(Paint.ANTI_ALIAS_FLAG)
+
+    private val p1RingPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#FCA5A5")
+        style = Paint.Style.STROKE
+        strokeWidth = 4f
+    }
+
+    private val p2RingPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#E2E8F0") // High-contrast Silver metallic ring for Black pieces
+        style = Paint.Style.STROKE
+        strokeWidth = 5f
+    }
 
     private val crownPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#FBBF24")
@@ -109,7 +123,7 @@ class CheckersBoardView @JvmOverloads constructor(
 
     private fun calculateDimensions() {
         val s = logic?.size ?: 8
-        val padding = 16f
+        val padding = 12f
         val availableWidth = width - (padding * 2)
         val availableHeight = height - (padding * 2)
 
@@ -167,7 +181,7 @@ class CheckersBoardView @JvmOverloads constructor(
             }
         }
 
-        // 2. Identify and Highlight Pieces with Mandatory Jumps
+        // 2. Highlight Pieces with Mandatory Jumps
         val piecesWithMandatoryJumps = mutableSetOf<Pair<Int, Int>>()
         val allJumps = l.getAllValidMovesForPlayer(l.currentPlayer).filter { it.isJump }
         if (allJumps.isNotEmpty()) {
@@ -181,10 +195,10 @@ class CheckersBoardView @JvmOverloads constructor(
             val sc = toScreenC(p.second)
             val cx = startX + sc * cellSize + cellSize / 2f
             val cy = startY + sr * cellSize + cellSize / 2f
-            canvas.drawCircle(cx, cy, pieceRadius + 5f, mandatoryCaptureHaloPaint)
+            canvas.drawCircle(cx, cy, pieceRadius + 6f, mandatoryCaptureHaloPaint)
         }
 
-        // 3. Draw Jump Trail and Destination Squares
+        // 3. Draw Jump Trail and Destination Move Indicators
         for (move in validMoves) {
             val fromSr = toScreenR(move.fromR)
             val fromSc = toScreenC(move.fromC)
@@ -211,7 +225,7 @@ class CheckersBoardView @JvmOverloads constructor(
             }
         }
 
-        // 4. Draw Pieces
+        // 4. Draw Pieces with 3D Gradients and Metallic Rings
         for (sr in 0 until s) {
             for (sc in 0 until s) {
                 val r = toBoardR(sr)
@@ -223,23 +237,34 @@ class CheckersBoardView @JvmOverloads constructor(
                     val cy = startY + sr * cellSize + cellSize / 2f
 
                     if (l.isP1(piece)) {
+                        // Red Player
                         p1PiecePaint.shader = RadialGradient(
                             cx - pieceRadius * 0.3f, cy - pieceRadius * 0.3f,
                             pieceRadius * 1.2f,
-                            intArrayOf(Color.parseColor("#EF4444"), Color.parseColor("#991B1B")),
+                            intArrayOf(Color.parseColor("#EF4444"), Color.parseColor("#881337")),
                             null, Shader.TileMode.CLAMP
                         )
                         canvas.drawCircle(cx, cy, pieceRadius, p1PiecePaint)
+                        canvas.drawCircle(cx, cy, pieceRadius * 0.75f, p1RingPaint)
                     } else {
+                        // Black Player (High contrast with silver outer ring)
                         p2PiecePaint.shader = RadialGradient(
                             cx - pieceRadius * 0.3f, cy - pieceRadius * 0.3f,
                             pieceRadius * 1.2f,
-                            intArrayOf(Color.parseColor("#475569"), Color.parseColor("#0F172A")),
+                            intArrayOf(Color.parseColor("#334155"), Color.parseColor("#020617")),
                             null, Shader.TileMode.CLAMP
                         )
                         canvas.drawCircle(cx, cy, pieceRadius, p2PiecePaint)
+                        canvas.drawCircle(cx, cy, pieceRadius - 2f, p2RingPaint)
+                        canvas.drawCircle(cx, cy, pieceRadius * 0.65f, p2RingPaint)
                     }
 
+                    // Highlight selected piece with cyan glow
+                    if (r == selectedR && c == selectedC) {
+                        canvas.drawCircle(cx, cy, pieceRadius + 5f, selectedRingPaint)
+                    }
+
+                    // King Crown
                     if (l.isKing(piece)) {
                         val yPos = (cy - ((crownPaint.descent() + crownPaint.ascent()) / 2))
                         canvas.drawText("👑", cx, yPos, crownPaint)
@@ -274,6 +299,7 @@ class CheckersBoardView @JvmOverloads constructor(
     private fun handleSquareTap(r: Int, c: Int) {
         val l = logic ?: return
 
+        // Check if tapping a destination move square
         val targetMove = validMoves.firstOrNull { it.toR == r && it.toC == c }
         if (targetMove != null) {
             val fromR = selectedR
@@ -283,18 +309,23 @@ class CheckersBoardView @JvmOverloads constructor(
             validMoves = emptyList()
             performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
             onMoveExecutedListener?.invoke(fromR, fromC, r, c)
+            invalidate()
             return
         }
 
+        // Tapping a piece
         if (l.isCurrentPlayerPiece(l.board[r][c])) {
             val moves = l.getValidMovesForPiece(r, c)
-            if (moves.isNotEmpty()) {
-                selectedR = r
-                selectedC = c
-                validMoves = moves
-                performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-                invalidate()
+            selectedR = r
+            selectedC = c
+            validMoves = moves
+            performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+
+            val allJumps = l.getAllValidMovesForPlayer(l.currentPlayer).filter { it.isJump }
+            if (allJumps.isNotEmpty() && moves.isEmpty()) {
+                Toast.makeText(context, "⚠️ Majburiy urish (Capture) mavjud! Oltin rangli donani tanlang.", Toast.LENGTH_SHORT).show()
             }
+            invalidate()
         } else {
             selectedR = -1
             selectedC = -1
