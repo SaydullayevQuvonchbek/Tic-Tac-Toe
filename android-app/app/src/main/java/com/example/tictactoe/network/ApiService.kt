@@ -40,6 +40,37 @@ data class MatchmakingRequest(val player_id: Int, val game_type: String)
 data class MatchmakingOpponent(val id: Int, val username: String, val level: Int, val avatar: String?)
 data class MatchmakingResponse(val status: String, val room_code: String?, val is_host: Boolean?, val opponent: MatchmakingOpponent?)
 
+// Durak Card Game Data Classes
+data class CardStartRequest(val room_code: String, val player_id: Int)
+data class CardStartResponse(
+    val status: String,
+    val trump_suit: String?,
+    val trump_card: String?,
+    val deck_remaining: Int?,
+    val player1_cards: List<String>?,
+    val player2_cards: List<String>?,
+    val attacker_id: Int?
+)
+
+data class CardActionRequest(
+    val room_code: String,
+    val player_id: Int,
+    val action: String,
+    val card: String? = null,
+    val target_card: String? = null
+)
+data class CardActionResponse(val status: String, val message: String? = null)
+
+data class CardRefillRequest(val room_code: String, val player_id: Int)
+data class CardRefillResponse(
+    val status: String,
+    val deck_remaining: Int?,
+    val p1_new_cards: List<String>?,
+    val p2_new_cards: List<String>?,
+    val next_attacker_id: Int?,
+    val next_defender_id: Int?
+)
+
 interface ApiService {
     @GET("leaderboard")
     fun getLeaderboard(): Call<LeaderboardResponse>
@@ -72,4 +103,14 @@ interface ApiService {
 
     @POST("store/buy")
     fun buyItem(@Body req: StoreBuyRequest): Call<StoreBuyResponse>
+
+    // Durak Card Game
+    @POST("room/card/start")
+    fun startCardGame(@Body req: CardStartRequest): Call<CardStartResponse>
+
+    @POST("room/card/action")
+    fun sendCardAction(@Body req: CardActionRequest): Call<CardActionResponse>
+
+    @POST("room/card/refill")
+    fun refillCards(@Body req: CardRefillRequest): Call<CardRefillResponse>
 }

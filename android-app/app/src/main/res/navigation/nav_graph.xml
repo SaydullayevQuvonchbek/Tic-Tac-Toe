@@ -43,6 +43,9 @@
         <action
             android:id="@+id/action_dashboardFragment_to_dropNumberFragment"
             app:destination="@id/dropNumberFragment" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_durakFragment"
+            app:destination="@id/durakFragment" />
     </fragment>
 
     <fragment
@@ -213,5 +216,11 @@
         android:name="com.example.tictactoe.DropNumberFragment"
         android:label="Drop Number"
         tools:layout="@layout/fragment_drop_number" />
+
+    <fragment
+        android:id="@+id/durakFragment"
+        android:name="com.example.tictactoe.DurakFragment"
+        android:label="Durak Card Game"
+        tools:layout="@layout/fragment_durak" />
 
 </navigation>
