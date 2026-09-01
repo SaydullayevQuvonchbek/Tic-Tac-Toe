@@ -185,7 +185,9 @@ class DurakFragment : Fragment() {
                     isHost = false
                     isOnlineMode = true
                     isAiMode = false
-                    startGame()
+                    showGameplayScreen()
+                    subscribePusherEvents()
+                    sendCardActionOnline("guest_joined", "", "")
                 } else {
                     Toast.makeText(context, response.body()?.message ?: "Room not found", Toast.LENGTH_SHORT).show()
                 }
@@ -204,7 +206,9 @@ class DurakFragment : Fragment() {
             onGameStarted = { data ->
                 activity?.runOnUiThread {
                     binding.waitingContainer.visibility = View.GONE
-                    syncOnlineGameStart(data)
+                    if (isHost) {
+                        hostBroadcastGameInit()
+                    }
                 }
             },
             onMoveMade = { eventData ->
@@ -237,6 +241,27 @@ class DurakFragment : Fragment() {
                 }
             }
         )
+    }
+
+    private fun hostBroadcastGameInit() {
+        logic.initNewGame()
+        val trump = logic.trumpCard ?: Card(CardSuit.HEARTS, CardRank.ACE)
+        val p1Cards = org.json.JSONArray(logic.playerHand.map { it.code })
+        val p2Cards = org.json.JSONArray(logic.opponentHand.map { it.code })
+        val deckCards = org.json.JSONArray(logic.deck.map { it.code })
+        val hostAttacks = logic.isPlayerAttacker
+
+        val payload = JSONObject().apply {
+            put("trump", trump.code)
+            put("p1", p1Cards)
+            put("p2", p2Cards)
+            put("deck", deckCards)
+            put("host_attacks", hostAttacks)
+        }.toString()
+
+        sendCardActionOnline("sync_init", trump.code, payload)
+        showGameplayScreen()
+        renderBoard()
     }
 
     private fun syncOnlineGameStart(data: String) {
@@ -659,6 +684,35 @@ class DurakFragment : Fragment() {
             val targetCardCode = json.optString("target_card", "")
 
             when (action) {
+                "guest_joined" -> {
+                    if (isHost) {
+                        hostBroadcastGameInit()
+                    }
+                }
+                "sync_init" -> {
+                    if (!isHost && targetCardCode.isNotEmpty()) {
+                        try {
+                            val initObj = JSONObject(targetCardCode)
+                            val trump = Card.fromCode(initObj.getString("trump"))
+                            val p1Arr = initObj.getJSONArray("p1")
+                            val p2Arr = initObj.getJSONArray("p2")
+                            val deckArr = initObj.getJSONArray("deck")
+                            val hostAttacks = initObj.getBoolean("host_attacks")
+
+                            val myCards = (0 until p2Arr.length()).map { p2Arr.getString(it) }
+                            val oppCards = (0 until p1Arr.length()).map { p1Arr.getString(it) }
+                            val deckList = (0 until deckArr.length()).map { deckArr.getString(it) }
+
+                            logic.initNewGameWithSyncedDeck(trump, myCards, oppCards, deckList)
+                            logic.isPlayerAttacker = !hostAttacks
+                            showGameplayScreen()
+                            renderBoard()
+                            return
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+                }
                 "attack" -> {
                     if (cardCode.isNotEmpty()) {
                         val card = Card.fromCode(cardCode)

@@ -79,7 +79,6 @@ class DurakLogic {
             playerHand = p1Cards.map { Card.fromCode(it) }.toMutableList()
             opponentHand = p2Cards.map { Card.fromCode(it) }.toMutableList()
             deck.clear()
-            // Create full deck minus dealt cards
             for (s in CardSuit.values()) {
                 for (r in CardRank.values()) {
                     val c = Card(s, r)
@@ -89,9 +88,8 @@ class DurakLogic {
                 }
             }
             deck.shuffle()
-            deck.add(trumpCard!!) // Trump card is last in deck
+            deck.add(trumpCard!!)
         } else {
-            // Local offline deck generation
             deck.clear()
             for (s in CardSuit.values()) {
                 for (r in CardRank.values()) {
@@ -103,16 +101,13 @@ class DurakLogic {
             playerHand.clear()
             opponentHand.clear()
 
-            // Deal 6 cards each
             for (i in 0 until 6) {
                 if (deck.isNotEmpty()) playerHand.add(deck.removeAt(0))
                 if (deck.isNotEmpty()) opponentHand.add(deck.removeAt(0))
             }
 
-            // Trump card is the last card in the deck
             trumpCard = if (deck.isNotEmpty()) deck.last() else Card(CardSuit.HEARTS, CardRank.ACE)
 
-            // Lowest trump starts first
             val pLowestTrump = playerHand.filter { it.suit == trumpSuit }.minByOrNull { it.rank.value }
             val oLowestTrump = opponentHand.filter { it.suit == trumpSuit }.minByOrNull { it.rank.value }
 
@@ -123,6 +118,20 @@ class DurakLogic {
                 else -> true
             }
         }
+
+        sortHand(playerHand)
+        sortHand(opponentHand)
+    }
+
+    fun initNewGameWithSyncedDeck(trump: Card, myCards: List<String>, oppCards: List<String>, deckCodes: List<String>) {
+        tablePairs.clear()
+        isGameOver = false
+        winner = 0
+
+        trumpCard = trump
+        playerHand = myCards.map { Card.fromCode(it) }.toMutableList()
+        opponentHand = oppCards.map { Card.fromCode(it) }.toMutableList()
+        deck = deckCodes.map { Card.fromCode(it) }.toMutableList()
 
         sortHand(playerHand)
         sortHand(opponentHand)
@@ -147,18 +156,15 @@ class DurakLogic {
         val defenderHandSize = if (isPlayer) opponentHand.size else playerHand.size
         val unbeatCount = tablePairs.count { it.defendCard == null }
 
-        // Cannot throw more unbeat cards than defender's remaining hand size
         if (unbeatCount >= defenderHandSize) return false
-
-        // If table is empty, can attack with anything
         if (tablePairs.isEmpty()) return true
 
-        // Otherwise rank must match ANY card already on the table
         val ranksOnTable = mutableSetOf<CardRank>()
         for (pair in tablePairs) {
             ranksOnTable.add(pair.attackCard.rank)
             pair.defendCard?.let { ranksOnTable.add(it.rank) }
         }
+
         return ranksOnTable.contains(card.rank)
     }
 
@@ -166,21 +172,25 @@ class DurakLogic {
         if (!canAttackWith(card, isPlayer)) return false
 
         val hand = if (isPlayer) playerHand else opponentHand
-        if (!hand.remove(card)) return false
-
-        tablePairs.add(TablePair(card))
+        hand.remove(card)
+        tablePairs.add(TablePair(attackCard = card))
         return true
     }
 
     fun defend(attackCard: Card, defendCard: Card, isPlayer: Boolean): Boolean {
-        val pair = tablePairs.firstOrNull { it.attackCard == attackCard && it.defendCard == null } ?: return false
+        val target = tablePairs.firstOrNull { it.attackCard == attackCard && it.defendCard == null } ?: return false
         if (!canBeat(attackCard, defendCard)) return false
 
         val hand = if (isPlayer) playerHand else opponentHand
-        if (!hand.remove(defendCard)) return false
-
-        pair.defendCard = defendCard
+        hand.remove(defendCard)
+        target.defendCard = defendCard
         return true
+    }
+
+    fun clearTableToBita() {
+        tablePairs.clear()
+        refillHands()
+        isPlayerAttacker = !isPlayerAttacker
     }
 
     fun takeTableCards(isPlayer: Boolean) {
@@ -191,33 +201,21 @@ class DurakLogic {
         }
         tablePairs.clear()
         sortHand(hand)
-
-        // Defender took -> Attacker remains the same
         refillHands()
-        checkGameOver()
-    }
-
-    fun clearTableToBita() {
-        tablePairs.clear()
-
-        // Turn switches to previous defender (now new attacker)
-        isPlayerAttacker = !isPlayerAttacker
-        refillHands()
-        checkGameOver()
     }
 
     fun refillHands() {
-        val attackerHand = if (isPlayerAttacker) playerHand else opponentHand
-        val defenderHand = if (isPlayerAttacker) opponentHand else playerHand
-
-        // Attacker draws first up to 6
-        while (attackerHand.size < 6 && deck.isNotEmpty()) {
-            attackerHand.add(deck.removeAt(0))
+        val (firstHand, secondHand) = if (isPlayerAttacker) {
+            Pair(playerHand, opponentHand)
+        } else {
+            Pair(opponentHand, playerHand)
         }
 
-        // Defender draws next up to 6
-        while (defenderHand.size < 6 && deck.isNotEmpty()) {
-            defenderHand.add(deck.removeAt(0))
+        while (firstHand.size < 6 && deck.isNotEmpty()) {
+            firstHand.add(deck.removeAt(0))
+        }
+        while (secondHand.size < 6 && deck.isNotEmpty()) {
+            secondHand.add(deck.removeAt(0))
         }
 
         sortHand(playerHand)
@@ -225,20 +223,17 @@ class DurakLogic {
     }
 
     fun checkGameOver() {
-        if (deck.isNotEmpty() || tablePairs.isNotEmpty()) return
-
-        val pEmpty = playerHand.isEmpty()
-        val oEmpty = opponentHand.isEmpty()
-
-        if (pEmpty && oEmpty) {
-            isGameOver = true
-            winner = 0 // Draw
-        } else if (pEmpty) {
-            isGameOver = true
-            winner = 1 // Player Win
-        } else if (oEmpty) {
-            isGameOver = true
-            winner = 2 // Opponent/Bot Win
+        if (deck.isEmpty()) {
+            if (playerHand.isEmpty() && opponentHand.isEmpty()) {
+                isGameOver = true
+                winner = 0 // Draw
+            } else if (playerHand.isEmpty()) {
+                isGameOver = true
+                winner = 1 // Player Won
+            } else if (opponentHand.isEmpty()) {
+                isGameOver = true
+                winner = 2 // Opponent Won
+            }
         }
     }
 }
