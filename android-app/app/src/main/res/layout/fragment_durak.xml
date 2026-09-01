@@ -524,9 +524,9 @@
         <HorizontalScrollView
             android:id="@+id/scrollPlayerHand"
             android:layout_width="match_parent"
-            android:layout_height="185dp"
+            android:layout_height="195dp"
             android:fillViewport="true"
-            android:paddingHorizontal="10dp"
+            android:paddingHorizontal="8dp"
             android:scrollbars="none"
             app:layout_constraintBottom_toTopOf="@+id/layoutEmotesDurak">
 

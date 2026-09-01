@@ -379,8 +379,8 @@ class DurakFragment : Fragment() {
         for (i in 0 until oppCount) {
             val miniCard = DurakCardView(requireContext()).apply {
                 isFaceDown = true
-                layoutParams = LinearLayout.LayoutParams(56, 76).apply {
-                    setMargins(-14, 0, 0, 0)
+                layoutParams = LinearLayout.LayoutParams(dp(50), dp(72)).apply {
+                    setMargins(if (i == 0) 0 else dp(-16), 0, 0, 0)
                 }
             }
             binding.layoutOpponentCards.addView(miniCard)
@@ -396,42 +396,47 @@ class DurakFragment : Fragment() {
         updateStatusAndButtons()
     }
 
+    private fun dp(dpVal: Int): Int {
+        val density = resources.displayMetrics.density
+        return (dpVal * density).toInt()
+    }
+
     private var selectedTargetAttackCard: Card? = null
 
     private fun renderTablePairs() {
         binding.layoutTablePairs.removeAllViews()
         val count = logic.tablePairs.size
 
-        // Dynamic Pair and Card scaling based on number of active battle pairs
+        // Dynamic Pair and Card scaling based on number of active battle pairs (DP based)
         val pairW = when {
-            count <= 2 -> 96
-            count == 3 -> 84
-            count == 4 -> 74
-            else -> 66
+            count <= 2 -> dp(98)
+            count == 3 -> dp(86)
+            count == 4 -> dp(76)
+            else -> dp(68)
         }
         val pairH = when {
-            count <= 2 -> 138
-            count == 3 -> 122
-            count == 4 -> 108
-            else -> 96
+            count <= 2 -> dp(142)
+            count == 3 -> dp(126)
+            count == 4 -> dp(112)
+            else -> dp(100)
         }
         val cardW = when {
-            count <= 2 -> 84
-            count == 3 -> 74
-            count == 4 -> 65
-            else -> 58
+            count <= 2 -> dp(86)
+            count == 3 -> dp(76)
+            count == 4 -> dp(66)
+            else -> dp(58)
         }
         val cardH = when {
-            count <= 2 -> 122
-            count == 3 -> 108
-            count == 4 -> 95
-            else -> 85
+            count <= 2 -> dp(126)
+            count == 3 -> dp(112)
+            count == 4 -> dp(98)
+            else -> dp(88)
         }
 
         for (pair in logic.tablePairs) {
             val pairContainer = FrameLayout(requireContext()).apply {
                 layoutParams = LinearLayout.LayoutParams(pairW, pairH).apply {
-                    setMargins(6, 0, 6, 0)
+                    setMargins(dp(6), 0, dp(6), 0)
                 }
             }
 
@@ -465,8 +470,8 @@ class DurakFragment : Fragment() {
                     card = pair.defendCard
                     isFaceDown = false
                     rotation = 12f
-                    translationX = 10f
-                    translationY = 10f
+                    translationX = dp(10).toFloat()
+                    translationY = dp(10).toFloat()
                     layoutParams = FrameLayout.LayoutParams(cardW, cardH)
                 }
                 pairContainer.addView(defendView)
@@ -486,25 +491,25 @@ class DurakFragment : Fragment() {
         binding.layoutPlayerCards.removeAllViews()
         val count = logic.playerHand.size
 
-        // Dynamic Card Dimensions and Negative Overlap Fan Spacing
+        // Dynamic Massive Card Dimensions in DP!
         val cardW = when {
-            count <= 6 -> 104
-            count <= 9 -> 94
-            count <= 13 -> 86
-            else -> 80
+            count <= 6 -> dp(112)
+            count <= 9 -> dp(102)
+            count <= 13 -> dp(92)
+            else -> dp(84)
         }
         val cardH = when {
-            count <= 6 -> 154
-            count <= 9 -> 140
-            count <= 13 -> 130
-            else -> 120
+            count <= 6 -> dp(166)
+            count <= 9 -> dp(152)
+            count <= 13 -> dp(138)
+            else -> dp(126)
         }
         val marginSide = when {
-            count <= 5 -> 6
-            count <= 7 -> 2
-            count <= 10 -> -((count - 6) * 8).coerceAtMost(36)
-            count <= 14 -> -((count - 6) * 7).coerceAtMost(48)
-            else -> -54
+            count <= 5 -> dp(6)
+            count <= 7 -> dp(2)
+            count <= 10 -> -dp(((count - 6) * 8).coerceAtMost(36))
+            count <= 14 -> -dp(((count - 6) * 7).coerceAtMost(48))
+            else -> -dp(54)
         }
 
         for ((index, card) in logic.playerHand.withIndex()) {
@@ -514,7 +519,7 @@ class DurakFragment : Fragment() {
                 isFaceDown = false
                 isSelectedCard = isSelected
                 layoutParams = LinearLayout.LayoutParams(cardW, cardH).apply {
-                    setMargins(if (index == 0) 6 else marginSide, 0, 6, 0)
+                    setMargins(if (index == 0) dp(6) else marginSide, 0, dp(6), 0)
                 }
                 if (isSelected) {
                     bringToFront()
