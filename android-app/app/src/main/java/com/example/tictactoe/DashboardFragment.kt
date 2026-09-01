@@ -126,6 +126,12 @@ class DashboardFragment : Fragment() {
             }
         }
 
+        binding.cardStore.setOnClickListener {
+            if (ensureProfile()) {
+                findNavController().navigate(R.id.action_dashboardFragment_to_storeFragment)
+            }
+        }
+
         initQuestsClickListeners()
     }
 

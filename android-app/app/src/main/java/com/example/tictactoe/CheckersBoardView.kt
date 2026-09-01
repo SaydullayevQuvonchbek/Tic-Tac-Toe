@@ -35,18 +35,38 @@ class CheckersBoardView @JvmOverloads constructor(
             invalidate()
         }
 
+    var boardTheme: CheckersThemeManager.BoardTheme = CheckersThemeManager.BOARD_THEMES[0]
+        set(value) {
+            field = value
+            updateThemePaints()
+            invalidate()
+        }
+
+    var pieceSkin: CheckersThemeManager.PieceSkin = CheckersThemeManager.PIECE_SKINS[0]
+        set(value) {
+            field = value
+            updateThemePaints()
+            invalidate()
+        }
+
     // Selection State
     var selectedR = -1
     var selectedC = -1
     var validMoves: List<CheckersLogic.Move> = emptyList()
 
     // Paints
-    private val lightSquarePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#F0D9B5") // Classic Light Wood
+    private val lightSquarePaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val darkSquarePaint = Paint(Paint.ANTI_ALIAS_FLAG)
+
+    init {
+        updateThemePaints()
     }
 
-    private val darkSquarePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#B58863") // Classic Rich Walnut Wood
+    private fun updateThemePaints() {
+        lightSquarePaint.color = boardTheme.lightColor
+        darkSquarePaint.color = boardTheme.darkColor
+        p1RingPaint.color = pieceSkin.p1RingColor
+        p2RingPaint.color = pieceSkin.p2RingColor
     }
 
     private val selectedRingPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -237,21 +257,21 @@ class CheckersBoardView @JvmOverloads constructor(
                     val cy = startY + sr * cellSize + cellSize / 2f
 
                     if (l.isP1(piece)) {
-                        // Red Player
+                        // P1 Player
                         p1PiecePaint.shader = RadialGradient(
                             cx - pieceRadius * 0.3f, cy - pieceRadius * 0.3f,
                             pieceRadius * 1.2f,
-                            intArrayOf(Color.parseColor("#EF4444"), Color.parseColor("#881337")),
+                            intArrayOf(pieceSkin.p1Color, Color.parseColor("#111827")),
                             null, Shader.TileMode.CLAMP
                         )
                         canvas.drawCircle(cx, cy, pieceRadius, p1PiecePaint)
                         canvas.drawCircle(cx, cy, pieceRadius * 0.75f, p1RingPaint)
                     } else {
-                        // Black Player (High contrast with silver outer ring)
+                        // P2 Player
                         p2PiecePaint.shader = RadialGradient(
                             cx - pieceRadius * 0.3f, cy - pieceRadius * 0.3f,
                             pieceRadius * 1.2f,
-                            intArrayOf(Color.parseColor("#334155"), Color.parseColor("#020617")),
+                            intArrayOf(pieceSkin.p2Color, Color.parseColor("#020617")),
                             null, Shader.TileMode.CLAMP
                         )
                         canvas.drawCircle(cx, cy, pieceRadius, p2PiecePaint)

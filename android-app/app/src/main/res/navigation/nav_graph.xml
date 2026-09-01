@@ -49,6 +49,9 @@
         <action
             android:id="@+id/action_dashboardFragment_to_chessFragment"
             app:destination="@id/chessFragment" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_storeFragment"
+            app:destination="@id/storeFragment" />
     </fragment>
 
     <fragment
@@ -231,5 +234,11 @@
         android:name="com.example.tictactoe.ChessFragment"
         android:label="Chess Game"
         tools:layout="@layout/fragment_chess" />
+
+    <fragment
+        android:id="@+id/storeFragment"
+        android:name="com.example.tictactoe.StoreFragment"
+        android:label="Store"
+        tools:layout="@layout/fragment_store" />
 
 </navigation>

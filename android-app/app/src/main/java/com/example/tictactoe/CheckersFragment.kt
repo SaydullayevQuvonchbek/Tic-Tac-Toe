@@ -198,6 +198,7 @@ class CheckersFragment : Fragment() {
 
     private fun startLocalGame(size: Int) {
         currentBoardSize = size
+        applyEquippedCustomization()
         logic.resetBoard(currentBoardSize)
         binding.checkersBoardView.logic = logic
         binding.checkersBoardView.isFlipped = (isOnlineMode && myPlayerNumber == 2)
@@ -234,6 +235,11 @@ class CheckersFragment : Fragment() {
         binding.checkersBoardView.onMoveExecutedListener = { fromR, fromC, toR, toC ->
             handleMove(fromR, fromC, toR, toC)
         }
+    }
+
+    private fun applyEquippedCustomization() {
+        binding.checkersBoardView.boardTheme = CheckersThemeManager.getEquippedBoardTheme(requireContext())
+        binding.checkersBoardView.pieceSkin = CheckersThemeManager.getEquippedPieceSkin(requireContext())
     }
 
     private fun handleMove(fromR: Int, fromC: Int, toR: Int, toC: Int) {
