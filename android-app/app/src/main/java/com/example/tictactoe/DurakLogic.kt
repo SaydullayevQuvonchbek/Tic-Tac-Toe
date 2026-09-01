@@ -2,11 +2,11 @@ package com.example.tictactoe
 
 import android.graphics.Color
 
-enum class CardSuit(val code: String, val symbol: String, val isRed: Boolean, val colorInt: Int) {
-    HEARTS("H", "♥️", true, Color.parseColor("#EF4444")),
-    DIAMONDS("D", "♦️", true, Color.parseColor("#F97316")),
-    CLUBS("C", "♣️", false, Color.parseColor("#1E293B")),
-    SPADES("S", "♠️", false, Color.parseColor("#0F172A"));
+enum class CardSuit(val code: String, val symbol: String, val isRed: Boolean, val colorInt: Int, val suitName: String) {
+    HEARTS("H", "♥️", true, Color.parseColor("#EF4444"), "Yurak (Qizil) ♥️"),
+    DIAMONDS("D", "♦️", true, Color.parseColor("#F97316"), "G'isht (Bubi) ♦️"),
+    CLUBS("C", "♣️", false, Color.parseColor("#1E293B"), "Chillik (Kresti) ♣️"),
+    SPADES("S", "♠️", false, Color.parseColor("#0F172A"), "Qarg'a (Piki) ♠️");
 
     companion object {
         fun fromCode(code: String): CardSuit {
@@ -147,8 +147,8 @@ class DurakLogic {
         val defenderHandSize = if (isPlayer) opponentHand.size else playerHand.size
         val unbeatCount = tablePairs.count { it.defendCard == null }
 
-        // Max 6 attacks and cannot exceed defender's cards
-        if (tablePairs.size >= 6 || (unbeatCount >= defenderHandSize)) return false
+        // Cannot throw more unbeat cards than defender's remaining hand size
+        if (unbeatCount >= defenderHandSize) return false
 
         // If table is empty, can attack with anything
         if (tablePairs.isEmpty()) return true

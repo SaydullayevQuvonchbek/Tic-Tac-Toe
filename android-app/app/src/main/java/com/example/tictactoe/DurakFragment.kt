@@ -286,7 +286,11 @@ class DurakFragment : Fragment() {
     private fun renderBoard() {
         if (_binding == null) return
 
-        // 1. Trump & Deck pile
+        // 1. Prominent ZOD (Trump) Badge & Deck Pile
+        val suit = logic.trumpSuit
+        binding.tvTrumpHeaderSuit.text = suit.suitName
+        binding.tvTrumpHeaderSuit.setTextColor(suit.colorInt)
+
         binding.viewTrumpCard.card = logic.trumpCard
         binding.viewTrumpCard.isFaceDown = false
 
@@ -296,14 +300,14 @@ class DurakFragment : Fragment() {
         binding.tvDeckCount.text = "🂠 ${logic.deck.size}"
 
         // 2. Opponent Count & Backs
-        binding.tvOpponentCardsCount.text = "🂠 ${logic.opponentHand.size}"
+        binding.tvOpponentCardsCount.text = "🂠 ${logic.opponentHand.size} ta"
         binding.layoutOpponentCards.removeAllViews()
         val oppCount = logic.opponentHand.size.coerceAtMost(10)
         for (i in 0 until oppCount) {
             val miniCard = DurakCardView(requireContext()).apply {
                 isFaceDown = true
-                layoutParams = LinearLayout.LayoutParams(40, 55).apply {
-                    setMargins(-10, 0, 0, 0)
+                layoutParams = LinearLayout.LayoutParams(46, 64).apply {
+                    setMargins(-12, 0, 0, 0)
                 }
             }
             binding.layoutOpponentCards.addView(miniCard)
@@ -323,7 +327,7 @@ class DurakFragment : Fragment() {
         binding.layoutTablePairs.removeAllViews()
         for (pair in logic.tablePairs) {
             val pairContainer = FrameLayout(requireContext()).apply {
-                layoutParams = LinearLayout.LayoutParams(75, 110).apply {
+                layoutParams = LinearLayout.LayoutParams(88, 126).apply {
                     setMargins(10, 0, 10, 0)
                 }
             }
@@ -332,7 +336,7 @@ class DurakFragment : Fragment() {
             val attackView = DurakCardView(requireContext()).apply {
                 card = pair.attackCard
                 isFaceDown = false
-                layoutParams = FrameLayout.LayoutParams(60, 90)
+                layoutParams = FrameLayout.LayoutParams(76, 110)
             }
             pairContainer.addView(attackView)
 
@@ -341,10 +345,10 @@ class DurakFragment : Fragment() {
                 val defendView = DurakCardView(requireContext()).apply {
                     card = pair.defendCard
                     isFaceDown = false
-                    rotation = 15f
-                    translationX = 14f
-                    translationY = 14f
-                    layoutParams = FrameLayout.LayoutParams(60, 90)
+                    rotation = 14f
+                    translationX = 12f
+                    translationY = 12f
+                    layoutParams = FrameLayout.LayoutParams(76, 110)
                 }
                 pairContainer.addView(defendView)
             }
@@ -360,7 +364,7 @@ class DurakFragment : Fragment() {
                 this.card = card
                 isFaceDown = false
                 isSelectedCard = (selectedCard == card)
-                layoutParams = LinearLayout.LayoutParams(70, 105).apply {
+                layoutParams = LinearLayout.LayoutParams(82, 122).apply {
                     setMargins(6, 0, 6, 0)
                 }
                 setOnClickListener {
@@ -389,7 +393,7 @@ class DurakFragment : Fragment() {
         val unbeatCount = logic.tablePairs.count { it.defendCard == null }
 
         if (isAttacker) {
-            binding.tvGameStatus.text = "Sizning navbatingiz (Hujum) ⚔️"
+            binding.tvGameStatus.text = "Sizning navbatingiz (Hujum qiling) ⚔️"
             binding.btnAttack.isEnabled = (selectedCard != null && logic.canAttackWith(selectedCard!!, true))
             binding.btnDefend.visibility = View.GONE
             binding.btnAttack.visibility = View.VISIBLE
@@ -398,8 +402,9 @@ class DurakFragment : Fragment() {
             // Can Pass/Bita only if table has at least 1 pair and all are defended
             binding.btnPassBita.visibility = View.VISIBLE
             binding.btnPassBita.isEnabled = (logic.tablePairs.isNotEmpty() && unbeatCount == 0)
+            binding.btnPassBita.text = "✋ Bita (Bo'ldi)"
         } else {
-            binding.tvGameStatus.text = "Himoyalaning (Kartani yoping) 🛡️"
+            binding.tvGameStatus.text = if (unbeatCount > 0) "Himoyalaning (Kartani yoping) 🛡️" else "Raqib yana karta qo'shishi mumkin... ⚔️"
             binding.btnAttack.visibility = View.GONE
             binding.btnDefend.visibility = View.VISIBLE
             binding.btnPassBita.visibility = View.GONE
@@ -407,7 +412,10 @@ class DurakFragment : Fragment() {
 
             val targetUnbeat = logic.tablePairs.firstOrNull { it.defendCard == null }
             binding.btnDefend.isEnabled = (selectedCard != null && targetUnbeat != null && logic.canBeat(targetUnbeat.attackCard, selectedCard!!))
+            
+            // Defender can ALWAYS choose to take table cards whenever there are cards on the table!
             binding.btnTakeCards.isEnabled = (logic.tablePairs.isNotEmpty())
+            binding.btnTakeCards.text = "📥 Ko'tarib Olish"
         }
 
         binding.btnAttack.alpha = if (binding.btnAttack.isEnabled) 1.0f else 0.45f

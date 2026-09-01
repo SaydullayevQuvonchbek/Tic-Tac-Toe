@@ -7,6 +7,7 @@ import android.graphics.LinearGradient
 import android.graphics.Paint
 import android.graphics.RectF
 import android.graphics.Shader
+import android.graphics.Typeface
 import android.util.AttributeSet
 import android.view.View
 
@@ -31,7 +32,7 @@ class DurakCardView @JvmOverloads constructor(
     var isSelectedCard: Boolean = false
         set(value) {
             field = value
-            translationY = if (value) -30f else 0f
+            translationY = if (value) -35f else 0f
             invalidate()
         }
 
@@ -42,32 +43,32 @@ class DurakCardView @JvmOverloads constructor(
     }
 
     private val cardBorderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#E2E8F0")
+        color = Color.parseColor("#CBD5E1")
         style = Paint.Style.STROKE
-        strokeWidth = 3f
+        strokeWidth = 3.5f
     }
 
     private val cardSelectedGlowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#F59E0B") // Golden Glow
         style = Paint.Style.STROKE
-        strokeWidth = 8f
+        strokeWidth = 9f
     }
 
     private val backBackgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val backPatternPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#38BDF8")
         style = Paint.Style.STROKE
-        strokeWidth = 2f
+        strokeWidth = 2.5f
     }
 
     private val redTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#DC2626")
-        isFakeBoldText = true
+        typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
     }
 
     private val blackTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#0F172A")
-        isFakeBoldText = true
+        typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
     }
 
     private val centerSymbolPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -81,7 +82,7 @@ class DurakCardView @JvmOverloads constructor(
         val h = height.toFloat()
         if (w <= 0 || h <= 0) return
 
-        val radius = 16f
+        val radius = 18f
         val rect = RectF(4f, 4f, w - 4f, h - 4f)
 
         if (isFaceDown) {
@@ -94,12 +95,12 @@ class DurakCardView @JvmOverloads constructor(
             canvas.drawRoundRect(rect, radius, radius, backBackgroundPaint)
 
             // Inner Pattern Border
-            val innerRect = RectF(12f, 12f, w - 12f, h - 12f)
+            val innerRect = RectF(10f, 10f, w - 10f, h - 10f)
             canvas.drawRoundRect(innerRect, radius - 4f, radius - 4f, backPatternPaint)
 
-            // Center Crown / Logo
+            // Center Logo
             centerSymbolPaint.color = Color.parseColor("#FBBF24")
-            centerSymbolPaint.textSize = w * 0.35f
+            centerSymbolPaint.textSize = w * 0.42f
             val yPos = (h / 2f) - ((centerSymbolPaint.descent() + centerSymbolPaint.ascent()) / 2)
             canvas.drawText("♠️", w / 2f, yPos, centerSymbolPaint)
             return
@@ -118,30 +119,32 @@ class DurakCardView @JvmOverloads constructor(
         }
 
         val textPaint = if (c.suit.isRed) redTextPaint else blackTextPaint
-        val cornerTextSize = w * 0.22f
-        textPaint.textSize = cornerTextSize
+        val cornerRankSize = w * 0.28f
+        val cornerSuitSize = w * 0.24f
 
         // 3. Top-Left Rank and Suit
         val rankLabel = c.rank.label
         val suitSymbol = c.suit.symbol
-        canvas.drawText(rankLabel, 12f, 22f + cornerTextSize * 0.8f, textPaint)
+        
+        textPaint.textSize = cornerRankSize
+        canvas.drawText(rankLabel, 10f, 12f + cornerRankSize, textPaint)
 
-        textPaint.textSize = cornerTextSize * 0.85f
-        canvas.drawText(suitSymbol, 12f, 26f + cornerTextSize * 1.7f, textPaint)
+        textPaint.textSize = cornerSuitSize
+        canvas.drawText(suitSymbol, 10f, 16f + cornerRankSize + cornerSuitSize, textPaint)
 
         // 4. Center Big Symbol
         centerSymbolPaint.color = c.suit.colorInt
-        centerSymbolPaint.textSize = w * 0.45f
+        centerSymbolPaint.textSize = w * 0.52f
         val centerY = (h / 2f) - ((centerSymbolPaint.descent() + centerSymbolPaint.ascent()) / 2)
         canvas.drawText(suitSymbol, w / 2f, centerY, centerSymbolPaint)
 
         // 5. Bottom-Right Inverted Rank & Suit
         canvas.save()
         canvas.rotate(180f, w / 2f, h / 2f)
-        textPaint.textSize = cornerTextSize
-        canvas.drawText(rankLabel, 12f, 22f + cornerTextSize * 0.8f, textPaint)
-        textPaint.textSize = cornerTextSize * 0.85f
-        canvas.drawText(suitSymbol, 12f, 26f + cornerTextSize * 1.7f, textPaint)
+        textPaint.textSize = cornerRankSize
+        canvas.drawText(rankLabel, 10f, 12f + cornerRankSize, textPaint)
+        textPaint.textSize = cornerSuitSize
+        canvas.drawText(suitSymbol, 10f, 16f + cornerRankSize + cornerSuitSize, textPaint)
         canvas.restore()
     }
 }
