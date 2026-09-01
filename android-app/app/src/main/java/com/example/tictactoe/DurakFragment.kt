@@ -240,6 +240,7 @@ class DurakFragment : Fragment() {
     }
 
     private fun syncOnlineGameStart(data: String) {
+        showGameplayScreen()
         try {
             var json = JSONObject(data)
             if (json.has("data")) {
@@ -353,7 +354,7 @@ class DurakFragment : Fragment() {
         for (i in 0 until oppCount) {
             val miniCard = DurakCardView(requireContext()).apply {
                 isFaceDown = true
-                layoutParams = LinearLayout.LayoutParams(52, 70).apply {
+                layoutParams = LinearLayout.LayoutParams(56, 76).apply {
                     setMargins(-14, 0, 0, 0)
                 }
             }
@@ -374,7 +375,7 @@ class DurakFragment : Fragment() {
         binding.layoutTablePairs.removeAllViews()
         for (pair in logic.tablePairs) {
             val pairContainer = FrameLayout(requireContext()).apply {
-                layoutParams = LinearLayout.LayoutParams(96, 138).apply {
+                layoutParams = LinearLayout.LayoutParams(105, 150).apply {
                     setMargins(10, 0, 10, 0)
                 }
             }
@@ -383,7 +384,7 @@ class DurakFragment : Fragment() {
             val attackView = DurakCardView(requireContext()).apply {
                 card = pair.attackCard
                 isFaceDown = false
-                layoutParams = FrameLayout.LayoutParams(84, 122)
+                layoutParams = FrameLayout.LayoutParams(92, 134)
             }
             pairContainer.addView(attackView)
 
@@ -393,9 +394,9 @@ class DurakFragment : Fragment() {
                     card = pair.defendCard
                     isFaceDown = false
                     rotation = 14f
-                    translationX = 12f
-                    translationY = 12f
-                    layoutParams = FrameLayout.LayoutParams(84, 122)
+                    translationX = 14f
+                    translationY = 14f
+                    layoutParams = FrameLayout.LayoutParams(92, 134)
                 }
                 pairContainer.addView(defendView)
             }
@@ -411,26 +412,85 @@ class DurakFragment : Fragment() {
                 this.card = card
                 isFaceDown = false
                 isSelectedCard = (selectedCard == card)
-                layoutParams = LinearLayout.LayoutParams(96, 142).apply {
+                layoutParams = LinearLayout.LayoutParams(108, 160).apply {
                     setMargins(6, 0, 6, 0)
                 }
-                setOnClickListener {
-                    if (selectedCard == card) {
-                        // Double tap to play immediately!
-                        if (logic.isPlayerAttacker) {
-                            handlePlayerAttack(card)
-                        } else {
-                            handlePlayerDefend(card)
-                        }
-                    } else {
-                        HapticHelper.performClick(context)
-                        SoundHelper.playMoveSound(context)
-                        selectedCard = card
-                        renderPlayerHand()
-                        updateStatusAndButtons()
+            }
+
+            // Fluid Drag-to-Throw / Drag-and-Drop Support (Surib Tashlash)
+            var downRawX = 0f
+            var downRawY = 0f
+            var isDragging = false
+
+            cardView.setOnTouchListener { v, event ->
+                when (event.actionMasked) {
+                    android.view.MotionEvent.ACTION_DOWN -> {
+                        downRawX = event.rawX
+                        downRawY = event.rawY
+                        isDragging = false
+                        v.parent.requestDisallowInterceptTouchEvent(true)
+                        true
                     }
+                    android.view.MotionEvent.ACTION_MOVE -> {
+                        val deltaX = event.rawX - downRawX
+                        val deltaY = event.rawY - downRawY
+                        if (Math.abs(deltaY) > 20 || Math.abs(deltaX) > 20) {
+                            isDragging = true
+                            v.translationX = deltaX
+                            v.translationY = deltaY
+                        }
+                        true
+                    }
+                    android.view.MotionEvent.ACTION_UP, android.view.MotionEvent.ACTION_CANCEL -> {
+                        v.parent.requestDisallowInterceptTouchEvent(false)
+                        if (isDragging) {
+                            // If dragged upwards past threshold -> Play card immediately!
+                            if (v.translationY < -80f) {
+                                if (logic.isPlayerAttacker) {
+                                    if (logic.canAttackWith(card, true)) {
+                                        v.translationX = 0f
+                                        v.translationY = 0f
+                                        handlePlayerAttack(card)
+                                        return@setOnTouchListener true
+                                    } else {
+                                        Toast.makeText(context, "Bu karta bilan hozir hujum qilib bo'lmaydi!", Toast.LENGTH_SHORT).show()
+                                    }
+                                } else {
+                                    val target = logic.tablePairs.firstOrNull { it.defendCard == null }
+                                    if (target != null && logic.canBeat(target.attackCard, card)) {
+                                        v.translationX = 0f
+                                        v.translationY = 0f
+                                        handlePlayerDefend(card)
+                                        return@setOnTouchListener true
+                                    } else {
+                                        Toast.makeText(context, "Bu karta stoldagi kartani ura olmaydi!", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            }
+                            // Snap back to hand smoothly
+                            v.animate().translationX(0f).translationY(0f).setDuration(180).start()
+                        } else {
+                            // Simple Tap: Select / Toggle / Double Tap
+                            if (selectedCard == card) {
+                                if (logic.isPlayerAttacker) {
+                                    handlePlayerAttack(card)
+                                } else {
+                                    handlePlayerDefend(card)
+                                }
+                            } else {
+                                HapticHelper.performClick(v.context)
+                                SoundHelper.playMoveSound(v.context)
+                                selectedCard = card
+                                renderPlayerHand()
+                                updateStatusAndButtons()
+                            }
+                        }
+                        true
+                    }
+                    else -> false
                 }
             }
+
             binding.layoutPlayerCards.addView(cardView)
         }
     }

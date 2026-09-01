@@ -163,7 +163,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="6dp"
-                            android:text="• 36 ta karta (6 dan Tuzgacha)\n• Har o'yinchiga 6 tadan karta beriladi\n• 1 ta ZOD (Kozir) belgilanadi\n• Hujum qiling, yoping yoki podkidnoy qiling!\n• Birinchi bo'lib kartalarini tugatgan yutadi 🏆"
+                            android:text="• 36 ta karta (6 dan Tuzgacha)\n• Har o'yinchiga 6 tadan karta beriladi\n• 1 ta ZOD (Kozir) belgilanadi\n• Kartani bosing yoki yuqoriga SURIB tashlang!\n• Birinchi bo'lib kartalarini tugatgan yutadi 🏆"
                             android:textColor="#D1FAE5"
                             android:textSize="12sp"
                             android:lineSpacingExtra="3dp" />
@@ -271,8 +271,8 @@
         <!-- Top Header Navigation -->
         <ImageButton
             android:id="@+id/btnGameplayBack"
-            android:layout_width="38dp"
-            android:layout_height="38dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_margin="10dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/ic_menu_revert"
@@ -301,8 +301,8 @@
             android:background="@drawable/badge_pill"
             android:backgroundTint="#0F172A"
             android:gravity="center_vertical"
-            android:paddingHorizontal="12dp"
-            android:paddingVertical="6dp"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="7dp"
             app:layout_constraintBottom_toBottomOf="@+id/btnGameplayBack"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/btnGameplayBack">
@@ -314,7 +314,7 @@
                 android:fontFamily="sans-serif-black"
                 android:text="👑 ZOD: "
                 android:textColor="#FBBF24"
-                android:textSize="14sp" />
+                android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/tvTrumpHeaderSuit"
@@ -323,7 +323,7 @@
                 android:fontFamily="sans-serif-black"
                 android:text="♥️ Yurak"
                 android:textColor="#EF4444"
-                android:textSize="15sp" />
+                android:textSize="16sp" />
         </LinearLayout>
 
         <!-- Opponent Info (Top Center) -->
@@ -366,7 +366,7 @@
         <LinearLayout
             android:id="@+id/layoutOpponentCards"
             android:layout_width="match_parent"
-            android:layout_height="72dp"
+            android:layout_height="76dp"
             android:gravity="center"
             android:orientation="horizontal"
             app:layout_constraintTop_toBottomOf="@+id/layoutOpponentHeader"
@@ -384,8 +384,8 @@
             <!-- Deck Pile & Trump Card (Left Side) -->
             <FrameLayout
                 android:id="@+id/layoutDeckAndTrump"
-                android:layout_width="115dp"
-                android:layout_height="150dp"
+                android:layout_width="125dp"
+                android:layout_height="160dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -393,16 +393,16 @@
                 <!-- Horizontal Trump Card underneath -->
                 <com.example.tictactoe.DurakCardView
                     android:id="@+id/viewTrumpCard"
-                    android:layout_width="74dp"
-                    android:layout_height="108dp"
+                    android:layout_width="82dp"
+                    android:layout_height="120dp"
                     android:layout_gravity="center"
                     android:rotation="90" />
 
                 <!-- Vertical Face-Down Deck Pile on top -->
                 <com.example.tictactoe.DurakCardView
                     android:id="@+id/viewDeckPile"
-                    android:layout_width="74dp"
-                    android:layout_height="108dp"
+                    android:layout_width="82dp"
+                    android:layout_height="120dp"
                     android:layout_gravity="center" />
 
                 <!-- Deck Count Badge -->
@@ -519,11 +519,11 @@
                 app:cornerRadius="14dp" />
         </LinearLayout>
 
-        <!-- Player Hand (Bottom Horizontal Scrollable 3D Large Cards) -->
+        <!-- Player Hand (Bottom Horizontal Scrollable 3D Large Cards with Drag-to-Throw Support) -->
         <HorizontalScrollView
             android:id="@+id/scrollPlayerHand"
             android:layout_width="match_parent"
-            android:layout_height="165dp"
+            android:layout_height="185dp"
             android:fillViewport="true"
             android:paddingHorizontal="10dp"
             android:scrollbars="none"
@@ -535,7 +535,7 @@
                 android:layout_height="match_parent"
                 android:gravity="bottom"
                 android:orientation="horizontal"
-                android:paddingBottom="10dp" />
+                android:paddingBottom="12dp" />
         </HorizontalScrollView>
 
         <!-- Emote Bar at bottom -->
