@@ -398,10 +398,38 @@ class DurakFragment : Fragment() {
 
     private fun renderTablePairs() {
         binding.layoutTablePairs.removeAllViews()
+        val count = logic.tablePairs.size
+
+        // Dynamic Pair and Card scaling based on number of active battle pairs
+        val pairW = when {
+            count <= 2 -> 96
+            count == 3 -> 84
+            count == 4 -> 74
+            else -> 66
+        }
+        val pairH = when {
+            count <= 2 -> 138
+            count == 3 -> 122
+            count == 4 -> 108
+            else -> 96
+        }
+        val cardW = when {
+            count <= 2 -> 84
+            count == 3 -> 74
+            count == 4 -> 65
+            else -> 58
+        }
+        val cardH = when {
+            count <= 2 -> 122
+            count == 3 -> 108
+            count == 4 -> 95
+            else -> 85
+        }
+
         for (pair in logic.tablePairs) {
             val pairContainer = FrameLayout(requireContext()).apply {
-                layoutParams = LinearLayout.LayoutParams(105, 150).apply {
-                    setMargins(10, 0, 10, 0)
+                layoutParams = LinearLayout.LayoutParams(pairW, pairH).apply {
+                    setMargins(6, 0, 6, 0)
                 }
             }
 
@@ -409,7 +437,7 @@ class DurakFragment : Fragment() {
             val attackView = DurakCardView(requireContext()).apply {
                 card = pair.attackCard
                 isFaceDown = false
-                layoutParams = FrameLayout.LayoutParams(92, 134)
+                layoutParams = FrameLayout.LayoutParams(cardW, cardH)
             }
             pairContainer.addView(attackView)
 
@@ -418,28 +446,60 @@ class DurakFragment : Fragment() {
                 val defendView = DurakCardView(requireContext()).apply {
                     card = pair.defendCard
                     isFaceDown = false
-                    rotation = 14f
-                    translationX = 14f
-                    translationY = 14f
-                    layoutParams = FrameLayout.LayoutParams(92, 134)
+                    rotation = 12f
+                    translationX = 10f
+                    translationY = 10f
+                    layoutParams = FrameLayout.LayoutParams(cardW, cardH)
                 }
                 pairContainer.addView(defendView)
             }
 
             binding.layoutTablePairs.addView(pairContainer)
         }
+
+        // Auto-scroll to the newest thrown attack pair
+        binding.scrollTablePairs.post {
+            binding.scrollTablePairs.fullScroll(View.FOCUS_RIGHT)
+        }
     }
 
     private fun renderPlayerHand() {
         if (_binding == null) return
         binding.layoutPlayerCards.removeAllViews()
-        for (card in logic.playerHand) {
+        val count = logic.playerHand.size
+
+        // Dynamic Card Dimensions and Negative Overlap Fan Spacing
+        val cardW = when {
+            count <= 6 -> 104
+            count <= 9 -> 94
+            count <= 13 -> 86
+            else -> 80
+        }
+        val cardH = when {
+            count <= 6 -> 154
+            count <= 9 -> 140
+            count <= 13 -> 130
+            else -> 120
+        }
+        val marginSide = when {
+            count <= 5 -> 6
+            count <= 7 -> 2
+            count <= 10 -> -((count - 6) * 8).coerceAtMost(36)
+            count <= 14 -> -((count - 6) * 7).coerceAtMost(48)
+            else -> -54
+        }
+
+        for ((index, card) in logic.playerHand.withIndex()) {
+            val isSelected = (selectedCard == card)
             val cardView = DurakCardView(requireContext()).apply {
                 this.card = card
                 isFaceDown = false
-                isSelectedCard = (selectedCard == card)
-                layoutParams = LinearLayout.LayoutParams(108, 160).apply {
-                    setMargins(6, 0, 6, 0)
+                isSelectedCard = isSelected
+                layoutParams = LinearLayout.LayoutParams(cardW, cardH).apply {
+                    setMargins(if (index == 0) 6 else marginSide, 0, 6, 0)
+                }
+                if (isSelected) {
+                    bringToFront()
                 }
             }
 
@@ -454,6 +514,7 @@ class DurakFragment : Fragment() {
                         downRawX = event.rawX
                         downRawY = event.rawY
                         isDragging = false
+                        v.bringToFront()
                         v.parent?.requestDisallowInterceptTouchEvent(true)
                         true
                     }

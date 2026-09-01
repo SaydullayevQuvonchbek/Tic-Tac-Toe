@@ -377,15 +377,15 @@
             android:id="@+id/layoutCenterArena"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:paddingHorizontal="8dp"
+            android:paddingHorizontal="4dp"
             app:layout_constraintBottom_toTopOf="@+id/tvGameStatus"
             app:layout_constraintTop_toBottomOf="@+id/layoutOpponentCards">
 
-            <!-- Deck Pile & Trump Card (Left Side) -->
+            <!-- Deck Pile & Trump Card (Compact Left Side) -->
             <FrameLayout
                 android:id="@+id/layoutDeckAndTrump"
-                android:layout_width="125dp"
-                android:layout_height="160dp"
+                android:layout_width="72dp"
+                android:layout_height="120dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -393,16 +393,16 @@
                 <!-- Horizontal Trump Card underneath -->
                 <com.example.tictactoe.DurakCardView
                     android:id="@+id/viewTrumpCard"
-                    android:layout_width="82dp"
-                    android:layout_height="120dp"
+                    android:layout_width="62dp"
+                    android:layout_height="90dp"
                     android:layout_gravity="center"
                     android:rotation="90" />
 
                 <!-- Vertical Face-Down Deck Pile on top -->
                 <com.example.tictactoe.DurakCardView
                     android:id="@+id/viewDeckPile"
-                    android:layout_width="82dp"
-                    android:layout_height="120dp"
+                    android:layout_width="62dp"
+                    android:layout_height="90dp"
                     android:layout_gravity="center" />
 
                 <!-- Deck Count Badge -->
@@ -413,19 +413,20 @@
                     android:layout_gravity="bottom|center_horizontal"
                     android:background="@drawable/badge_pill"
                     android:backgroundTint="#0F172A"
-                    android:paddingHorizontal="12dp"
-                    android:paddingVertical="3dp"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="2dp"
                     android:text="🂠 24"
                     android:textColor="#FBBF24"
-                    android:textSize="13sp"
+                    android:textSize="12sp"
                     android:textStyle="bold" />
             </FrameLayout>
 
-            <!-- Table Battle Pairs (Center Area) -->
+            <!-- Table Battle Pairs (Spacious Center Area) -->
             <HorizontalScrollView
+                android:id="@+id/scrollTablePairs"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="4dp"
                 android:fillViewport="true"
                 android:scrollbars="none"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -439,7 +440,7 @@
                     android:layout_height="match_parent"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:paddingHorizontal="6dp" />
+                    android:paddingHorizontal="4dp" />
             </HorizontalScrollView>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
