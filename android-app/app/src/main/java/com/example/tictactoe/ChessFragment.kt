@@ -76,6 +76,8 @@ class ChessFragment : Fragment() {
     }
 
     private fun setupUI() {
+        applyEquippedCustomization()
+
         binding.chessBoardView.logic = logic
         binding.chessBoardView.onSquareTapped = { r, c ->
             handleSquareTapped(r, c)
@@ -115,9 +117,30 @@ class ChessFragment : Fragment() {
         }
     }
 
+    private fun applyEquippedCustomization() {
+        val boardTheme = ChessThemeManager.getEquippedBoardTheme(requireContext())
+        val pieceSkin = ChessThemeManager.getEquippedPieceSkin(requireContext())
+        binding.chessBoardView.boardTheme = boardTheme
+        binding.chessBoardView.pieceSkin = pieceSkin
+    }
+
+    private fun openCustomizationDialog() {
+        ChessCustomizationDialog(requireContext()) {
+            applyEquippedCustomization()
+        }.show()
+    }
+
     private fun setupListeners() {
         binding.btnBackSetup.setOnClickListener {
             findNavController().navigateUp()
+        }
+
+        binding.btnCustomizationSetup.setOnClickListener {
+            openCustomizationDialog()
+        }
+
+        binding.btnCustomizationGameplay.setOnClickListener {
+            openCustomizationDialog()
         }
 
         binding.btnGameplayBack.setOnClickListener {

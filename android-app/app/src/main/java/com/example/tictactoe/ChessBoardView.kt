@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.RectF
 import android.graphics.Typeface
 import android.util.AttributeSet
 import android.view.MotionEvent
@@ -19,6 +18,20 @@ class ChessBoardView @JvmOverloads constructor(
     var logic: ChessLogic? = null
         set(value) {
             field = value
+            invalidate()
+        }
+
+    var boardTheme: ChessThemeManager.BoardTheme = ChessThemeManager.BOARD_THEMES[0]
+        set(value) {
+            field = value
+            updatePaints()
+            invalidate()
+        }
+
+    var pieceSkin: ChessThemeManager.PieceSkin = ChessThemeManager.PIECE_SKINS[0]
+        set(value) {
+            field = value
+            updatePaints()
             invalidate()
         }
 
@@ -49,55 +62,42 @@ class ChessBoardView @JvmOverloads constructor(
     var onSquareTapped: ((row: Int, col: Int) -> Unit)? = null
 
     // Paints
-    private val lightSquarePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#EEEED2")
-    }
-
-    private val darkSquarePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#769656")
-    }
-
-    private val selectedSquarePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#B8D434")
-    }
-
-    private val lastMoveSquarePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#F7EC59")
-        alpha = 150
-    }
-
-    private val checkSquarePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#EF4444")
-        alpha = 180
-    }
+    private val lightSquarePaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val darkSquarePaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val selectedSquarePaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val lastMoveSquarePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { alpha = 160 }
+    private val checkSquarePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { alpha = 180 }
 
     private val validDotPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#0F172A")
-        alpha = 80
+        alpha = 90
         style = Paint.Style.FILL
     }
 
     private val captureRingPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#0F172A")
-        alpha = 100
+        alpha = 110
         style = Paint.Style.STROKE
     }
 
     private val pieceWhitePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#FFFFFF")
         textAlign = Paint.Align.CENTER
         typeface = Typeface.DEFAULT_BOLD
     }
 
     private val pieceWhiteStrokePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#0F172A")
         style = Paint.Style.STROKE
         textAlign = Paint.Align.CENTER
         typeface = Typeface.DEFAULT_BOLD
     }
 
     private val pieceBlackPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#1E293B")
+        textAlign = Paint.Align.CENTER
+        typeface = Typeface.DEFAULT_BOLD
+    }
+
+    private val pieceBlackStrokePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
         textAlign = Paint.Align.CENTER
         typeface = Typeface.DEFAULT_BOLD
     }
@@ -105,6 +105,26 @@ class ChessBoardView @JvmOverloads constructor(
     private val coordPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textSize = 24f
         typeface = Typeface.DEFAULT_BOLD
+    }
+
+    init {
+        updatePaints()
+    }
+
+    private fun updatePaints() {
+        lightSquarePaint.color = boardTheme.lightColor
+        darkSquarePaint.color = boardTheme.darkColor
+        selectedSquarePaint.color = boardTheme.selectedColor
+        lastMoveSquarePaint.color = boardTheme.lastMoveColor
+        checkSquarePaint.color = boardTheme.checkColor
+
+        pieceWhitePaint.color = pieceSkin.whiteColor
+        pieceWhiteStrokePaint.color = pieceSkin.whiteStrokeColor
+
+        pieceBlackPaint.color = pieceSkin.blackColor
+        if (pieceSkin.blackStrokeColor != null) {
+            pieceBlackStrokePaint.color = pieceSkin.blackStrokeColor!!
+        }
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -162,7 +182,7 @@ class ChessBoardView @JvmOverloads constructor(
                 }
 
                 // Coordinates (rank numbers on left edge, file letters on bottom edge)
-                coordPaint.color = if (isLight) Color.parseColor("#769656") else Color.parseColor("#EEEED2")
+                coordPaint.color = if (isLight) boardTheme.darkColor else boardTheme.lightColor
                 if (displayC == 0) {
                     val rankText = (8 - r).toString()
                     canvas.drawText(rankText, left + 6f, top + 26f, coordPaint)
@@ -201,7 +221,10 @@ class ChessBoardView @JvmOverloads constructor(
             pieceWhitePaint.textSize = pieceFontSize
             pieceWhiteStrokePaint.textSize = pieceFontSize
             pieceWhiteStrokePaint.strokeWidth = cellSize * 0.035f
+
             pieceBlackPaint.textSize = pieceFontSize
+            pieceBlackStrokePaint.textSize = pieceFontSize
+            pieceBlackStrokePaint.strokeWidth = cellSize * 0.035f
 
             val yOffset = ((pieceWhitePaint.descent() + pieceWhitePaint.ascent()) / 2f)
 
@@ -218,11 +241,14 @@ class ChessBoardView @JvmOverloads constructor(
                     val symbol = piece.symbol
 
                     if (piece.color == PieceColor.WHITE) {
-                        // White Piece with Dark Outline for high contrast
+                        // White Piece with Stroke
                         canvas.drawText(symbol, cx, cy, pieceWhiteStrokePaint)
                         canvas.drawText(symbol, cx, cy, pieceWhitePaint)
                     } else {
-                        // Black Piece
+                        // Black Piece (with optional stroke if configured)
+                        if (pieceSkin.blackStrokeColor != null) {
+                            canvas.drawText(symbol, cx, cy, pieceBlackStrokePaint)
+                        }
                         canvas.drawText(symbol, cx, cy, pieceBlackPaint)
                     }
                 }

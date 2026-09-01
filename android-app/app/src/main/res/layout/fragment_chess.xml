@@ -19,7 +19,7 @@
             android:orientation="vertical"
             android:padding="20dp">
 
-            <!-- Back Button & Title -->
+            <!-- Back Button & Title & Customization Button -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -35,13 +35,25 @@
                     app:tint="@color/white" />
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
+                    android:layout_weight="1"
                     android:fontFamily="sans-serif-black"
                     android:text="👑 SHAXMAT (CHESS)"
                     android:textColor="@color/white"
-                    android:textSize="20sp" />
+                    android:textSize="18sp" />
+
+                <Button
+                    android:id="@+id/btnCustomizationSetup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="38dp"
+                    android:backgroundTint="#7C3AED"
+                    android:text="🎨 Do'kon"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    android:fontFamily="sans-serif-black"
+                    app:cornerRadius="10dp" />
             </LinearLayout>
 
             <!-- Mode Selection Card -->
@@ -344,6 +356,19 @@
             app:layout_constraintBottom_toBottomOf="@+id/btnGameplayBack"
             app:layout_constraintStart_toEndOf="@+id/btnGameplayBack"
             app:layout_constraintTop_toTopOf="@+id/btnGameplayBack" />
+
+        <!-- Customization Palette Button -->
+        <ImageButton
+            android:id="@+id/btnCustomizationGameplay"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="6dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_gallery"
+            app:layout_constraintBottom_toBottomOf="@+id/btnGameplayBack"
+            app:layout_constraintEnd_toStartOf="@+id/tvTurnBadge"
+            app:layout_constraintTop_toTopOf="@+id/btnGameplayBack"
+            app:tint="#F59E0B" />
 
         <!-- Turn Badge Pill -->
         <TextView
