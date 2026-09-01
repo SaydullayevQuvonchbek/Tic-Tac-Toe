@@ -61,6 +61,12 @@ class StoreFragment : Fragment() {
         })
     }
 
+    override fun onResume() {
+        super.onResume()
+        updateCoinBalance()
+        renderCurrentContent()
+    }
+
     private fun updateCoinBalance() {
         val prefs = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
         val coins = prefs.getInt("coins", 0)

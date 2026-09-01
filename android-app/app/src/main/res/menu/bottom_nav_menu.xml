@@ -5,6 +5,10 @@
         android:icon="@android:drawable/ic_menu_today"
         android:title="Home" />
     <item
+        android:id="@+id/storeFragment"
+        android:icon="@drawable/ic_nav_store"
+        android:title="Do'kon" />
+    <item
         android:id="@+id/leaderboardFragment"
         android:icon="@android:drawable/ic_menu_sort_by_size"
         android:title="Ranks" />

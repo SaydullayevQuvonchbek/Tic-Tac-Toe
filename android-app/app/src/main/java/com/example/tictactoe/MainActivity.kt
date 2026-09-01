@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
         // Hide bottom nav in game screens
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.dashboardFragment, R.id.leaderboardFragment, R.id.profileFragment -> {
+                R.id.dashboardFragment, R.id.storeFragment, R.id.leaderboardFragment, R.id.profileFragment -> {
                     binding.bottomNav.visibility = android.view.View.VISIBLE
                 }
                 else -> {
