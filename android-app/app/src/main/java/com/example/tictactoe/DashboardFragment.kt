@@ -127,22 +127,28 @@ class DashboardFragment : Fragment() {
 
     private fun initQuestsClickListeners() {
         binding.btnClaimQuest1.setOnClickListener {
-            if (QuestManager.claimQuest(requireContext(), "q1")) {
-                Toast.makeText(context, "🎁 +60 Coins & +100 XP Claimed!", Toast.LENGTH_SHORT).show()
+            val quests = QuestManager.getDailyQuests(requireContext())
+            val q = quests.getOrNull(0)
+            if (q != null && QuestManager.claimQuest(requireContext(), q.id)) {
+                Toast.makeText(context, "🎁 +${q.coinReward} 🪙 & +${q.xpReward} ⚡ Olingan!", Toast.LENGTH_SHORT).show()
                 loadProfile()
             }
         }
 
         binding.btnClaimQuest2.setOnClickListener {
-            if (QuestManager.claimQuest(requireContext(), "q2")) {
-                Toast.makeText(context, "🎁 +50 Coins & +80 XP Claimed!", Toast.LENGTH_SHORT).show()
+            val quests = QuestManager.getDailyQuests(requireContext())
+            val q = quests.getOrNull(1)
+            if (q != null && QuestManager.claimQuest(requireContext(), q.id)) {
+                Toast.makeText(context, "🎁 +${q.coinReward} 🪙 & +${q.xpReward} ⚡ Olingan!", Toast.LENGTH_SHORT).show()
                 loadProfile()
             }
         }
 
         binding.btnClaimQuest3.setOnClickListener {
-            if (QuestManager.claimQuest(requireContext(), "q3")) {
-                Toast.makeText(context, "🎁 +100 Coins & +150 XP Claimed!", Toast.LENGTH_SHORT).show()
+            val quests = QuestManager.getDailyQuests(requireContext())
+            val q = quests.getOrNull(2)
+            if (q != null && QuestManager.claimQuest(requireContext(), q.id)) {
+                Toast.makeText(context, "🎁 +${q.coinReward} 🪙 & +${q.xpReward} ⚡ Olingan!", Toast.LENGTH_SHORT).show()
                 loadProfile()
             }
         }

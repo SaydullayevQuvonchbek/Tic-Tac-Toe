@@ -95,7 +95,7 @@ object QuestManager {
             val tpl = QUEST_POOL.firstOrNull { it.templateId == tplId } ?: templates[i]
             val progress = prefs.getInt("quest_${i}_progress", 0)
             val claimed = prefs.getBoolean("quest_${i}_claimed", false)
-            Quest("q$i", tpl.title, progress, tpl.target, tpl.coinReward, tpl.xpReward, claimed)
+            Quest("q${i + 1}", tpl.title, progress, tpl.target, tpl.coinReward, tpl.xpReward, claimed)
         }
     }
 
@@ -121,7 +121,8 @@ object QuestManager {
     fun claimQuest(context: Context, questId: String): Boolean {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val quests = getDailyQuests(context)
-        val questIndex = questId.removePrefix("q").toIntOrNull() ?: return false
+        val rawNum = questId.removePrefix("q").toIntOrNull() ?: return false
+        val questIndex = if (rawNum in 1..3) rawNum - 1 else rawNum
         val quest = quests.getOrNull(questIndex) ?: return false
 
         if (!quest.isCompleted || quest.isClaimed) return false
