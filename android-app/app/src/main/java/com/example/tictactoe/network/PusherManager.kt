@@ -57,16 +57,12 @@ object PusherManager {
         currentRoomCode = roomCode
 
         try {
-            // Check if already subscribed
             val existing = pusher?.getChannel(channelName)
             if (existing != null && existing.isSubscribed) {
-                Log.d(TAG, "Channel $channelName already subscribed. Unsubscribing first.")
                 pusher?.unsubscribe(channelName)
             }
 
             activeChannel = pusher?.subscribe(channelName)
-
-            // Global listener to capture ANY event regardless of Laravel class name or naming convention
             activeChannel?.bindGlobal { event: PusherEvent ->
                 val eventName = event.eventName
                 val data = event.data ?: "{}"

@@ -120,8 +120,14 @@ class ResultFragment : Fragment() {
             onMoveMade = { eventData ->
                 activity?.runOnUiThread {
                     try {
-                        val json = JSONObject(eventData)
-                        val senderId = json.optInt("player_id", -1)
+                        var json = JSONObject(eventData)
+                        if (json.has("data")) {
+                            val d = json.get("data")
+                            if (d is String) json = JSONObject(d)
+                            else if (d is JSONObject) json = d
+                        }
+
+                        val senderId = json.optInt("player_id", json.optString("player_id", "-1").toIntOrNull() ?: -1)
                         val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
                         val myUserId = sharedPref.getInt("user_id", -1)
 
@@ -129,8 +135,8 @@ class ResultFragment : Fragment() {
                             return@runOnUiThread
                         }
 
-                        val row = json.optInt("row", -1)
-                        val col = json.optInt("col", -1)
+                        val row = json.optInt("row", json.optString("row", "-1").toIntOrNull() ?: -1)
+                        val col = json.optInt("col", json.optString("col", "-1").toIntOrNull() ?: -1)
 
                         if (row == -98 && col == -98) {
                             // Opponent requested rematch!
@@ -141,13 +147,13 @@ class ResultFragment : Fragment() {
                                 launchRematchGame()
                             } else {
                                 binding.tvRematchStatus.visibility = View.VISIBLE
-                                binding.tvRematchStatus.text = "⚡ Opponent requested a rematch!"
-                                binding.btnAction.text = "ACCEPT REMATCH 🔄"
+                                binding.tvRematchStatus.text = "⚡ Raqibingiz revansh so'radi!"
+                                binding.btnAction.text = "REVANSGNI QABUL QILISH 🔄"
                                 binding.btnAction.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#059669"))
                             }
                         } else if (row == -99 && col == -99) {
                             // Opponent accepted rematch!
-                            Toast.makeText(context, "Rematch Accepted! Starting match... 🔥", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Revansh qabul qilindi! O'yin boshlanmoqda... 🔥", Toast.LENGTH_SHORT).show()
                             launchRematchGame()
                         }
                     } catch (e: Exception) {
@@ -157,9 +163,9 @@ class ResultFragment : Fragment() {
             },
             onOpponentLeft = {
                 activity?.runOnUiThread {
-                    Toast.makeText(context, "Opponent left the room", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Raqibingiz xonadan chiqib ketdi", Toast.LENGTH_SHORT).show()
                     binding.tvRematchStatus.visibility = View.VISIBLE
-                    binding.tvRematchStatus.text = "🚪 Opponent left the room"
+                    binding.tvRematchStatus.text = "🚪 Raqib xonadan chiqdi"
                     binding.btnAction.isEnabled = false
                     binding.btnAction.alpha = 0.5f
                 }
