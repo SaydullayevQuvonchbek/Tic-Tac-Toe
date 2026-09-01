@@ -108,6 +108,10 @@ class DashboardFragment : Fragment() {
         binding.cardDurak.setOnClickListener {
             handleGameClick("durak", 2, 100, binding.tvDurak, "🃏 Durak (Karta)", R.id.action_dashboardFragment_to_durakFragment)
         }
+
+        binding.cardChess.setOnClickListener {
+            handleGameClick("chess", 3, 150, binding.tvChess, "👑 Shaxmat (Chess PRO)", R.id.action_dashboardFragment_to_chessFragment)
+        }
         
         binding.cardDailyReward.setOnClickListener {
             if (ensureProfile()) claimDailyReward()
@@ -199,6 +203,7 @@ class DashboardFragment : Fragment() {
         updateLock("game_2048", 5, binding.tv2048, "🔢 2048 Classic")
         updateLock("drop_number", 3, binding.tvDropNumber, "🎯 Drop 2048")
         updateLock("durak", 2, binding.tvDurak, "🃏 Durak (Karta)")
+        updateLock("chess", 3, binding.tvChess, "👑 Shaxmat (Chess PRO)")
     }
 
     private fun handleGameClick(key: String, reqLevel: Int, cost: Int, tv: android.widget.TextView, title: String, actionId: Int) {
@@ -310,6 +315,7 @@ class DashboardFragment : Fragment() {
             val gomokuWins = sharedPref.getInt("gomoku_wins", 0)
             val checkersWins = sharedPref.getInt("checkers_wins", 0)
             val durakWins = sharedPref.getInt("durak_wins", 0)
+            val chessWins = sharedPref.getInt("chess_wins", 0)
 
             val mathUnlocked = sharedPref.getInt("math_unlocked_level", 1)
             binding.tvRecordTicTacToe.text = "🏆 Wins: $wins"
@@ -323,6 +329,7 @@ class DashboardFragment : Fragment() {
             binding.tvRecordGomoku.text = "🏆 Wins: $gomokuWins"
             binding.tvRecordCheckers.text = "🏆 Wins: $checkersWins"
             binding.tvRecordDurak.text = "🏆 Wins: $durakWins"
+            binding.tvRecordChess.text = "🏆 Wins: $chessWins • Do'st bilan Onlayn & AI Bot"
         } else {
             binding.tvUsername.text = "Guest Player"
             binding.tvLevelInfo.text = "Click edit to set username"

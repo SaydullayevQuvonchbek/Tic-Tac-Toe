@@ -43,7 +43,8 @@ object QuestManager {
         QuestTemplate("water_sort", "🧪 Suv saralashda 2 ta bosqichni yut", 2, 60, 90) { g, _, w -> g == "water_sort" && w },
         QuestTemplate("game_2048", "🔢 2048 o'yinida 1 marta o'yna", 1, 50, 80) { g, _, _ -> g == "2048" },
         QuestTemplate("gomoku_win", "⚪ Gomoku (5 qator) da 1 marta yut", 1, 80, 120) { g, _, w -> g == "gomoku" && w },
-        QuestTemplate("dots_boxes", "📦 Nuqtalar va Kataklar o'yinini o'yna", 2, 60, 90) { g, _, _ -> g == "dots_and_boxes" },
+        QuestTemplate("chess_play", "👑 Shaxmatda 1 ta o'yin o'yna", 1, 70, 110) { g, _, _ -> g == "chess" },
+        QuestTemplate("chess_win", "👑 Shaxmatda 1 marta g'alaba qozon", 1, 100, 160) { g, _, w -> g == "chess" && w },
         QuestTemplate("any_games", "🎮 Har qanday o'yinda 4 ta raund o'yna", 4, 80, 130) { _, _, _ -> true }
     )
 

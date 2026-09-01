@@ -46,6 +46,9 @@
         <action
             android:id="@+id/action_dashboardFragment_to_durakFragment"
             app:destination="@id/durakFragment" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_chessFragment"
+            app:destination="@id/chessFragment" />
     </fragment>
 
     <fragment
@@ -222,5 +225,11 @@
         android:name="com.example.tictactoe.DurakFragment"
         android:label="Durak Card Game"
         tools:layout="@layout/fragment_durak" />
+
+    <fragment
+        android:id="@+id/chessFragment"
+        android:name="com.example.tictactoe.ChessFragment"
+        android:label="Chess Game"
+        tools:layout="@layout/fragment_chess" />
 
 </navigation>

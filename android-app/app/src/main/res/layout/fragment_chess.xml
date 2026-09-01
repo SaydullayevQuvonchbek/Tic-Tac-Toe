@@ -1,0 +1,495 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_color">
+
+    <!-- 1. SETUP SCREEN -->
+    <ScrollView
+        android:id="@+id/setupContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- Back Button & Title -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/btnBackSetup"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@android:drawable/ic_menu_revert"
+                    app:tint="@color/white" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:fontFamily="sans-serif-black"
+                    android:text="👑 SHAXMAT (CHESS)"
+                    android:textColor="@color/white"
+                    android:textSize="20sp" />
+            </LinearLayout>
+
+            <!-- Mode Selection Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="14dp"
+                app:cardBackgroundColor="#1E293B"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="6dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-black"
+                        android:text="O'YIN REJIMI"
+                        android:textColor="#38BDF8"
+                        android:textSize="14sp" />
+
+                    <RadioGroup
+                        android:id="@+id/rgGameMode"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp">
+
+                        <RadioButton
+                            android:id="@+id/rbAiMode"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:text="🤖 Botga qarshi o'ynash (AI)"
+                            android:textColor="@color/white"
+                            android:textSize="15sp" />
+
+                        <RadioButton
+                            android:id="@+id/rbPassAndPlay"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:text="📱 Bitta telefonda (2 O'yinchi)"
+                            android:textColor="@color/white"
+                            android:textSize="15sp" />
+
+                        <RadioButton
+                            android:id="@+id/rbOnlineMode"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:text="🌐 Do'st bilan Onlayn Xona"
+                            android:textColor="@color/white"
+                            android:textSize="15sp" />
+                    </RadioGroup>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Online Options (Host / Join) -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardOnlineOptions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="14dp"
+                android:visibility="gone"
+                app:cardBackgroundColor="#1E293B"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="6dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-black"
+                        android:text="ONLAYN XONA SOZLAMALARI"
+                        android:textColor="#F59E0B"
+                        android:textSize="14sp" />
+
+                    <RadioGroup
+                        android:id="@+id/rgOnlineType"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp">
+
+                        <RadioButton
+                            android:id="@+id/rbCreateRoom"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:text="🏠 Yangi xona ochish (Oq donalar)"
+                            android:textColor="@color/white"
+                            android:textSize="15sp" />
+
+                        <RadioButton
+                            android:id="@+id/rbJoinRoom"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:text="🔗 Mavjud xonaga qo'shilish (Qora)"
+                            android:textColor="@color/white"
+                            android:textSize="15sp" />
+                    </RadioGroup>
+
+                    <!-- Room Code Input -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilRoomCode"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:hint="Xona Kodi (masalan: ABCD)"
+                        android:visibility="gone"
+                        app:endIconMode="custom"
+                        app:endIconDrawable="@android:drawable/ic_menu_agenda"
+                        app:endIconContentDescription="Kodni qo'yish"
+                        app:boxCornerRadiusBottomEnd="14dp"
+                        app:boxCornerRadiusBottomStart="14dp"
+                        app:boxCornerRadiusTopEnd="14dp"
+                        app:boxCornerRadiusTopStart="14dp">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etRoomCode"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-black"
+                            android:gravity="center"
+                            android:letterSpacing="0.25"
+                            android:maxLength="6"
+                            android:maxLines="1"
+                            android:singleLine="true"
+                            android:textAllCaps="true"
+                            android:textSize="20sp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Rules Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                app:cardBackgroundColor="#0F172A"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-black"
+                        android:text="📜 SHAXMAT RASMIY QOIDALARI"
+                        android:textColor="@color/white"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="• Shoh ♚, Farzin ♛, Ruh ♜, Fil ♝, Ot ♞, Piyoda ♟\n• Rokirovka (Castling) va En Passant to'liq qo'llab-quvvatlanadi\n• Piyoda oxirgi qatorga borganda Farzinga aylanadi\n• Shoh xavf ostida bo'lganda qizil nur bilan ogohlantiriladi\n• Raqib shohini Mot qilgan o'yinchi yutadi 🏆"
+                        android:textColor="#94A3B8"
+                        android:textSize="12sp"
+                        android:lineSpacingExtra="3dp" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Start Game Button -->
+            <Button
+                android:id="@+id/btnStartGame"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:backgroundTint="#2563EB"
+                android:fontFamily="sans-serif-black"
+                android:text="🎮 O'YINNI BOSHLASH"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                app:cornerRadius="16dp" />
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- 2. WAITING FOR OPPONENT SCREEN -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/waitingContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="24dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvWaitingTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-black"
+            android:text="Do'st Kutilmoqda... ⏳"
+            android:textColor="@color/white"
+            android:textSize="22sp"
+            app:layout_constraintBottom_toTopOf="@+id/tvCreatedRoomCode"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <TextView
+            android:id="@+id/tvWaitingSub"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Do'stingizga ushbu xona kodini yuboring:"
+            android:textColor="@color/text_secondary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvWaitingTitle" />
+
+        <TextView
+            android:id="@+id/tvCreatedRoomCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:fontFamily="sans-serif-black"
+            android:letterSpacing="0.25"
+            android:text="ABCD"
+            android:textColor="#38BDF8"
+            android:textSize="36sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvWaitingSub" />
+
+        <ProgressBar
+            android:id="@+id/pbWaiting"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvCreatedRoomCode" />
+
+        <Button
+            android:id="@+id/btnInviteFriend"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="24dp"
+            android:backgroundTint="#059669"
+            android:fontFamily="sans-serif-black"
+            android:text="🔗 Kodni Do'stga Ulashish"
+            android:textColor="@color/white"
+            app:cornerRadius="14dp"
+            app:layout_constraintTop_toBottomOf="@+id/pbWaiting" />
+
+        <Button
+            android:id="@+id/btnCancelWaiting"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="12dp"
+            android:backgroundTint="#EF4444"
+            android:text="Bekor Qilish"
+            android:textColor="@color/white"
+            app:cornerRadius="14dp"
+            app:layout_constraintTop_toBottomOf="@+id/btnInviteFriend" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- 3. GAMEPLAY SCREEN -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/gameplayContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <!-- Top Header Navigation -->
+        <ImageButton
+            android:id="@+id/btnGameplayBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="10dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_revert"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/white" />
+
+        <TextView
+            android:id="@+id/tvRoomCodeHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-black"
+            android:text="👑 Shaxmat"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="@+id/btnGameplayBack"
+            app:layout_constraintStart_toEndOf="@+id/btnGameplayBack"
+            app:layout_constraintTop_toTopOf="@+id/btnGameplayBack" />
+
+        <!-- Turn Badge Pill -->
+        <TextView
+            android:id="@+id/tvTurnBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/badge_pill"
+            android:backgroundTint="#1E293B"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="7dp"
+            android:fontFamily="sans-serif-black"
+            android:text="⚪ Oqlar navbati"
+            android:textColor="#FBBF24"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@+id/btnGameplayBack"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/btnGameplayBack" />
+
+        <!-- Opponent Info & Captured Bar (Top) -->
+        <LinearLayout
+            android:id="@+id/layoutOpponentBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginTop="4dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@+id/btnGameplayBack">
+
+            <TextView
+                android:id="@+id/tvOpponentName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-black"
+                android:text="Opponent"
+                android:textColor="@color/white"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/tvOpponentCaptured"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:text=""
+                android:textColor="#CBD5E1"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <!-- Center Chess Board -->
+        <FrameLayout
+            android:id="@+id/boardContainer"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="10dp"
+            app:layout_constraintBottom_toTopOf="@+id/layoutPlayerBar"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/layoutOpponentBar">
+
+            <com.example.tictactoe.ChessBoardView
+                android:id="@+id/chessBoardView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </FrameLayout>
+
+        <!-- Player Info & Captured Bar (Bottom) -->
+        <LinearLayout
+            android:id="@+id/layoutPlayerBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="12dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toTopOf="@+id/tvGameStatus">
+
+            <TextView
+                android:id="@+id/tvPlayerName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-black"
+                android:text="Siz"
+                android:textColor="@color/white"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/tvPlayerCaptured"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:text=""
+                android:textColor="#CBD5E1"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <!-- Status Text -->
+        <TextView
+            android:id="@+id/tvGameStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/badge_pill"
+            android:backgroundTint="#0F172A"
+            android:fontFamily="sans-serif-black"
+            android:gravity="center"
+            android:paddingVertical="8dp"
+            android:text="Sizning navbatingiz ⚔️"
+            android:textColor="#38BDF8"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toTopOf="@+id/layoutBottomControls" />
+
+        <!-- Bottom Controls (Resign & Emotes) -->
+        <LinearLayout
+            android:id="@+id/layoutBottomControls"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginBottom="12dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <Button
+                android:id="@+id/btnResign"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:backgroundTint="#DC2626"
+                android:text="🏳️ Taslim Bo'lish"
+                android:textColor="@color/white"
+                app:cornerRadius="12dp" />
+
+            <Space
+                android:layout_width="12dp"
+                android:layout_height="wrap_content" />
+
+            <!-- Quick Emote Bar -->
+            <LinearLayout
+                android:id="@+id/layoutEmotes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
