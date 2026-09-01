@@ -135,8 +135,21 @@ class DurakFragment : Fragment() {
                     if (code.isNotEmpty()) {
                         joinOnlineRoom(code)
                     } else {
-                        Toast.makeText(context, "Please enter room code", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Iltimos xona kodini kiriting", Toast.LENGTH_SHORT).show()
                     }
+                }
+            }
+        }
+
+        binding.tilRoomCode.setEndIconOnClickListener {
+            val clipboard = requireContext().getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+            val clip = clipboard.primaryClip
+            if (clip != null && clip.itemCount > 0) {
+                val text = clip.getItemAt(0).text?.toString()?.trim()?.uppercase() ?: ""
+                if (text.isNotEmpty()) {
+                    binding.etRoomCode.setText(text)
+                    HapticHelper.performClick(requireContext())
+                    Toast.makeText(context, "Xona kodi qo'yildi: $text", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -697,7 +710,10 @@ class DurakFragment : Fragment() {
         if (isOnlineMode) {
             sendCardActionOnline("attack", card.code, null)
         } else if (isAiMode) {
-            triggerBotAction()
+            // When defender is taking, human is adding cards (Qo'shib berish) -> don't trigger bot until human presses Berdim
+            if (!logic.isDefenderTaking) {
+                triggerBotAction()
+            }
         }
 
         checkGameOver()
@@ -802,7 +818,10 @@ class DurakFragment : Fragment() {
                 }
                 DurakAI.ActionType.PASS -> {
                     if (logic.isDefenderTaking) {
-                        logic.finalizeTakeByDefender(isDefenderPlayer = true)
+                        // Only finalize if BOT was attacking and dumping cards on human
+                        if (!logic.isPlayerAttacker) {
+                            logic.finalizeTakeByDefender(isDefenderPlayer = true)
+                        }
                     } else {
                         logic.clearTableToBita()
                     }

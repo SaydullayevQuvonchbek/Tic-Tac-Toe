@@ -122,16 +122,26 @@
                             android:layout_marginTop="12dp"
                             android:hint="Xona Kodi (masalan: ABCD)"
                             android:visibility="gone"
-                            app:boxCornerRadiusBottomEnd="12dp"
-                            app:boxCornerRadiusBottomStart="12dp"
-                            app:boxCornerRadiusTopEnd="12dp"
-                            app:boxCornerRadiusTopStart="12dp">
+                            app:endIconMode="custom"
+                            app:endIconDrawable="@android:drawable/ic_menu_agenda"
+                            app:endIconContentDescription="Kodni qo'yish"
+                            app:boxCornerRadiusBottomEnd="14dp"
+                            app:boxCornerRadiusBottomStart="14dp"
+                            app:boxCornerRadiusTopEnd="14dp"
+                            app:boxCornerRadiusTopStart="14dp">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/etRoomCode"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:textAllCaps="true" />
+                                android:fontFamily="sans-serif-black"
+                                android:gravity="center"
+                                android:letterSpacing="0.25"
+                                android:maxLength="6"
+                                android:maxLines="1"
+                                android:singleLine="true"
+                                android:textAllCaps="true"
+                                android:textSize="20sp" />
                         </com.google.android.material.textfield.TextInputLayout>
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
