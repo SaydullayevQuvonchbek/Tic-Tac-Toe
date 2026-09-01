@@ -19,6 +19,22 @@ object DurakAI {
         val botHand = logic.opponentHand
         val trumpSuit = logic.trumpSuit
 
+        if (logic.isDefenderTaking) {
+            if (isBotAttacker) {
+                // Human is taking cards! Bot can dump more non-trumps onto human (Qo'shib berish)
+                val playable = botHand.filter { logic.canAttackWith(it, isPlayer = false) }
+                val nonTrumpDump = playable.filter { it.suit != trumpSuit }.minByOrNull { it.rank.value }
+                if (nonTrumpDump != null) {
+                    return Decision(ActionType.ATTACK, nonTrumpDump)
+                }
+                // No more cards to dump -> Finalize take
+                return Decision(ActionType.PASS)
+            } else {
+                // Bot is taking, waiting for human attacker to finish adding cards
+                return Decision(ActionType.PASS)
+            }
+        }
+
         if (isBotAttacker) {
             // Bot is ATTACKING
             if (logic.tablePairs.isEmpty()) {
@@ -33,23 +49,20 @@ object DurakAI {
                 }
                 return Decision(ActionType.PASS)
             } else {
-                // Podkidnoy / Follow-up attack: Check if table can accept more attacks
+                // Follow-up attack: Check if any unbeat cards remain
                 val unbeat = logic.tablePairs.count { it.defendCard == null }
                 if (unbeat > 0) {
-                    // Wait for defender to beat currently placed cards
                     return Decision(ActionType.PASS)
                 }
 
                 // Table cards are all defended, can bot add another matching card?
                 val playableCards = botHand.filter { logic.canAttackWith(it, isPlayer = false) }
                 if (playableCards.isNotEmpty()) {
-                    // Prefer throwing lowest non-trump
                     val nonTrumpAdd = playableCards.filter { it.suit != trumpSuit }.minByOrNull { it.rank.value }
                     if (nonTrumpAdd != null) {
                         return Decision(ActionType.ATTACK, nonTrumpAdd)
                     }
 
-                    // Only throw low trump if player has <= 2 cards left
                     if (logic.playerHand.size <= 2) {
                         val trumpAdd = playableCards.filter { it.suit == trumpSuit && it.rank.value <= 10 }.minByOrNull { it.rank.value }
                         if (trumpAdd != null) {
@@ -58,7 +71,6 @@ object DurakAI {
                     }
                 }
 
-                // No more cards to add -> Pass to Bita!
                 return Decision(ActionType.PASS)
             }
         } else {
@@ -73,16 +85,13 @@ object DurakAI {
                 return Decision(ActionType.TAKE)
             }
 
-            // 1. Try to beat with lowest matching non-trump
             val nonTrumpBeat = beatableCards.filter { it.suit != trumpSuit }.minByOrNull { it.rank.value }
             if (nonTrumpBeat != null) {
                 return Decision(ActionType.DEFEND, nonTrumpBeat, attackCard)
             }
 
-            // 2. Try to beat with lowest trump
             val trumpBeat = beatableCards.filter { it.suit == trumpSuit }.minByOrNull { it.rank.value }
             if (trumpBeat != null) {
-                // If it's a high trump (Ace/King) and attack card is low (6/7), and table has few cards, consider taking instead of wasting high trump
                 if (trumpBeat.rank.value >= 13 && attackCard.rank.value <= 8 && logic.deck.size > 10 && botHand.size > 4) {
                     return Decision(ActionType.TAKE)
                 }

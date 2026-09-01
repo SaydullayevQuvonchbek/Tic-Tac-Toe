@@ -396,6 +396,8 @@ class DurakFragment : Fragment() {
         updateStatusAndButtons()
     }
 
+    private var selectedTargetAttackCard: Card? = null
+
     private fun renderTablePairs() {
         binding.layoutTablePairs.removeAllViews()
         val count = logic.tablePairs.size
@@ -433,11 +435,27 @@ class DurakFragment : Fragment() {
                 }
             }
 
+            val isTargeted = (selectedTargetAttackCard == pair.attackCard)
+
             // Attack Card (Bottom)
             val attackView = DurakCardView(requireContext()).apply {
                 card = pair.attackCard
                 isFaceDown = false
+                isSelectedCard = isTargeted
                 layoutParams = FrameLayout.LayoutParams(cardW, cardH)
+                setOnClickListener {
+                    if (pair.defendCard != null) return@setOnClickListener
+                    if (selectedCard != null && logic.canBeat(pair.attackCard, selectedCard!!)) {
+                        val c = selectedCard!!
+                        selectedCard = null
+                        selectedTargetAttackCard = null
+                        handlePlayerDefend(c, pair.attackCard)
+                    } else {
+                        selectedTargetAttackCard = if (selectedTargetAttackCard == pair.attackCard) null else pair.attackCard
+                        renderTablePairs()
+                        updateStatusAndButtons()
+                    }
+                }
             }
             pairContainer.addView(attackView)
 
@@ -531,6 +549,7 @@ class DurakFragment : Fragment() {
                     android.view.MotionEvent.ACTION_UP, android.view.MotionEvent.ACTION_CANCEL -> {
                         v.parent?.requestDisallowInterceptTouchEvent(false)
                         val currTranslationY = v.translationY
+                        val dropX = event.rawX
                         v.translationX = 0f
                         v.translationY = 0f
 
@@ -540,7 +559,29 @@ class DurakFragment : Fragment() {
                                 if (logic.isPlayerAttacker) {
                                     handlePlayerAttack(card)
                                 } else {
-                                    handlePlayerDefend(card)
+                                    // Check if dropped directly over a specific table card (Tanlab urish)
+                                    var targetedAttackCard: Card? = null
+                                    for (i in 0 until binding.layoutTablePairs.childCount) {
+                                        val child = binding.layoutTablePairs.getChildAt(i)
+                                        val loc = IntArray(2)
+                                        child.getLocationOnScreen(loc)
+                                        val left = loc[0]
+                                        val right = left + child.width
+                                        if (dropX >= (left - 15) && dropX <= (right + 15)) {
+                                            val p = logic.tablePairs.getOrNull(i)
+                                            if (p != null && p.defendCard == null && logic.canBeat(p.attackCard, card)) {
+                                                targetedAttackCard = p.attackCard
+                                                break
+                                            }
+                                        }
+                                    }
+
+                                    val curTarget = selectedTargetAttackCard
+                                    if (targetedAttackCard == null && curTarget != null && logic.canBeat(curTarget, card)) {
+                                        targetedAttackCard = curTarget
+                                    }
+
+                                    handlePlayerDefend(card, targetedAttackCard)
                                 }
                             }
                         } else {
@@ -550,7 +591,7 @@ class DurakFragment : Fragment() {
                                     if (logic.isPlayerAttacker) {
                                         handlePlayerAttack(card)
                                     } else {
-                                        handlePlayerDefend(card)
+                                        handlePlayerDefend(card, selectedTargetAttackCard)
                                     }
                                 } else {
                                     HapticHelper.performClick(v.context)
@@ -575,9 +616,28 @@ class DurakFragment : Fragment() {
         val isAttacker = logic.isPlayerAttacker
         val unbeatCount = logic.tablePairs.count { it.defendCard == null }
 
-        if (isAttacker) {
+        if (logic.isDefenderTaking) {
+            if (isAttacker) {
+                binding.tvGameStatus.text = "🔥 Raqib ko'tarmoqda! Yana karta qo'shing yoki '✅ Berdim' ni bosing"
+                binding.btnAttack.visibility = View.VISIBLE
+                binding.btnAttack.isEnabled = (selectedCard != null && logic.canAttackWith(selectedCard!!, true))
+                binding.btnAttack.text = "⚔️ Qo'shish"
+                binding.btnPassBita.visibility = View.VISIBLE
+                binding.btnPassBita.isEnabled = true
+                binding.btnPassBita.text = "✅ Berdim (Olib ket)"
+                binding.btnDefend.visibility = View.GONE
+                binding.btnTakeCards.visibility = View.GONE
+            } else {
+                binding.tvGameStatus.text = "📥 Ko'tarishni tanladingiz. Raqib karta qo'shmoqda..."
+                binding.btnAttack.visibility = View.GONE
+                binding.btnDefend.visibility = View.GONE
+                binding.btnPassBita.visibility = View.GONE
+                binding.btnTakeCards.visibility = View.GONE
+            }
+        } else if (isAttacker) {
             binding.tvGameStatus.text = "Sizning navbatingiz (Hujum qiling) ⚔️"
             binding.btnAttack.isEnabled = (selectedCard != null && logic.canAttackWith(selectedCard!!, true))
+            binding.btnAttack.text = "⚔️ Tashlash"
             binding.btnDefend.visibility = View.GONE
             binding.btnAttack.visibility = View.VISIBLE
             binding.btnTakeCards.visibility = View.GONE
@@ -587,16 +647,14 @@ class DurakFragment : Fragment() {
             binding.btnPassBita.isEnabled = (logic.tablePairs.isNotEmpty() && unbeatCount == 0)
             binding.btnPassBita.text = "✋ Bita (Bo'ldi)"
         } else {
-            binding.tvGameStatus.text = if (unbeatCount > 0) "Himoyalaning (Kartani yoping) 🛡️" else "Raqib yana karta qo'shishi mumkin... ⚔️"
+            val targetUnbeat = selectedTargetAttackCard ?: logic.tablePairs.firstOrNull { it.defendCard == null }?.attackCard
+            binding.tvGameStatus.text = if (targetUnbeat != null) "Himoyalaning: ${targetUnbeat.rank.label}${targetUnbeat.suit.symbol} ni uring 🛡️" else "Raqib o'ylamoqda... ⚔️"
             binding.btnAttack.visibility = View.GONE
             binding.btnDefend.visibility = View.VISIBLE
             binding.btnPassBita.visibility = View.GONE
             binding.btnTakeCards.visibility = View.VISIBLE
 
-            val targetUnbeat = logic.tablePairs.firstOrNull { it.defendCard == null }
-            binding.btnDefend.isEnabled = (selectedCard != null && targetUnbeat != null && logic.canBeat(targetUnbeat.attackCard, selectedCard!!))
-            
-            // Defender can ALWAYS choose to take table cards whenever there are cards on the table!
+            binding.btnDefend.isEnabled = (selectedCard != null && targetUnbeat != null && logic.canBeat(targetUnbeat, selectedCard!!))
             binding.btnTakeCards.isEnabled = (logic.tablePairs.isNotEmpty())
             binding.btnTakeCards.text = "📥 Ko'tarib Olish"
         }
@@ -609,7 +667,8 @@ class DurakFragment : Fragment() {
 
     private fun handlePlayerAttack(card: Card) {
         if (!logic.canAttackWith(card, true)) {
-            Toast.makeText(context, "Bu karta bilan hozir hujum qilib bo'lmaydi!", Toast.LENGTH_SHORT).show()
+            binding.tvGameStatus.text = "❌ Bu karta bilan hozir hujum qilib bo'lmaydi!"
+            HapticHelper.performClick(requireContext())
             return
         }
 
@@ -618,6 +677,7 @@ class DurakFragment : Fragment() {
 
         logic.attack(card, true)
         selectedCard = null
+        selectedTargetAttackCard = null
         renderBoard()
 
         if (isOnlineMode) {
@@ -629,22 +689,24 @@ class DurakFragment : Fragment() {
         checkGameOver()
     }
 
-    private fun handlePlayerDefend(card: Card) {
-        val target = logic.tablePairs.firstOrNull { it.defendCard == null }
-        if (target == null || !logic.canBeat(target.attackCard, card)) {
-            Toast.makeText(context, "Bu karta stoldagi kartani ura olmaydi!", Toast.LENGTH_SHORT).show()
+    private fun handlePlayerDefend(card: Card, explicitTarget: Card? = null) {
+        val target = explicitTarget ?: selectedTargetAttackCard ?: logic.tablePairs.firstOrNull { it.defendCard == null && logic.canBeat(it.attackCard, card) }?.attackCard
+        if (target == null || !logic.canBeat(target, card)) {
+            binding.tvGameStatus.text = "❌ Bu karta stoldagi kartani ura olmaydi!"
+            HapticHelper.performClick(requireContext())
             return
         }
 
         HapticHelper.performHeavyImpact(requireContext())
         SoundHelper.playCaptureSound(requireContext())
 
-        logic.defend(target.attackCard, card, true)
+        logic.defend(target, card, true)
         selectedCard = null
+        selectedTargetAttackCard = null
         renderBoard()
 
         if (isOnlineMode) {
-            sendCardActionOnline("defend", card.code, target.attackCard.code)
+            sendCardActionOnline("defend", card.code, target.code)
         } else if (isAiMode) {
             triggerBotAction()
         }
@@ -656,8 +718,25 @@ class DurakFragment : Fragment() {
         HapticHelper.performClick(requireContext())
         SoundHelper.playMoveSound(requireContext())
 
+        if (logic.isDefenderTaking) {
+            // Attacker finished adding cards -> Finalize Defender Take!
+            logic.finalizeTakeByDefender(isDefenderPlayer = false)
+            selectedCard = null
+            selectedTargetAttackCard = null
+            renderBoard()
+
+            if (isOnlineMode) {
+                sendCardActionOnline("finalize_take", null, null)
+            } else if (isAiMode) {
+                triggerBotAction()
+            }
+            checkGameOver()
+            return
+        }
+
         logic.clearTableToBita()
         selectedCard = null
+        selectedTargetAttackCard = null
         renderBoard()
 
         if (isOnlineMode) {
@@ -670,20 +749,21 @@ class DurakFragment : Fragment() {
     }
 
     private fun handlePlayerTake() {
+        if (logic.tablePairs.isEmpty()) return
+
         HapticHelper.performHeavyImpact(requireContext())
         SoundHelper.playCaptureSound(requireContext())
 
-        logic.takeTableCards(true)
+        logic.declareTakeByDefender()
         selectedCard = null
+        selectedTargetAttackCard = null
         renderBoard()
 
         if (isOnlineMode) {
-            sendCardActionOnline("take", null, null)
+            sendCardActionOnline("take_declared", null, null)
         } else if (isAiMode) {
             triggerBotAction()
         }
-
-        checkGameOver()
     }
 
     private fun triggerBotAction() {
@@ -707,19 +787,22 @@ class DurakFragment : Fragment() {
                     }
                 }
                 DurakAI.ActionType.PASS -> {
-                    logic.clearTableToBita()
+                    if (logic.isDefenderTaking) {
+                        logic.finalizeTakeByDefender(isDefenderPlayer = true)
+                    } else {
+                        logic.clearTableToBita()
+                    }
                     HapticHelper.performClick(requireContext())
                 }
                 DurakAI.ActionType.TAKE -> {
-                    logic.takeTableCards(false)
-                    Toast.makeText(context, "🤖 Bot kartalarni oldi!", Toast.LENGTH_SHORT).show()
+                    logic.declareTakeByDefender()
                     HapticHelper.performHeavyImpact(requireContext())
                 }
             }
 
             renderBoard()
             checkGameOver()
-        }, 800)
+        }, 750)
     }
 
     private fun sendCardActionOnline(action: String, card: String?, targetCard: String?) {
@@ -796,10 +879,20 @@ class DurakFragment : Fragment() {
                     HapticHelper.performClick(requireContext())
                     SoundHelper.playMoveSound(requireContext())
                 }
-                "take" -> {
-                    logic.takeTableCards(isPlayer = false)
-                    Toast.makeText(context, "Raqib kartalarni oldi!", Toast.LENGTH_SHORT).show()
+                "take_declared" -> {
+                    logic.declareTakeByDefender()
                     HapticHelper.performHeavyImpact(requireContext())
+                    SoundHelper.playCaptureSound(requireContext())
+                }
+                "finalize_take" -> {
+                    logic.finalizeTakeByDefender(isDefenderPlayer = true)
+                    HapticHelper.performHeavyImpact(requireContext())
+                    SoundHelper.playCaptureSound(requireContext())
+                }
+                "take" -> {
+                    logic.finalizeTakeByDefender(isDefenderPlayer = true)
+                    HapticHelper.performHeavyImpact(requireContext())
+                    SoundHelper.playCaptureSound(requireContext())
                 }
             }
 

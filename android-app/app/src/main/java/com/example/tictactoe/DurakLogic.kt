@@ -62,6 +62,7 @@ class DurakLogic {
     var tablePairs = mutableListOf<TablePair>()
 
     var isPlayerAttacker: Boolean = true
+    var isDefenderTaking: Boolean = false // When defender declares taking, attacker can add more cards (Qo'shib berish)
     var isGameOver: Boolean = false
     var winner: Int = 0 // 0 = Ongoing, 1 = Player, 2 = Opponent/Bot
 
@@ -72,6 +73,7 @@ class DurakLogic {
     fun initNewGame(customTrumpCard: Card? = null, p1Cards: List<String>? = null, p2Cards: List<String>? = null) {
         tablePairs.clear()
         isGameOver = false
+        isDefenderTaking = false
         winner = 0
 
         if (p1Cards != null && p2Cards != null && customTrumpCard != null) {
@@ -126,6 +128,7 @@ class DurakLogic {
     fun initNewGameWithSyncedDeck(trump: Card, myCards: List<String>, oppCards: List<String>, deckCodes: List<String>) {
         tablePairs.clear()
         isGameOver = false
+        isDefenderTaking = false
         winner = 0
 
         trumpCard = trump
@@ -153,10 +156,14 @@ class DurakLogic {
 
     fun canAttackWith(card: Card, isPlayer: Boolean): Boolean {
         if (isGameOver) return false
+        val isAttacker = (isPlayer == isPlayerAttacker)
+        if (!isAttacker) return false
+
         val defenderHandSize = if (isPlayer) opponentHand.size else playerHand.size
         val unbeatCount = tablePairs.count { it.defendCard == null }
 
-        if (unbeatCount >= defenderHandSize) return false
+        // While not in taking mode, cannot throw more unbeat cards than defender's hand size
+        if (!isDefenderTaking && unbeatCount >= defenderHandSize) return false
         if (tablePairs.isEmpty()) return true
 
         val ranksOnTable = mutableSetOf<CardRank>()
@@ -189,19 +196,27 @@ class DurakLogic {
 
     fun clearTableToBita() {
         tablePairs.clear()
+        isDefenderTaking = false
         refillHands()
         isPlayerAttacker = !isPlayerAttacker
     }
 
-    fun takeTableCards(isPlayer: Boolean) {
-        val hand = if (isPlayer) playerHand else opponentHand
+    fun declareTakeByDefender() {
+        isDefenderTaking = true
+    }
+
+    fun finalizeTakeByDefender(isDefenderPlayer: Boolean) {
+        val defenderHand = if (isDefenderPlayer) playerHand else opponentHand
         for (pair in tablePairs) {
-            hand.add(pair.attackCard)
-            pair.defendCard?.let { hand.add(it) }
+            defenderHand.add(pair.attackCard)
+            pair.defendCard?.let { defenderHand.add(it) }
         }
         tablePairs.clear()
-        sortHand(hand)
-        refillHands()
+        sortHand(defenderHand)
+        isDefenderTaking = false
+        // Attacker refills up to 6, defender keeps cards and skips refill
+        refillHandsAfterTake(isDefenderPlayer)
+        // Attacker remains attacker since defender took
     }
 
     fun refillHands() {
@@ -218,6 +233,19 @@ class DurakLogic {
             secondHand.add(deck.removeAt(0))
         }
 
+        sortHand(playerHand)
+        sortHand(opponentHand)
+    }
+
+    private fun refillHandsAfterTake(isDefenderPlayer: Boolean) {
+        val attackerHand = if (isDefenderPlayer) opponentHand else playerHand
+        while (attackerHand.size < 6 && deck.isNotEmpty()) {
+            attackerHand.add(deck.removeAt(0))
+        }
+        val defenderHand = if (isDefenderPlayer) playerHand else opponentHand
+        while (defenderHand.size < 6 && deck.isNotEmpty()) {
+            defenderHand.add(deck.removeAt(0))
+        }
         sortHand(playerHand)
         sortHand(opponentHand)
     }
