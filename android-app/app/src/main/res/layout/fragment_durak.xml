@@ -271,8 +271,8 @@
         <!-- Top Header Navigation -->
         <ImageButton
             android:id="@+id/btnGameplayBack"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
             android:layout_margin="10dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/ic_menu_revert"
@@ -287,7 +287,7 @@
             android:fontFamily="sans-serif-black"
             android:text="🃏 Durak"
             android:textColor="@color/white"
-            android:textSize="15sp"
+            android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="@+id/btnGameplayBack"
             app:layout_constraintStart_toEndOf="@+id/btnGameplayBack"
             app:layout_constraintTop_toTopOf="@+id/btnGameplayBack" />
@@ -301,8 +301,8 @@
             android:background="@drawable/badge_pill"
             android:backgroundTint="#0F172A"
             android:gravity="center_vertical"
-            android:paddingHorizontal="10dp"
-            android:paddingVertical="5dp"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
             app:layout_constraintBottom_toBottomOf="@+id/btnGameplayBack"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/btnGameplayBack">
@@ -314,7 +314,7 @@
                 android:fontFamily="sans-serif-black"
                 android:text="👑 ZOD: "
                 android:textColor="#FBBF24"
-                android:textSize="13sp" />
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/tvTrumpHeaderSuit"
@@ -323,7 +323,7 @@
                 android:fontFamily="sans-serif-black"
                 android:text="♥️ Yurak"
                 android:textColor="#EF4444"
-                android:textSize="14sp" />
+                android:textSize="15sp" />
         </LinearLayout>
 
         <!-- Opponent Info (Top Center) -->
@@ -345,7 +345,7 @@
                 android:fontFamily="sans-serif-black"
                 android:text="Opponent"
                 android:textColor="@color/white"
-                android:textSize="14sp" />
+                android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/tvOpponentCardsCount"
@@ -354,7 +354,7 @@
                 android:layout_marginStart="8dp"
                 android:background="@drawable/badge_pill"
                 android:backgroundTint="#0F172A"
-                android:paddingHorizontal="10dp"
+                android:paddingHorizontal="12dp"
                 android:paddingVertical="3dp"
                 android:text="🂠 6 ta"
                 android:textColor="#38BDF8"
@@ -366,7 +366,7 @@
         <LinearLayout
             android:id="@+id/layoutOpponentCards"
             android:layout_width="match_parent"
-            android:layout_height="62dp"
+            android:layout_height="72dp"
             android:gravity="center"
             android:orientation="horizontal"
             app:layout_constraintTop_toBottomOf="@+id/layoutOpponentHeader"
@@ -384,8 +384,8 @@
             <!-- Deck Pile & Trump Card (Left Side) -->
             <FrameLayout
                 android:id="@+id/layoutDeckAndTrump"
-                android:layout_width="105dp"
-                android:layout_height="140dp"
+                android:layout_width="115dp"
+                android:layout_height="150dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -393,16 +393,16 @@
                 <!-- Horizontal Trump Card underneath -->
                 <com.example.tictactoe.DurakCardView
                     android:id="@+id/viewTrumpCard"
-                    android:layout_width="65dp"
-                    android:layout_height="95dp"
+                    android:layout_width="74dp"
+                    android:layout_height="108dp"
                     android:layout_gravity="center"
                     android:rotation="90" />
 
                 <!-- Vertical Face-Down Deck Pile on top -->
                 <com.example.tictactoe.DurakCardView
                     android:id="@+id/viewDeckPile"
-                    android:layout_width="65dp"
-                    android:layout_height="95dp"
+                    android:layout_width="74dp"
+                    android:layout_height="108dp"
                     android:layout_gravity="center" />
 
                 <!-- Deck Count Badge -->
@@ -413,11 +413,11 @@
                     android:layout_gravity="bottom|center_horizontal"
                     android:background="@drawable/badge_pill"
                     android:backgroundTint="#0F172A"
-                    android:paddingHorizontal="10dp"
+                    android:paddingHorizontal="12dp"
                     android:paddingVertical="3dp"
                     android:text="🂠 24"
                     android:textColor="#FBBF24"
-                    android:textSize="12sp"
+                    android:textSize="13sp"
                     android:textStyle="bold" />
             </FrameLayout>
 
@@ -425,7 +425,7 @@
             <HorizontalScrollView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_marginStart="6dp"
+                android:layout_marginStart="8dp"
                 android:fillViewport="true"
                 android:scrollbars="none"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -439,7 +439,7 @@
                     android:layout_height="match_parent"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:paddingHorizontal="4dp" />
+                    android:paddingHorizontal="6dp" />
             </HorizontalScrollView>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -451,9 +451,9 @@
             android:gravity="center"
             android:padding="6dp"
             android:fontFamily="sans-serif-black"
-            android:text="Sizning navbatingiz (Hujum) ⚔️"
+            android:text="Sizning navbatingiz (Hujum qiling) ⚔️"
             android:textColor="#FDE047"
-            android:textSize="14sp"
+            android:textSize="15sp"
             app:layout_constraintBottom_toTopOf="@+id/layoutActionButtons" />
 
         <!-- Action Buttons Row (Tashlash, Urish, Bita, Olish) -->
@@ -470,62 +470,62 @@
             <Button
                 android:id="@+id/btnAttack"
                 android:layout_width="0dp"
-                android:layout_height="48dp"
+                android:layout_height="50dp"
                 android:layout_weight="1"
                 android:layout_marginEnd="4dp"
                 android:backgroundTint="#0284C7"
                 android:fontFamily="sans-serif-black"
                 android:text="⚔️ Tashlash"
                 android:textColor="@color/white"
-                android:textSize="13sp"
-                app:cornerRadius="12dp" />
+                android:textSize="14sp"
+                app:cornerRadius="14dp" />
 
             <Button
                 android:id="@+id/btnDefend"
                 android:layout_width="0dp"
-                android:layout_height="48dp"
+                android:layout_height="50dp"
                 android:layout_weight="1"
                 android:layout_marginEnd="4dp"
                 android:backgroundTint="#16A34A"
                 android:fontFamily="sans-serif-black"
                 android:text="🛡️ Urish"
                 android:textColor="@color/white"
-                android:textSize="13sp"
-                app:cornerRadius="12dp" />
+                android:textSize="14sp"
+                app:cornerRadius="14dp" />
 
             <Button
                 android:id="@+id/btnPassBita"
                 android:layout_width="0dp"
-                android:layout_height="48dp"
+                android:layout_height="50dp"
                 android:layout_weight="1"
                 android:layout_marginEnd="4dp"
                 android:backgroundTint="#D97706"
                 android:fontFamily="sans-serif-black"
                 android:text="✋ Bita"
                 android:textColor="@color/white"
-                android:textSize="13sp"
-                app:cornerRadius="12dp" />
+                android:textSize="14sp"
+                app:cornerRadius="14dp" />
 
             <Button
                 android:id="@+id/btnTakeCards"
                 android:layout_width="0dp"
-                android:layout_height="48dp"
+                android:layout_height="50dp"
                 android:layout_weight="1"
                 android:backgroundTint="#DC2626"
                 android:fontFamily="sans-serif-black"
                 android:text="📥 Olish"
                 android:textColor="@color/white"
-                android:textSize="13sp"
-                app:cornerRadius="12dp" />
+                android:textSize="14sp"
+                app:cornerRadius="14dp" />
         </LinearLayout>
 
         <!-- Player Hand (Bottom Horizontal Scrollable 3D Large Cards) -->
         <HorizontalScrollView
             android:id="@+id/scrollPlayerHand"
             android:layout_width="match_parent"
-            android:layout_height="145dp"
+            android:layout_height="165dp"
             android:fillViewport="true"
-            android:paddingHorizontal="12dp"
+            android:paddingHorizontal="10dp"
             android:scrollbars="none"
             app:layout_constraintBottom_toTopOf="@+id/layoutEmotesDurak">
 

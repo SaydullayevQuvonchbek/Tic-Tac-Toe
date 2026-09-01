@@ -204,7 +204,7 @@ class DurakFragment : Fragment() {
             onGameStarted = { data ->
                 activity?.runOnUiThread {
                     binding.waitingContainer.visibility = View.GONE
-                    startGame()
+                    syncOnlineGameStart(data)
                 }
             },
             onMoveMade = { eventData ->
@@ -239,13 +239,60 @@ class DurakFragment : Fragment() {
         )
     }
 
+    private fun syncOnlineGameStart(data: String) {
+        try {
+            var json = JSONObject(data)
+            if (json.has("data")) {
+                val d = json.get("data")
+                if (d is String) json = JSONObject(d)
+                else if (d is JSONObject) json = d
+            }
+
+            if (json.has("trump_card")) {
+                val trumpStr = json.getString("trump_card")
+                val trump = Card.fromCode(trumpStr)
+                val p1Array = json.optJSONArray("player1_cards")
+                val p2Array = json.optJSONArray("player2_cards")
+                val p1 = if (p1Array != null) (0 until p1Array.length()).map { p1Array.getString(it) } else null
+                val p2 = if (p2Array != null) (0 until p2Array.length()).map { p2Array.getString(it) } else null
+                val attackerId = json.optInt("attacker_id", -1)
+
+                if (p1 != null && p2 != null) {
+                    val myHand = if (isHost) p1 else p2
+                    val oppHand = if (isHost) p2 else p1
+                    logic.initNewGame(trump, myHand, oppHand)
+                    if (attackerId != -1) {
+                        logic.isPlayerAttacker = (attackerId == myPlayerId)
+                    }
+                    renderBoard()
+                    return
+                }
+            }
+        } catch (_: Exception) {}
+
+        // Fallback: Fetch directly from server API
+        ApiClient.instance.startCardGame(CardStartRequest(roomCode, myPlayerId)).enqueue(object : Callback<CardStartResponse> {
+            override fun onResponse(call: Call<CardStartResponse>, response: Response<CardStartResponse>) {
+                val body = response.body()
+                if (response.isSuccessful && body != null && body.trump_card != null) {
+                    val trump = Card.fromCode(body.trump_card)
+                    val p1 = if (isHost) body.player1_cards else body.player2_cards
+                    val p2 = if (isHost) body.player2_cards else body.player1_cards
+                    logic.initNewGame(trump, p1, p2)
+                    logic.isPlayerAttacker = (body.attacker_id == myPlayerId)
+                    renderBoard()
+                }
+            }
+            override fun onFailure(call: Call<CardStartResponse>, t: Throwable) {}
+        })
+    }
+
     private fun startGame() {
         selectedCard = null
         logic.initNewGame()
 
         if (isOnlineMode) {
             subscribePusherEvents()
-            // Request clean start from server
             ApiClient.instance.startCardGame(CardStartRequest(roomCode, myPlayerId)).enqueue(object : Callback<CardStartResponse> {
                 override fun onResponse(call: Call<CardStartResponse>, response: Response<CardStartResponse>) {
                     val body = response.body()
@@ -306,8 +353,8 @@ class DurakFragment : Fragment() {
         for (i in 0 until oppCount) {
             val miniCard = DurakCardView(requireContext()).apply {
                 isFaceDown = true
-                layoutParams = LinearLayout.LayoutParams(46, 64).apply {
-                    setMargins(-12, 0, 0, 0)
+                layoutParams = LinearLayout.LayoutParams(52, 70).apply {
+                    setMargins(-14, 0, 0, 0)
                 }
             }
             binding.layoutOpponentCards.addView(miniCard)
@@ -327,7 +374,7 @@ class DurakFragment : Fragment() {
         binding.layoutTablePairs.removeAllViews()
         for (pair in logic.tablePairs) {
             val pairContainer = FrameLayout(requireContext()).apply {
-                layoutParams = LinearLayout.LayoutParams(88, 126).apply {
+                layoutParams = LinearLayout.LayoutParams(96, 138).apply {
                     setMargins(10, 0, 10, 0)
                 }
             }
@@ -336,7 +383,7 @@ class DurakFragment : Fragment() {
             val attackView = DurakCardView(requireContext()).apply {
                 card = pair.attackCard
                 isFaceDown = false
-                layoutParams = FrameLayout.LayoutParams(76, 110)
+                layoutParams = FrameLayout.LayoutParams(84, 122)
             }
             pairContainer.addView(attackView)
 
@@ -348,7 +395,7 @@ class DurakFragment : Fragment() {
                     rotation = 14f
                     translationX = 12f
                     translationY = 12f
-                    layoutParams = FrameLayout.LayoutParams(76, 110)
+                    layoutParams = FrameLayout.LayoutParams(84, 122)
                 }
                 pairContainer.addView(defendView)
             }
@@ -364,7 +411,7 @@ class DurakFragment : Fragment() {
                 this.card = card
                 isFaceDown = false
                 isSelectedCard = (selectedCard == card)
-                layoutParams = LinearLayout.LayoutParams(82, 122).apply {
+                layoutParams = LinearLayout.LayoutParams(96, 142).apply {
                     setMargins(6, 0, 6, 0)
                 }
                 setOnClickListener {

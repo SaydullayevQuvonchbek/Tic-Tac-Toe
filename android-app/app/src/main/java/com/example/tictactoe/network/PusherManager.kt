@@ -74,7 +74,7 @@ object PusherManager {
 
                 val normalizedName = eventName.lowercase()
                 when {
-                    normalizedName.contains("start") || normalizedName.contains("rematch") || normalizedName.contains("restart") -> {
+                    normalizedName.contains("start") || normalizedName.contains("rematch") || normalizedName.contains("restart") || normalizedName.contains("game_started") -> {
                         Log.d(TAG, "Dispatched -> onGameStarted")
                         onGameStarted(data)
                     }
@@ -82,7 +82,7 @@ object PusherManager {
                         Log.d(TAG, "Dispatched -> onEmoteReceived")
                         onEmoteReceived(data)
                     }
-                    normalizedName.contains("move") -> {
+                    normalizedName.contains("move") || normalizedName.contains("card") || normalizedName.contains("action") || normalizedName.contains("refill") -> {
                         Log.d(TAG, "Dispatched -> onMoveMade")
                         onMoveMade(data)
                     }

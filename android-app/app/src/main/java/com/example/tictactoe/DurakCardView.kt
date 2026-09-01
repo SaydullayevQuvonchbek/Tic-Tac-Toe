@@ -32,7 +32,7 @@ class DurakCardView @JvmOverloads constructor(
     var isSelectedCard: Boolean = false
         set(value) {
             field = value
-            translationY = if (value) -35f else 0f
+            translationY = if (value) -40f else 0f
             invalidate()
         }
 
@@ -51,7 +51,7 @@ class DurakCardView @JvmOverloads constructor(
     private val cardSelectedGlowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#F59E0B") // Golden Glow
         style = Paint.Style.STROKE
-        strokeWidth = 9f
+        strokeWidth = 10f
     }
 
     private val backBackgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -86,7 +86,7 @@ class DurakCardView @JvmOverloads constructor(
         val rect = RectF(4f, 4f, w - 4f, h - 4f)
 
         if (isFaceDown) {
-            // Draw Card Back (Royal Blue Pattern)
+            // Draw Card Back (Royal Blue Casino Gradient)
             backBackgroundPaint.shader = LinearGradient(
                 0f, 0f, w, h,
                 Color.parseColor("#1E3A8A"), Color.parseColor("#0F172A"),
@@ -95,14 +95,18 @@ class DurakCardView @JvmOverloads constructor(
             canvas.drawRoundRect(rect, radius, radius, backBackgroundPaint)
 
             // Inner Pattern Border
-            val innerRect = RectF(10f, 10f, w - 10f, h - 10f)
+            val innerRect = RectF(8f, 8f, w - 8f, h - 8f)
             canvas.drawRoundRect(innerRect, radius - 4f, radius - 4f, backPatternPaint)
 
-            // Center Logo
+            // Diamond Mesh Lines
+            val meshRect = RectF(14f, 14f, w - 14f, h - 14f)
+            canvas.drawRoundRect(meshRect, radius - 6f, radius - 6f, backPatternPaint)
+
+            // Center Neutral Crown Logo (No Spade / Qarg'a confusion!)
             centerSymbolPaint.color = Color.parseColor("#FBBF24")
-            centerSymbolPaint.textSize = w * 0.42f
+            centerSymbolPaint.textSize = w * 0.40f
             val yPos = (h / 2f) - ((centerSymbolPaint.descent() + centerSymbolPaint.ascent()) / 2)
-            canvas.drawText("♠️", w / 2f, yPos, centerSymbolPaint)
+            canvas.drawText("👑", w / 2f, yPos, centerSymbolPaint)
             return
         }
 
@@ -119,22 +123,22 @@ class DurakCardView @JvmOverloads constructor(
         }
 
         val textPaint = if (c.suit.isRed) redTextPaint else blackTextPaint
-        val cornerRankSize = w * 0.28f
-        val cornerSuitSize = w * 0.24f
+        val cornerRankSize = w * 0.30f
+        val cornerSuitSize = w * 0.25f
 
         // 3. Top-Left Rank and Suit
         val rankLabel = c.rank.label
         val suitSymbol = c.suit.symbol
-        
+
         textPaint.textSize = cornerRankSize
-        canvas.drawText(rankLabel, 10f, 12f + cornerRankSize, textPaint)
+        canvas.drawText(rankLabel, 8f, 10f + cornerRankSize, textPaint)
 
         textPaint.textSize = cornerSuitSize
-        canvas.drawText(suitSymbol, 10f, 16f + cornerRankSize + cornerSuitSize, textPaint)
+        canvas.drawText(suitSymbol, 8f, 14f + cornerRankSize + cornerSuitSize, textPaint)
 
-        // 4. Center Big Symbol
+        // 4. Center Big Suit Symbol
         centerSymbolPaint.color = c.suit.colorInt
-        centerSymbolPaint.textSize = w * 0.52f
+        centerSymbolPaint.textSize = w * 0.54f
         val centerY = (h / 2f) - ((centerSymbolPaint.descent() + centerSymbolPaint.ascent()) / 2)
         canvas.drawText(suitSymbol, w / 2f, centerY, centerSymbolPaint)
 
@@ -142,9 +146,9 @@ class DurakCardView @JvmOverloads constructor(
         canvas.save()
         canvas.rotate(180f, w / 2f, h / 2f)
         textPaint.textSize = cornerRankSize
-        canvas.drawText(rankLabel, 10f, 12f + cornerRankSize, textPaint)
+        canvas.drawText(rankLabel, 8f, 10f + cornerRankSize, textPaint)
         textPaint.textSize = cornerSuitSize
-        canvas.drawText(suitSymbol, 10f, 16f + cornerRankSize + cornerSuitSize, textPaint)
+        canvas.drawText(suitSymbol, 8f, 14f + cornerRankSize + cornerSuitSize, textPaint)
         canvas.restore()
     }
 }
