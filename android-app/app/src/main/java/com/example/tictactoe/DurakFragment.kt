@@ -406,6 +406,7 @@ class DurakFragment : Fragment() {
     }
 
     private fun renderPlayerHand() {
+        if (_binding == null) return
         binding.layoutPlayerCards.removeAllViews()
         for (card in logic.playerHand) {
             val cardView = DurakCardView(requireContext()).apply {
@@ -428,13 +429,13 @@ class DurakFragment : Fragment() {
                         downRawX = event.rawX
                         downRawY = event.rawY
                         isDragging = false
-                        v.parent.requestDisallowInterceptTouchEvent(true)
+                        v.parent?.requestDisallowInterceptTouchEvent(true)
                         true
                     }
                     android.view.MotionEvent.ACTION_MOVE -> {
                         val deltaX = event.rawX - downRawX
                         val deltaY = event.rawY - downRawY
-                        if (Math.abs(deltaY) > 20 || Math.abs(deltaX) > 20) {
+                        if (Math.abs(deltaY) > 15 || Math.abs(deltaX) > 15) {
                             isDragging = true
                             v.translationX = deltaX
                             v.translationY = deltaY
@@ -442,47 +443,36 @@ class DurakFragment : Fragment() {
                         true
                     }
                     android.view.MotionEvent.ACTION_UP, android.view.MotionEvent.ACTION_CANCEL -> {
-                        v.parent.requestDisallowInterceptTouchEvent(false)
-                        if (isDragging) {
-                            // If dragged upwards past threshold -> Play card immediately!
-                            if (v.translationY < -80f) {
-                                if (logic.isPlayerAttacker) {
-                                    if (logic.canAttackWith(card, true)) {
-                                        v.translationX = 0f
-                                        v.translationY = 0f
-                                        handlePlayerAttack(card)
-                                        return@setOnTouchListener true
-                                    } else {
-                                        Toast.makeText(context, "Bu karta bilan hozir hujum qilib bo'lmaydi!", Toast.LENGTH_SHORT).show()
-                                    }
-                                } else {
-                                    val target = logic.tablePairs.firstOrNull { it.defendCard == null }
-                                    if (target != null && logic.canBeat(target.attackCard, card)) {
-                                        v.translationX = 0f
-                                        v.translationY = 0f
-                                        handlePlayerDefend(card)
-                                        return@setOnTouchListener true
-                                    } else {
-                                        Toast.makeText(context, "Bu karta stoldagi kartani ura olmaydi!", Toast.LENGTH_SHORT).show()
-                                    }
-                                }
-                            }
-                            // Snap back to hand smoothly
-                            v.animate().translationX(0f).translationY(0f).setDuration(180).start()
-                        } else {
-                            // Simple Tap: Select / Toggle / Double Tap
-                            if (selectedCard == card) {
+                        v.parent?.requestDisallowInterceptTouchEvent(false)
+                        val currTranslationY = v.translationY
+                        v.translationX = 0f
+                        v.translationY = 0f
+
+                        if (isDragging && currTranslationY < -60f) {
+                            // Dragged upwards to table -> safely execute on next loop tick
+                            v.post {
                                 if (logic.isPlayerAttacker) {
                                     handlePlayerAttack(card)
                                 } else {
                                     handlePlayerDefend(card)
                                 }
-                            } else {
-                                HapticHelper.performClick(v.context)
-                                SoundHelper.playMoveSound(v.context)
-                                selectedCard = card
-                                renderPlayerHand()
-                                updateStatusAndButtons()
+                            }
+                        } else {
+                            // Tap to select or double-tap to play
+                            v.post {
+                                if (selectedCard == card) {
+                                    if (logic.isPlayerAttacker) {
+                                        handlePlayerAttack(card)
+                                    } else {
+                                        handlePlayerDefend(card)
+                                    }
+                                } else {
+                                    HapticHelper.performClick(v.context)
+                                    SoundHelper.playMoveSound(v.context)
+                                    selectedCard = card
+                                    renderPlayerHand()
+                                    updateStatusAndButtons()
+                                }
                             }
                         }
                         true
