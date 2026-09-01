@@ -389,37 +389,60 @@ class DashboardFragment : Fragment() {
     }
 
     private fun showEditProfileDialog() {
-        val input = EditText(context)
-        input.hint = "Enter Unique Username"
+        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+        val currentName = sharedPref.getString("username", "") ?: ""
+
+        val container = android.widget.FrameLayout(requireContext()).apply {
+            setPadding(50, 20, 50, 20)
+        }
+        val input = EditText(requireContext()).apply {
+            hint = "Foydalanuvchi ismingizni kiriting"
+            if (currentName.isNotEmpty()) setText(currentName)
+            setSingleLine()
+            setPadding(30, 30, 30, 30)
+            background = requireContext().getDrawable(R.drawable.edittext_bg)
+        }
+        container.addView(input)
+
         AlertDialog.Builder(requireContext())
-            .setTitle("Profile Setup")
-            .setMessage("Set your username. It must be unique!")
-            .setView(input)
-            .setPositiveButton("Save") { _, _ ->
+            .setTitle("👤 Profilni sozlash")
+            .setMessage("O'yinda ko'rinadigan noyob ismingizni (username) kiriting:")
+            .setView(container)
+            .setPositiveButton("Saqlash 💾") { _, _ ->
                 val newName = input.text.toString().trim()
                 if (newName.isNotEmpty()) {
                     updateProfileOnServer(newName)
                 } else {
-                    Toast.makeText(context, "Username cannot be empty", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Ism bo'sh bo'lishi mumkin emas", Toast.LENGTH_SHORT).show()
                 }
             }
-            .setCancelable(false)
+            .setNegativeButton("Bekor qilish", null)
             .show()
     }
 
     private fun updateProfileOnServer(newUsername: String) {
         val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
-        val deviceId = sharedPref.getString("device_id", "") ?: java.util.UUID.randomUUID().toString()
-        sharedPref.edit().putString("device_id", deviceId).apply()
+        
+        // Ensure valid persistent device_id
+        var deviceId = sharedPref.getString("device_id", "") ?: ""
+        if (deviceId.isEmpty()) {
+            deviceId = java.util.UUID.randomUUID().toString()
+            sharedPref.edit().putString("device_id", deviceId).apply()
+        }
 
-        val pd = android.app.ProgressDialog(context)
-        pd.setMessage("Updating profile...")
-        pd.show()
+        // Save locally first so user is never blocked
+        sharedPref.edit().putString("username", newUsername).apply()
+        loadProfile()
+
+        val pd = android.app.ProgressDialog(context).apply {
+            setMessage("Profil saqlanmoqda...")
+            show()
+        }
 
         ApiClient.instance.auth(AuthRequest(deviceId, newUsername))
             .enqueue(object : Callback<AuthResponse> {
                 override fun onResponse(call: Call<AuthResponse>, response: Response<AuthResponse>) {
-                    pd.dismiss()
+                    try { pd.dismiss() } catch (_: Exception) {}
                     if (response.isSuccessful && response.body()?.status == "success") {
                         val user = response.body()?.user
                         if (user != null) {
@@ -438,16 +461,18 @@ class DashboardFragment : Fragment() {
                                 apply()
                             }
                             loadProfile()
-                            Toast.makeText(context, "Welcome, ${user.username}!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Hush kelibsiz, ${user.username}! 🎉", Toast.LENGTH_SHORT).show()
                         }
                     } else {
-                        Toast.makeText(context, "Failed to update profile", Toast.LENGTH_SHORT).show()
+                        // Saved locally anyway
+                        Toast.makeText(context, "Profil saqlandi: $newUsername", Toast.LENGTH_SHORT).show()
                     }
                 }
 
                 override fun onFailure(call: Call<AuthResponse>, t: Throwable) {
-                    pd.dismiss()
-                    Toast.makeText(context, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                    try { pd.dismiss() } catch (_: Exception) {}
+                    // Saved locally anyway
+                    Toast.makeText(context, "Profil saqlandi: $newUsername", Toast.LENGTH_SHORT).show()
                 }
             })
     }

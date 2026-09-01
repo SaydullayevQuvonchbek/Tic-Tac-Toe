@@ -37,10 +37,93 @@ class ProfileFragment : Fragment() {
         val coins = sharedPref.getInt("coins", 0)
         val streak = sharedPref.getInt("streak_count", 0)
 
-        binding.tvProfileName.text = username
+        binding.tvProfileName.text = "$username ✏️"
         binding.tvProfileLevel.text = "Level $level | $xp XP"
         binding.tvProfileStreak.text = "🔥 Streak: $streak"
         binding.tvProfileCoins.text = "🪙 Coins: $coins"
+
+        binding.tvProfileName.setOnClickListener {
+            showEditUsernameDialog()
+        }
+    }
+
+    private fun showEditUsernameDialog() {
+        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+        val currentName = sharedPref.getString("username", "") ?: ""
+
+        val container = android.widget.FrameLayout(requireContext()).apply {
+            setPadding(50, 20, 50, 20)
+        }
+        val input = android.widget.EditText(requireContext()).apply {
+            hint = "Foydalanuvchi ismingizni kiriting"
+            if (currentName.isNotEmpty()) setText(currentName)
+            setSingleLine()
+            setPadding(30, 30, 30, 30)
+            background = requireContext().getDrawable(R.drawable.edittext_bg)
+        }
+        container.addView(input)
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("👤 Ismni o'zgartirish")
+            .setMessage("Yangi foydalanuvchi ismini (username) kiriting:")
+            .setView(container)
+            .setPositiveButton("Saqlash 💾") { _, _ ->
+                val newName = input.text.toString().trim()
+                if (newName.isNotEmpty()) {
+                    updateUsernameOnServer(newName)
+                } else {
+                    android.widget.Toast.makeText(context, "Ism bo'sh bo'lishi mumkin emas", android.widget.Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton("Bekor qilish", null)
+            .show()
+    }
+
+    private fun updateUsernameOnServer(newUsername: String) {
+        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+        var deviceId = sharedPref.getString("device_id", "") ?: ""
+        if (deviceId.isEmpty()) {
+            deviceId = java.util.UUID.randomUUID().toString()
+            sharedPref.edit().putString("device_id", deviceId).apply()
+        }
+
+        sharedPref.edit().putString("username", newUsername).apply()
+        loadProfile()
+
+        val pd = android.app.ProgressDialog(context).apply {
+            setMessage("Profil saqlanmoqda...")
+            show()
+        }
+
+        com.example.tictactoe.network.ApiClient.instance.auth(com.example.tictactoe.network.AuthRequest(deviceId, newUsername))
+            .enqueue(object : retrofit2.Callback<com.example.tictactoe.network.AuthResponse> {
+                override fun onResponse(call: retrofit2.Call<com.example.tictactoe.network.AuthResponse>, response: retrofit2.Response<com.example.tictactoe.network.AuthResponse>) {
+                    try { pd.dismiss() } catch (_: Exception) {}
+                    if (response.isSuccessful && response.body()?.status == "success") {
+                        val user = response.body()?.user
+                        if (user != null) {
+                            sharedPref.edit().apply {
+                                putInt("user_id", user.id)
+                                putString("username", user.username)
+                                putInt("level", user.level)
+                                putInt("xp", user.xp)
+                                putInt("coins", user.coins)
+                                putInt("streak_count", user.streak_count)
+                                apply()
+                            }
+                            loadProfile()
+                            android.widget.Toast.makeText(context, "Ism yangilandi: ${user.username} 🎉", android.widget.Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        android.widget.Toast.makeText(context, "Ism saqlandi: $newUsername", android.widget.Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: retrofit2.Call<com.example.tictactoe.network.AuthResponse>, t: Throwable) {
+                    try { pd.dismiss() } catch (_: Exception) {}
+                    android.widget.Toast.makeText(context, "Ism saqlandi: $newUsername", android.widget.Toast.LENGTH_SHORT).show()
+                }
+            })
     }
 
     private fun initSettings() {
