@@ -490,26 +490,35 @@ class DurakFragment : Fragment() {
         if (_binding == null) return
         binding.layoutPlayerCards.removeAllViews()
         val count = logic.playerHand.size
+        if (count == 0) return
 
-        // Dynamic Massive Card Dimensions in DP!
+        // 1. Calculate usable width on screen
+        val screenWidthPx = resources.displayMetrics.widthPixels
+        val paddingPx = dp(16)
+        val usableWidthPx = (screenWidthPx - paddingPx).coerceAtLeast(dp(280))
+
+        // 2. Dynamic Massive Card Dimensions in DP!
         val cardW = when {
-            count <= 6 -> dp(112)
-            count <= 9 -> dp(102)
-            count <= 13 -> dp(92)
-            else -> dp(84)
+            count <= 6 -> dp(106)
+            count <= 9 -> dp(98)
+            count <= 13 -> dp(90)
+            else -> dp(82)
         }
         val cardH = when {
-            count <= 6 -> dp(166)
-            count <= 9 -> dp(152)
+            count <= 6 -> dp(162)
+            count <= 9 -> dp(150)
             count <= 13 -> dp(138)
             else -> dp(126)
         }
-        val marginSide = when {
-            count <= 5 -> dp(6)
-            count <= 7 -> dp(2)
-            count <= 10 -> -dp(((count - 6) * 8).coerceAtMost(36))
-            count <= 14 -> -dp(((count - 6) * 7).coerceAtMost(48))
-            else -> -dp(54)
+
+        // 3. Exact Screen-Fit Fan Overlap: All cards fit neatly on screen with zero scrolling!
+        val overlapMarginPx = if (count > 1) {
+            val neededStep = (usableWidthPx - cardW) / (count - 1)
+            val computedMargin = neededStep - cardW
+            // Limit margin to max dp(6) when cards are few, and let it overlap tightly when cards are many
+            computedMargin.coerceAtMost(dp(6))
+        } else {
+            0
         }
 
         for ((index, card) in logic.playerHand.withIndex()) {
@@ -519,7 +528,7 @@ class DurakFragment : Fragment() {
                 isFaceDown = false
                 isSelectedCard = isSelected
                 layoutParams = LinearLayout.LayoutParams(cardW, cardH).apply {
-                    setMargins(if (index == 0) dp(6) else marginSide, 0, dp(6), 0)
+                    setMargins(if (index == 0) 0 else overlapMarginPx, 0, 0, 0)
                 }
                 if (isSelected) {
                     bringToFront()

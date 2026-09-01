@@ -520,24 +520,27 @@
                 app:cornerRadius="14dp" />
         </LinearLayout>
 
-        <!-- Player Hand (Bottom Horizontal Scrollable 3D Large Cards with Drag-to-Throw Support) -->
-        <HorizontalScrollView
+        <!-- Player Hand (Screen-Fit Fan of Cards with No Scroll Needed) -->
+        <FrameLayout
             android:id="@+id/scrollPlayerHand"
             android:layout_width="match_parent"
             android:layout_height="195dp"
-            android:fillViewport="true"
-            android:paddingHorizontal="8dp"
-            android:scrollbars="none"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:paddingHorizontal="4dp"
             app:layout_constraintBottom_toTopOf="@+id/layoutEmotesDurak">
 
             <LinearLayout
                 android:id="@+id/layoutPlayerCards"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:gravity="bottom"
+                android:layout_gravity="center_horizontal|bottom"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:gravity="center_horizontal|bottom"
                 android:orientation="horizontal"
-                android:paddingBottom="12dp" />
-        </HorizontalScrollView>
+                android:paddingBottom="10dp" />
+        </FrameLayout>
 
         <!-- Emote Bar at bottom -->
         <LinearLayout
