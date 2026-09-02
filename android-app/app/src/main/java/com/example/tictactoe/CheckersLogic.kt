@@ -4,7 +4,9 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-class CheckersLogic(var size: Int = 8) {
+class CheckersLogic private constructor(var size: Int, skipInit: Boolean) {
+
+    constructor(size: Int = 8) : this(size, false)
 
     companion object {
         const val EMPTY = 0
@@ -23,7 +25,18 @@ class CheckersLogic(var size: Int = 8) {
     var activeJumpPiece: Pair<Int, Int>? = null // When in a multi-jump sequence
 
     init {
-        resetBoard(size)
+        if (!skipInit) resetBoard(size)
+    }
+
+    /** Lightweight deep copy used by the AI search (no [resetBoard] work per node). */
+    fun copy(): CheckersLogic {
+        val c = CheckersLogic(size, skipInit = true)
+        c.board = Array(size) { r -> board[r].copyOf() }
+        c.currentPlayer = currentPlayer
+        c.isGameOver = isGameOver
+        c.winner = winner
+        c.activeJumpPiece = activeJumpPiece
+        return c
     }
 
     fun resetBoard(newSize: Int = size) {
@@ -311,7 +324,7 @@ class CheckersLogic(var size: Int = 8) {
         return count
     }
 
-    fun getAiMove(): Move? {
-        return CheckersAI.findBestMove(this, 2, maxDepth = 5)
+    fun getAiMove(difficulty: BotDifficulty = BotDifficulty.MEDIUM): Move? {
+        return CheckersAI.findBestMove(this, aiPlayer = 2, difficulty = difficulty)
     }
 }

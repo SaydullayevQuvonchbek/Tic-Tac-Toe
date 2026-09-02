@@ -149,6 +149,13 @@ class CheckersFragment : Fragment() {
     private fun initSetupUI() {
         showSetupScreen()
 
+        DifficultySelector.bind(
+            binding.diffSelector.segDiffEasy,
+            binding.diffSelector.segDiffMedium,
+            binding.diffSelector.segDiffHard,
+            "checkers"
+        )
+
         binding.rgMode.setOnCheckedChangeListener { _, checkedId ->
             binding.onlineOptionsContainer.visibility = if (checkedId == R.id.rbOnline) View.VISIBLE else View.GONE
             binding.btnStartGame.visibility = if (checkedId == R.id.rbOnline) View.GONE else View.VISIBLE
@@ -242,6 +249,15 @@ class CheckersFragment : Fragment() {
         binding.checkersBoardView.pieceSkin = CheckersThemeManager.getEquippedPieceSkin(requireContext())
     }
 
+    /** After a jump that continues, re-select the landed piece so the player sees the next hop. */
+    private fun autoSelectContinuedJump() {
+        val jp = logic.activeJumpPiece ?: return
+        binding.checkersBoardView.selectedR = jp.first
+        binding.checkersBoardView.selectedC = jp.second
+        binding.checkersBoardView.validMoves = logic.getValidMovesForPiece(jp.first, jp.second)
+        binding.checkersBoardView.invalidate()
+    }
+
     private fun handleMove(fromR: Int, fromC: Int, toR: Int, toC: Int) {
         if (logic.isGameOver) return
 
@@ -262,6 +278,8 @@ class CheckersFragment : Fragment() {
                 val continuesJump = (logic.activeJumpPiece != null)
                 if (!continuesJump) {
                     isMyTurnOnline = false
+                } else {
+                    autoSelectContinuedJump()
                 }
                 updateTurnIndicator()
 
@@ -289,44 +307,46 @@ class CheckersFragment : Fragment() {
             updateScoreboard()
             updateTurnIndicator()
 
-            if (logic.isGameOver) {
-                handleGameOver()
-            } else if (isAiMode && logic.currentPlayer == 2) {
-                triggerAiMove()
+            when {
+                logic.isGameOver -> handleGameOver()
+                logic.activeJumpPiece != null && logic.currentPlayer == 1 -> autoSelectContinuedJump()
+                isAiMode && logic.currentPlayer == 2 -> triggerAiMove()
             }
         }
     }
 
     private fun triggerAiMove() {
+        _binding ?: return
         binding.checkersBoardView.isEnabled = false
-        handler.postDelayed({
-            if (!isAdded || logic.isGameOver || logic.currentPlayer != 2) {
-                binding.checkersBoardView.isEnabled = true
-                return@postDelayed
-            }
+        val difficulty = DifficultyStore.get(requireContext(), "checkers")
 
-            val aiMove = logic.getAiMove()
-            if (aiMove != null) {
-                val moved = logic.makeMove(aiMove.fromR, aiMove.fromC, aiMove.toR, aiMove.toC)
-                if (moved) {
-                    binding.checkersBoardView.invalidate()
-                    updateScoreboard()
-                    updateTurnIndicator()
-
-                    if (logic.isGameOver) {
-                        handleGameOver()
-                    } else if (logic.currentPlayer == 2 && logic.activeJumpPiece != null) {
-                        triggerAiMove()
-                    } else {
-                        binding.checkersBoardView.isEnabled = true
-                    }
-                } else {
+        AiThinker.think(
+            owner = this,
+            compute = {
+                if (logic.isGameOver || logic.currentPlayer != 2) null
+                else logic.getAiMove(difficulty)
+            },
+            onResult = onResult@{ aiMove ->
+                if (_binding == null) return@onResult
+                if (aiMove == null || logic.isGameOver || logic.currentPlayer != 2) {
                     binding.checkersBoardView.isEnabled = true
+                    return@onResult
                 }
-            } else {
-                binding.checkersBoardView.isEnabled = true
+                val moved = logic.makeMove(aiMove.fromR, aiMove.fromC, aiMove.toR, aiMove.toC)
+                if (!moved) {
+                    binding.checkersBoardView.isEnabled = true
+                    return@onResult
+                }
+                binding.checkersBoardView.invalidate()
+                updateScoreboard()
+                updateTurnIndicator()
+                when {
+                    logic.isGameOver -> handleGameOver()
+                    logic.currentPlayer == 2 && logic.activeJumpPiece != null -> triggerAiMove()
+                    else -> binding.checkersBoardView.isEnabled = true
+                }
             }
-        }, 500)
+        )
     }
 
     private fun updateScoreboard() {

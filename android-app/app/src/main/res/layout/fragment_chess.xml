@@ -79,6 +79,14 @@
                     <RadioButton android:id="@+id/rbPassAndPlay" style="@style/ModeRadio" android:text="📱   Bitta telefonda (2 o'yinchi)" />
                     <RadioButton android:id="@+id/rbOnlineMode" style="@style/ModeRadio" android:text="🌐   Do'st bilan onlayn" />
                 </RadioGroup>
+
+                <TextView style="@style/SectionLabel" android:text="BOT DARAJASI" android:layout_marginTop="14dp" android:layout_marginBottom="8dp" />
+
+                <include
+                    android:id="@+id/diffSelector"
+                    layout="@layout/view_difficulty_selector"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
             </LinearLayout>
 
             <LinearLayout

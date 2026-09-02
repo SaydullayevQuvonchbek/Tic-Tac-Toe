@@ -146,6 +146,13 @@ class GomokuFragment : Fragment() {
     private fun initSetupUI() {
         showSetupScreen()
 
+        DifficultySelector.bind(
+            binding.diffSelector.segDiffEasy,
+            binding.diffSelector.segDiffMedium,
+            binding.diffSelector.segDiffHard,
+            "gomoku"
+        )
+
         binding.rgMode.setOnCheckedChangeListener { _, checkedId ->
             binding.onlineOptionsContainer.visibility = if (checkedId == R.id.rbOnline) View.VISIBLE else View.GONE
             binding.btnStartGame.visibility = if (checkedId == R.id.rbOnline) View.GONE else View.VISIBLE
@@ -241,29 +248,23 @@ class GomokuFragment : Fragment() {
     }
 
     private fun triggerAiMove() {
+        if (_binding == null) return
         binding.gomokuBoardView.isEnabled = false
-        handler.postDelayed({
-            if (!isAdded || logic.isGameOver || logic.currentPlayer != 2) {
-                binding.gomokuBoardView.isEnabled = true
-                return@postDelayed
-            }
-
-            val aiMove = logic.getAiMove()
-            if (aiMove != null) {
-                val (r, c) = aiMove
-                val moved = logic.makeMove(r, c)
-                if (moved) {
-                    binding.gomokuBoardView.invalidate()
-                    updatePlayerCards()
-                    updateTurnIndicator()
-
-                    if (logic.isGameOver) {
-                        handleGameOver()
-                    }
-                }
-            }
+        val difficulty = DifficultyStore.get(requireContext(), "gomoku")
+        AiThinker.think(this, compute = {
+            if (logic.isGameOver || logic.currentPlayer != 2) null else logic.getAiMove(difficulty)
+        }, onResult = onResult@{ aiMove ->
+            if (_binding == null) return@onResult
             binding.gomokuBoardView.isEnabled = true
-        }, 450)
+            if (aiMove == null || logic.isGameOver || logic.currentPlayer != 2) return@onResult
+            val (r, c) = aiMove
+            if (logic.makeMove(r, c)) {
+                binding.gomokuBoardView.invalidate()
+                updatePlayerCards()
+                updateTurnIndicator()
+                if (logic.isGameOver) handleGameOver()
+            }
+        })
     }
 
     private fun updatePlayerCards() {

@@ -1,5 +1,9 @@
 package com.example.tictactoe
 
+import android.os.SystemClock
+import kotlin.math.max
+import kotlin.math.min
+
 class DotsAndBoxesLogic(val gridSize: Int = 4) {
 
     val numBoxesRow = gridSize - 1
@@ -118,69 +122,139 @@ class DotsAndBoxesLogic(val gridSize: Int = 4) {
         }
     }
 
-    /**
-     * AI move calculation
-     */
-    fun getAiMove(isHard: Boolean): Pair<Boolean, Pair<Int, Int>>? {
-        val allAvailableMoves = mutableListOf<Pair<Boolean, Pair<Int, Int>>>()
+    // ===================== AI =====================
+    // Move = (isVertical, r, c)
+    private fun availableMoves(): List<Triple<Boolean, Int, Int>> {
+        val out = ArrayList<Triple<Boolean, Int, Int>>()
+        for (r in 0 until gridSize) for (c in 0 until numBoxesRow) if (!horizontalEdges[r][c]) out.add(Triple(false, r, c))
+        for (r in 0 until numBoxesRow) for (c in 0 until gridSize) if (!verticalEdges[r][c]) out.add(Triple(true, r, c))
+        return out
+    }
 
-        // 1. Horizontal edges
-        for (r in 0 until gridSize) {
-            for (c in 0 until numBoxesRow) {
-                if (!horizontalEdges[r][c]) {
-                    allAvailableMoves.add(Pair(false, Pair(r, c)))
-                }
-            }
+    private fun isCapturing(m: Triple<Boolean, Int, Int>): Boolean {
+        val (isVert, r, c) = m
+        return if (isVert) (c > 0 && countBoxSides(r, c - 1) == 3) || (c < numBoxesRow && countBoxSides(r, c) == 3)
+        else (r > 0 && countBoxSides(r - 1, c) == 3) || (r < numBoxesRow && countBoxSides(r, c) == 3)
+    }
+
+    private fun isSafe(m: Triple<Boolean, Int, Int>): Boolean {
+        val (isVert, r, c) = m
+        val a = if (isVert) (c == 0 || countBoxSides(r, c - 1) < 2) else (r == 0 || countBoxSides(r - 1, c) < 2)
+        val b = if (isVert) (c == numBoxesRow || countBoxSides(r, c) < 2) else (r == numBoxesRow || countBoxSides(r, c) < 2)
+        return a && b
+    }
+
+    fun copy(): DotsAndBoxesLogic {
+        val c = DotsAndBoxesLogic(gridSize)
+        for (r in 0 until gridSize) horizontalEdges[r].copyInto(c.horizontalEdges[r])
+        for (r in 0 until numBoxesRow) verticalEdges[r].copyInto(c.verticalEdges[r])
+        for (r in 0 until numBoxesRow) boxes[r].copyInto(c.boxes[r])
+        c.currentPlayer = currentPlayer
+        c.scoreP1 = scoreP1
+        c.scoreP2 = scoreP2
+        c.isGameOver = isGameOver
+        c.winner = winner
+        return c
+    }
+
+    fun getAiMove(difficulty: BotDifficulty = BotDifficulty.MEDIUM): Pair<Boolean, Pair<Int, Int>>? {
+        val moves = availableMoves()
+        if (moves.isEmpty()) return null
+
+        val caps = moves.filter { isCapturing(it) }
+        if (caps.isNotEmpty()) return caps.random().let { (v, r, c) -> v to (r to c) }
+
+        val safe = moves.filter { isSafe(it) }
+        if (safe.isNotEmpty()) {
+            return when (difficulty) {
+                BotDifficulty.EASY -> safe.random()
+                else -> safe.minByOrNull { m -> chainRiskAround(m) }
+            }?.let { (v, r, c) -> v to (r to c) }
         }
 
-        // 2. Vertical edges
-        for (r in 0 until numBoxesRow) {
-            for (c in 0 until gridSize) {
-                if (!verticalEdges[r][c]) {
-                    allAvailableMoves.add(Pair(true, Pair(r, c)))
-                }
-            }
+        // No safe move — every move opens a chain. EASY: random. Else: give away the least, with search on HARD.
+        if (difficulty == BotDifficulty.EASY) return moves.random().let { (v, r, c) -> v to (r to c) }
+
+        val botPlayer = currentPlayer
+        val deadline = SystemClock.elapsedRealtime() + if (difficulty == BotDifficulty.HARD) 1800L else 700L
+        val maxDepth = if (difficulty == BotDifficulty.HARD) 14 else 6
+
+        var best = moves.first()
+        var bestVal = Int.MIN_VALUE
+        for (m in moves.sortedBy { sacrificeSize(it) }) {
+            val sim = copy()
+            sim.applyMoveInternal(m)
+            val v = sim.dbMinimax(maxDepth - 1, Int.MIN_VALUE + 1, Int.MAX_VALUE - 1, botPlayer, deadline)
+            if (v > bestVal) { bestVal = v; best = m }
+            if (SystemClock.elapsedRealtime() >= deadline) break
         }
+        return best.let { (v, r, c) -> v to (r to c) }
+    }
 
-        if (allAvailableMoves.isEmpty()) return null
+    private fun applyMoveInternal(m: Triple<Boolean, Int, Int>) = makeMove(m.first, m.second, m.third)
 
-        // Priority 1: Capturing Moves (moves that complete a box)
-        val capturingMoves = allAvailableMoves.filter { (isVert, pos) ->
-            val (r, c) = pos
-            if (isVert) {
-                (c > 0 && countBoxSides(r, c - 1) == 3) || (c < numBoxesRow && countBoxSides(r, c) == 3)
-            } else {
-                (r > 0 && countBoxSides(r - 1, c) == 3) || (r < numBoxesRow && countBoxSides(r, c) == 3)
-            }
+    private fun dbMinimax(depth: Int, alphaIn: Int, betaIn: Int, botPlayer: Int, deadline: Long): Int {
+        if (isGameOver || depth <= 0 || SystemClock.elapsedRealtime() >= deadline) {
+            val botScore = if (botPlayer == 1) scoreP1 else scoreP2
+            val oppScore = if (botPlayer == 1) scoreP2 else scoreP1
+            return botScore - oppScore
         }
-
-        if (capturingMoves.isNotEmpty()) {
-            return capturingMoves.random()
+        val moves = availableMoves()
+        if (moves.isEmpty()) {
+            val botScore = if (botPlayer == 1) scoreP1 else scoreP2
+            val oppScore = if (botPlayer == 1) scoreP2 else scoreP1
+            return botScore - oppScore
         }
+        val maximizing = currentPlayer == botPlayer
+        var alpha = alphaIn
+        var beta = betaIn
+        val ordered = moves.sortedByDescending { if (isCapturing(it)) 2 else if (isSafe(it)) 1 else 0 }
 
-        // Priority 2: Safe Moves (moves that DO NOT create a 3rd side for opponent)
-        if (isHard) {
-            val safeMoves = allAvailableMoves.filter { (isVert, pos) ->
-                val (r, c) = pos
-                val safeLeftOrTop = if (isVert) {
-                    c == 0 || countBoxSides(r, c - 1) < 2
-                } else {
-                    r == 0 || countBoxSides(r - 1, c) < 2
-                }
-                val safeRightOrBottom = if (isVert) {
-                    c == numBoxesRow || countBoxSides(r, c) < 2
-                } else {
-                    r == numBoxesRow || countBoxSides(r, c) < 2
-                }
-                safeLeftOrTop && safeRightOrBottom
+        if (maximizing) {
+            var bv = Int.MIN_VALUE
+            for (m in ordered) {
+                val s = copy(); s.applyMoveInternal(m)
+                bv = max(bv, s.dbMinimax(depth - 1, alpha, beta, botPlayer, deadline))
+                alpha = max(alpha, bv)
+                if (beta <= alpha || SystemClock.elapsedRealtime() >= deadline) break
             }
-
-            if (safeMoves.isNotEmpty()) {
-                return safeMoves.random()
+            return bv
+        } else {
+            var bv = Int.MAX_VALUE
+            for (m in ordered) {
+                val s = copy(); s.applyMoveInternal(m)
+                bv = min(bv, s.dbMinimax(depth - 1, alpha, beta, botPlayer, deadline))
+                beta = min(beta, bv)
+                if (beta <= alpha || SystemClock.elapsedRealtime() >= deadline) break
             }
+            return bv
         }
+    }
 
-        // Priority 3: Fallback to any available move
-        return allAvailableMoves.random()
+    /** How many boxes the opponent could immediately run after this (unsafe) move — smaller is better. */
+    private fun sacrificeSize(m: Triple<Boolean, Int, Int>): Int {
+        val s = copy()
+        s.applyMoveInternal(m)
+        var run = 0
+        while (true) {
+            val cap = s.availableMoves().firstOrNull { s.isCapturing(it) } ?: break
+            s.applyMoveInternal(cap)
+            run++
+            if (run > s.totalBoxes) break
+        }
+        return run
+    }
+
+    private fun chainRiskAround(m: Triple<Boolean, Int, Int>): Int {
+        val (isVert, r, c) = m
+        var risk = 0
+        if (isVert) {
+            if (c > 0) risk += countBoxSides(r, c - 1)
+            if (c < numBoxesRow) risk += countBoxSides(r, c)
+        } else {
+            if (r > 0) risk += countBoxSides(r - 1, c)
+            if (r < numBoxesRow) risk += countBoxSides(r, c)
+        }
+        return risk
     }
 }

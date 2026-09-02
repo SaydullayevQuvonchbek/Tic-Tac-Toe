@@ -143,6 +143,13 @@ class Connect4Fragment : Fragment() {
     private fun initSetupUI() {
         showSetupScreen()
 
+        DifficultySelector.bind(
+            binding.diffSelector.segDiffEasy,
+            binding.diffSelector.segDiffMedium,
+            binding.diffSelector.segDiffHard,
+            "connect4"
+        )
+
         binding.rgSetupMode.setOnCheckedChangeListener { _, checkedId ->
             if (checkedId == R.id.rbJoinOnline) {
                 binding.layoutRoomCode.visibility = View.VISIBLE
@@ -477,9 +484,14 @@ class Connect4Fragment : Fragment() {
             } else {
                 updateTurnIndicator()
                 if (isAiMode && logic.currentPlayer == 2) {
-                    binding.root.postDelayed({
-                        makeMove(logic.getBestMove())
-                    }, 500)
+                    val difficulty = DifficultyStore.get(requireContext(), "connect4")
+                    AiThinker.think(this, compute = {
+                        if (logic.isGameOver || logic.currentPlayer != 2) -1 else logic.getBestMove(difficulty)
+                    }, onResult = onResult@{ colResult ->
+                        if (_binding == null || colResult == null || colResult < 0) return@onResult
+                        if (logic.isGameOver || logic.currentPlayer != 2) return@onResult
+                        makeMove(colResult)
+                    })
                 }
             }
         }

@@ -102,7 +102,7 @@ class DashboardFragment : Fragment() {
         }
 
         binding.cardCheckers.setOnClickListener {
-            handleGameClick("checkers", 4, 200, binding.tvCheckers, "👑 Shashka (Checkers)", R.id.action_dashboardFragment_to_checkersFragment)
+            handleGameClick("checkers", 1, 200, binding.tvCheckers, "👑 Shashka (Checkers)", R.id.action_dashboardFragment_to_checkersFragment)
         }
 
         binding.cardDurak.setOnClickListener {
@@ -291,7 +291,7 @@ class DashboardFragment : Fragment() {
         
         updateLock("dots_and_boxes", 2, binding.tvDotsAndBoxes, "Dots & Boxes")
         updateLock("gomoku", 3, binding.tvGomoku, "Gomoku")
-        updateLock("checkers", 4, binding.tvCheckers, "Shashka")
+        updateLock("checkers", 1, binding.tvCheckers, "Shashka")
         updateLock("memory_game", 2, binding.tvMemoryGame, "Memory Game")
         updateLock("color_match", 3, binding.tvColorMatch, "Color Match")
         updateLock("water_sort", 3, binding.tvWaterSort, "Water Sort")

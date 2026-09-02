@@ -18,23 +18,36 @@ object PusherManager {
     private var activeChannel: Channel? = null
     private var currentRoomCode: String? = null
 
+    /** Optional per-screen listener for connection health (true = CONNECTED). */
+    @Volatile
+    var connectionListener: ((connected: Boolean) -> Unit)? = null
+
+    val isConnected: Boolean
+        get() = pusher?.connection?.state == ConnectionState.CONNECTED
+
+    private val connectionEvents = object : ConnectionEventListener {
+        override fun onConnectionStateChange(change: ConnectionStateChange) {
+            Log.d(TAG, "Pusher state changed: ${change.previousState} -> ${change.currentState}")
+            connectionListener?.invoke(change.currentState == ConnectionState.CONNECTED)
+        }
+        override fun onError(message: String, code: String?, e: Exception?) {
+            Log.e(TAG, "Pusher error: $message (code: $code)", e)
+            connectionListener?.invoke(false)
+        }
+    }
+
     fun connect() {
         if (pusher == null) {
             val options = PusherOptions().setCluster(CLUSTER)
-            pusher = Pusher(APP_KEY, options)
+            pusher = Pusher(APP_KEY, options).also {
+                it.connection.bind(ConnectionState.ALL, connectionEvents)
+            }
         }
 
         val state = pusher?.connection?.state
         if (state == null || state == ConnectionState.DISCONNECTED || state == ConnectionState.DISCONNECTING) {
             Log.d(TAG, "Initiating Pusher connection... Current state: $state")
-            pusher?.connect(object : ConnectionEventListener {
-                override fun onConnectionStateChange(change: ConnectionStateChange) {
-                    Log.d(TAG, "Pusher state changed: ${change.previousState} -> ${change.currentState}")
-                }
-                override fun onError(message: String, code: String?, e: Exception?) {
-                    Log.e(TAG, "Pusher error: $message (code: $code)", e)
-                }
-            }, ConnectionState.ALL)
+            pusher?.connect()
         }
     }
 

@@ -1,9 +1,55 @@
 package com.example.tictactoe
 
+import android.os.SystemClock
 import kotlin.math.max
 import kotlin.math.min
 
 object ChessAI {
+
+    // Search time budget (elapsedRealtime deadline); 0 = unlimited. Always runs on a bg thread.
+    private var deadline: Long = 0L
+    private fun timeUp() = deadline != 0L && SystemClock.elapsedRealtime() >= deadline
+
+    /** Difficulty-aware entry point used by ChessFragment (via AiThinker). */
+    fun getBestMove(logic: ChessLogic, difficulty: BotDifficulty): ChessMove? {
+        val botColor = logic.currentTurn
+        val legalMoves = logic.getAllLegalMovesForColor(botColor)
+        if (legalMoves.isEmpty()) return null
+        if (legalMoves.size == 1) return legalMoves[0]
+
+        val (depth, budget) = when (difficulty) {
+            BotDifficulty.EASY -> 2 to 0L
+            BotDifficulty.MEDIUM -> 3 to 1800L
+            BotDifficulty.HARD -> 4 to 2800L
+        }
+        deadline = if (budget == 0L) 0L else SystemClock.elapsedRealtime() + budget
+
+        val sorted = legalMoves.sortedByDescending { orderScore(it) }
+        val scored = ArrayList<Pair<ChessMove, Int>>(sorted.size)
+        for (move in sorted) {
+            val copy = cloneLogic(logic)
+            copy.makeMove(move)
+            val s = minimax(copy, depth - 1, Int.MIN_VALUE + 1, Int.MAX_VALUE - 1, false, botColor)
+            scored.add(move to s)
+            if (timeUp()) break
+        }
+        deadline = 0L
+        if (scored.isEmpty()) return legalMoves.random()
+        scored.sortByDescending { it.second }
+
+        return if (difficulty == BotDifficulty.EASY && scored.size > 1 && Math.random() < 0.30) {
+            scored[minOf(scored.lastIndex, (1..2).random())].first
+        } else {
+            scored.first().first
+        }
+    }
+
+    /** MVV-LVA style ordering: value of captured piece minus a fraction of the mover. */
+    private fun orderScore(m: ChessMove): Int {
+        val cap = m.capturedPiece?.type?.value ?: 0
+        val promo = m.promotionType?.value ?: 0
+        return cap * 10 - m.piece.type.value + promo
+    }
 
     private val PAWN_TABLE = arrayOf(
         intArrayOf(0,  0,  0,  0,  0,  0,  0,  0),
@@ -134,7 +180,7 @@ object ChessAI {
         isMaximizing: Boolean,
         botColor: PieceColor
     ): Int {
-        if (depth == 0 || logic.isGameOver) {
+        if (depth == 0 || logic.isGameOver || timeUp()) {
             if (logic.isGameOver) {
                 if (logic.winner == botColor) return 100000 + depth
                 if (logic.winner == botColor.opposite()) return -100000 - depth

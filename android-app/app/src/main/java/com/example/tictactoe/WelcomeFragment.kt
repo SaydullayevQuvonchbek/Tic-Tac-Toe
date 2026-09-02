@@ -44,6 +44,13 @@ class WelcomeFragment : Fragment() {
     private fun initUI() {
         showSetupScreen()
 
+        DifficultySelector.bind(
+            binding.diffSelector.segDiffEasy,
+            binding.diffSelector.segDiffMedium,
+            binding.diffSelector.segDiffHard,
+            "tictactoe"
+        )
+
         binding.btnSetupBack.setOnClickListener { findNavController().navigateUp() }
         binding.btnCancelWaiting.setOnClickListener { cancelWaiting() }
         binding.btnInviteFriend.setOnClickListener {

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_segment_track"
+    android:orientation="horizontal"
+    android:padding="3dp">
+
+    <TextView
+        android:id="@+id/segDiffEasy"
+        style="@style/RankTab"
+        android:text="OSON" />
+
+    <TextView
+        android:id="@+id/segDiffMedium"
+        style="@style/RankTab"
+        android:text="O'RTA" />
+
+    <TextView
+        android:id="@+id/segDiffHard"
+        style="@style/RankTab"
+        android:text="QIYIN" />
+
+</LinearLayout>

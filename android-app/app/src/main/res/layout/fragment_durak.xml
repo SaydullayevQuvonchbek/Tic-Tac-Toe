@@ -225,6 +225,23 @@
                         android:textSize="12.5sp" />
                 </RadioGroup>
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="sans-serif-black"
+                    android:letterSpacing="0.12"
+                    android:text="BOT DARAJASI"
+                    android:textColor="#64748B"
+                    android:textSize="11sp" />
+
+                <include
+                    android:id="@+id/diffSelector"
+                    layout="@layout/view_difficulty_selector"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
                 <!-- Room Code Input (when Join is selected) -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilRoomCode"
@@ -837,85 +854,46 @@
                 android:textSize="11sp" />
         </LinearLayout>
 
-        <!-- Action Buttons Row (Design 3a & 3c: 🛡 URISH | 📥 OLISH | 😎) -->
+        <!-- One context action + one reaction button (Design 3a / 3c) -->
         <LinearLayout
             android:id="@+id/layoutActionButtons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingHorizontal="14dp"
             android:paddingBottom="6dp"
             app:layout_constraintBottom_toTopOf="@+id/scrollPlayerHand">
 
             <TextView
-                android:id="@+id/btnAttack"
+                android:id="@+id/btnPrimaryAction"
                 android:layout_width="0dp"
-                android:layout_height="46dp"
-                android:layout_marginEnd="6dp"
-                android:layout_weight="1"
-                android:background="@drawable/bg_durak_btn_defend"
-                android:fontFamily="sans-serif-black"
-                android:gravity="center"
-                android:text="⚔️ TASHLASH"
-                android:textColor="#FFFFFF"
-                android:textSize="13sp" />
-
-            <TextView
-                android:id="@+id/btnDefend"
-                android:layout_width="0dp"
-                android:layout_height="46dp"
-                android:layout_marginEnd="6dp"
-                android:layout_weight="1"
-                android:background="@drawable/bg_durak_btn_defend"
-                android:fontFamily="sans-serif-black"
-                android:gravity="center"
-                android:text="🛡 URISH"
-                android:textColor="#FFFFFF"
-                android:textSize="13sp" />
-
-            <TextView
-                android:id="@+id/btnPassBita"
-                android:layout_width="0dp"
-                android:layout_height="46dp"
-                android:layout_marginEnd="6dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="8dp"
                 android:layout_weight="1"
                 android:background="@drawable/bg_durak_btn_pass"
                 android:fontFamily="sans-serif-black"
                 android:gravity="center"
+                android:letterSpacing="0.04"
                 android:text="✋ BITA"
                 android:textColor="#FFFFFF"
-                android:textSize="13sp" />
+                android:textSize="14sp" />
 
-            <TextView
-                android:id="@+id/btnTakeCards"
-                android:layout_width="0dp"
-                android:layout_height="46dp"
-                android:layout_marginEnd="6dp"
-                android:layout_weight="1"
-                android:background="@drawable/bg_durak_btn_take"
-                android:fontFamily="sans-serif-black"
-                android:gravity="center"
-                android:text="📥 OLISH"
-                android:textColor="#FCA5A5"
-                android:textSize="13sp" />
-
-            <!-- Quick Reaction Button (Design 3a: 😎) -->
             <TextView
                 android:id="@+id/btnOpenReaction"
-                android:layout_width="46dp"
-                android:layout_height="46dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:background="@drawable/bg_durak_btn_action_sm"
                 android:gravity="center"
                 android:text="😎"
-                android:textSize="18sp" />
+                android:textSize="19sp" />
         </LinearLayout>
 
         <!-- Player Hand Fan (Design 3a: Fanned cards) -->
         <FrameLayout
             android:id="@+id/scrollPlayerHand"
             android:layout_width="match_parent"
-            android:layout_height="130dp"
+            android:layout_height="140dp"
             android:clipChildren="false"
             android:clipToPadding="false"
             android:paddingHorizontal="6dp"
@@ -940,22 +918,65 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:letterSpacing="0.1"
-            android:paddingBottom="4dp"
-            android:text="KARTANI YUQORIGA SURING"
-            android:textColor="#66ECFDF5"
-            android:textSize="10sp"
-            app:layout_constraintBottom_toTopOf="@+id/layoutEmotesDurak" />
-
-        <!-- Quick 4 Reactions Bar (Design 3c: 🔥 😂 👏 💀 ⋯) -->
-        <LinearLayout
-            android:id="@+id/layoutEmotesDurak"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal"
             android:paddingBottom="12dp"
             android:paddingTop="2dp"
+            android:text="KARTANI YUQORIGA SURIB TASHLANG"
+            android:textColor="#66ECFDF5"
+            android:textSize="10sp"
             app:layout_constraintBottom_toBottomOf="parent" />
+
+        <!-- Opponent-stall banner -->
+        <TextView
+            android:id="@+id/tvStallBanner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="14dp"
+            android:background="@drawable/bg_durak_status_banner"
+            android:gravity="center"
+            android:fontFamily="sans-serif-black"
+            android:padding="10dp"
+            android:text="⏳ Raqib javob bermayapti — G'ALABA OLISH"
+            android:textColor="#FDE047"
+            android:textSize="12sp"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@+id/layoutOpponentCards" />
+
+        <!-- Reconnect overlay -->
+        <LinearLayout
+            android:id="@+id/viewReconnectOverlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#CC020A06"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ProgressBar
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:indeterminateTint="#34D399" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:fontFamily="sans-serif-black"
+                android:text="Qayta ulanmoqda…"
+                android:textColor="#ECFDF5"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Internet aloqasi tekshirilmoqda"
+                android:textColor="#8492B0"
+                android:textSize="11sp" />
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -107,6 +107,13 @@ class ChessFragment : Fragment() {
     private fun setupUI() {
         applyEquippedCustomization()
 
+        DifficultySelector.bind(
+            binding.diffSelector.segDiffEasy,
+            binding.diffSelector.segDiffMedium,
+            binding.diffSelector.segDiffHard,
+            "chess"
+        )
+
         binding.chessBoardView.logic = logic
         binding.chessBoardView.onSquareTapped = { r, c ->
             handleSquareTapped(r, c)
@@ -370,12 +377,17 @@ class ChessFragment : Fragment() {
     private fun showHint() {
         if (isOnlineMode || logic.isGameOver) return
         if (isAiMode && logic.currentTurn != PieceColor.WHITE) return
-        val m = ChessAI.getBestMove(logic, depth = 2) ?: return
-        selectedPiecePos = Pair(m.fromR, m.fromC)
-        currentValidMoves = listOf(m)
-        updateSelectionUI()
-        binding.chessBoardView.invalidate()
-        binding.tvGameStatus.text = "💡 Maslahat: belgilangan yurish tavsiya etiladi"
+        binding.tvGameStatus.text = "💡 Maslahat izlanmoqda..."
+        AiThinker.think(this, minVisibleMs = 150L, compute = {
+            if (logic.isGameOver) null else ChessAI.getBestMove(logic, BotDifficulty.MEDIUM)
+        }, onResult = onResult@{ m ->
+            if (_binding == null || m == null) return@onResult
+            selectedPiecePos = Pair(m.fromR, m.fromC)
+            currentValidMoves = listOf(m)
+            updateSelectionUI()
+            binding.chessBoardView.invalidate()
+            binding.tvGameStatus.text = "💡 Maslahat: belgilangan yurish tavsiya etiladi"
+        })
     }
 
     private fun startLocalGame() {
@@ -605,25 +617,25 @@ class ChessFragment : Fragment() {
     }
 
     private fun triggerBotMove() {
+        if (_binding == null) return
         binding.tvGameStatus.text = "🤖 Bot o'ylamoqda..."
-        handler.postDelayed({
-            if (!isAdded || logic.isGameOver) return@postDelayed
-
-            val botMove = ChessAI.getBestMove(logic, depth = 3)
-            if (botMove != null) {
-                pushSnapshot()
-                logic.makeMove(botMove)
-                binding.chessBoardView.lastMove = botMove
-                HapticHelper.performHeavyImpact(requireContext())
-                if (botMove.capturedPiece != null) {
-                    SoundHelper.playCaptureSound(requireContext())
-                } else {
-                    SoundHelper.playMoveSound(requireContext())
-                }
-                updateBoardUI()
-                checkGameOver()
+        val difficulty = DifficultyStore.get(requireContext(), "chess")
+        AiThinker.think(this, compute = {
+            if (logic.isGameOver) null else ChessAI.getBestMove(logic, difficulty)
+        }, onResult = onResult@{ botMove ->
+            if (_binding == null || botMove == null || logic.isGameOver) return@onResult
+            pushSnapshot()
+            logic.makeMove(botMove)
+            binding.chessBoardView.lastMove = botMove
+            HapticHelper.performHeavyImpact(requireContext())
+            if (botMove.capturedPiece != null) {
+                SoundHelper.playCaptureSound(requireContext())
+            } else {
+                SoundHelper.playMoveSound(requireContext())
             }
-        }, 400)
+            updateBoardUI()
+            checkGameOver()
+        })
     }
 
     private fun sendOnlineMove(move: ChessMove) {

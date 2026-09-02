@@ -144,6 +144,13 @@ class DotsAndBoxesFragment : Fragment() {
     private fun initSetupUI() {
         showSetupScreen()
 
+        DifficultySelector.bind(
+            binding.diffSelector.segDiffEasy,
+            binding.diffSelector.segDiffMedium,
+            binding.diffSelector.segDiffHard,
+            "dots_and_boxes"
+        )
+
         binding.rgMode.setOnCheckedChangeListener { _, checkedId ->
             binding.onlineOptionsContainer.visibility = if (checkedId == R.id.rbOnline) View.VISIBLE else View.GONE
             binding.btnStartGame.visibility = if (checkedId == R.id.rbOnline) View.GONE else View.VISIBLE
@@ -251,38 +258,32 @@ class DotsAndBoxesFragment : Fragment() {
     }
 
     private fun triggerAiMove() {
+        if (_binding == null) return
         binding.dotsAndBoxesView.isEnabled = false
-        handler.postDelayed({
-            if (!isAdded || logic.isGameOver || logic.currentPlayer != 2) {
+        val difficulty = DifficultyStore.get(requireContext(), "dots_and_boxes")
+        AiThinker.think(this, compute = {
+            if (logic.isGameOver || logic.currentPlayer != 2) null else logic.getAiMove(difficulty)
+        }, onResult = onResult@{ aiMove ->
+            if (_binding == null) return@onResult
+            if (aiMove == null || logic.isGameOver || logic.currentPlayer != 2) {
                 binding.dotsAndBoxesView.isEnabled = true
-                return@postDelayed
+                return@onResult
             }
-
-            val aiMove = logic.getAiMove(isHard = true)
-            if (aiMove != null) {
-                val (isVert, pos) = aiMove
-                val (r, c) = pos
-                val moved = logic.makeMove(isVert, r, c)
-                if (moved) {
-                    binding.dotsAndBoxesView.invalidate()
-                    updateScoreboard()
-                    updateTurnIndicator()
-
-                    if (logic.isGameOver) {
-                        handleGameOver()
-                    } else if (logic.currentPlayer == 2) {
-                        // AI completed a box and gets another turn!
-                        triggerAiMove()
-                    } else {
-                        binding.dotsAndBoxesView.isEnabled = true
-                    }
-                } else {
-                    binding.dotsAndBoxesView.isEnabled = true
-                }
-            } else {
+            val (isVert, pos) = aiMove
+            val (r, c) = pos
+            if (!logic.makeMove(isVert, r, c)) {
                 binding.dotsAndBoxesView.isEnabled = true
+                return@onResult
             }
-        }, 500)
+            binding.dotsAndBoxesView.invalidate()
+            updateScoreboard()
+            updateTurnIndicator()
+            when {
+                logic.isGameOver -> handleGameOver()
+                logic.currentPlayer == 2 -> triggerAiMove() // completed a box → another turn
+                else -> binding.dotsAndBoxesView.isEnabled = true
+            }
+        })
     }
 
     private fun updateScoreboard() {

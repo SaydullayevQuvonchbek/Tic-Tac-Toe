@@ -319,38 +319,35 @@ class GameFragment : Fragment() {
     }
 
     private fun triggerAiMoveIfNeeded(boardSize: Int) {
-        if (!isAiMode) return
+        if (!isAiMode || _binding == null) return
         val current = if (isInfinityMode) infinityGameLogic!!.currentPlayer else gameLogic!!.currentPlayer
         val gameOver = if (isInfinityMode) infinityGameLogic!!.isGameOver else gameLogic!!.isGameOver
-        
-        if (current == aiPlayer && !gameOver) {
-            // Disable buttons temporarily
-            setButtonsEnabled(false, boardSize)
-            binding.root.postDelayed({
-                val board = if (isInfinityMode) infinityGameLogic!!.board else gameLogic!!.board
-                // Wait! Infinity mode AI is much harder because minimax needs to simulate queues.
-                // Our MinimaxAI only works for classic mode!
-                // For Infinity mode, we will just pick a random empty spot for now.
-                if (isInfinityMode) {
-                    val emptySpots = mutableListOf<Pair<Int, Int>>()
-                    for (i in 0 until boardSize) {
-                        for (j in 0 until boardSize) {
-                            if (board[i][j] == "") emptySpots.add(Pair(i, j))
-                        }
-                    }
-                    if (emptySpots.isNotEmpty()) {
-                        val move = emptySpots.random()
-                        onCellClicked(move.first, move.second, isAi = true)
-                    }
-                } else {
-                    val bestMove = aiObj?.findBestMove(board, aiPlayer, boardSize)
-                    if (bestMove != null) {
-                        onCellClicked(bestMove.first, bestMove.second, isAi = true)
-                    }
-                }
-                setButtonsEnabled(true, boardSize)
-            }, 500)
-        }
+        if (current != aiPlayer || gameOver) return
+
+        setButtonsEnabled(false, boardSize)
+        val liveBoard = if (isInfinityMode) infinityGameLogic!!.board else gameLogic!!.board
+        val snapshot = Array(boardSize) { r -> liveBoard[r].copyOf() }
+        val infinity = isInfinityMode
+        val difficulty = DifficultyStore.get(requireContext(), "tictactoe")
+        val ai = aiObj
+
+        AiThinker.think(this, compute = {
+            if (infinity) {
+                // MinimaxAI can't model the fade queue — pick a random empty cell.
+                val empties = ArrayList<Pair<Int, Int>>()
+                for (i in 0 until boardSize) for (j in 0 until boardSize) if (snapshot[i][j] == "") empties.add(i to j)
+                empties.randomOrNull()
+            } else {
+                ai?.findBestMove(snapshot, aiPlayer, boardSize, difficulty)
+            }
+        }, onResult = onResult@{ move ->
+            if (_binding == null) return@onResult
+            setButtonsEnabled(true, boardSize)
+            val stillOver = if (isInfinityMode) infinityGameLogic!!.isGameOver else gameLogic!!.isGameOver
+            val stillCurrent = if (isInfinityMode) infinityGameLogic!!.currentPlayer else gameLogic!!.currentPlayer
+            if (move == null || stillOver || stillCurrent != aiPlayer) return@onResult
+            onCellClicked(move.first, move.second, isAi = true)
+        })
     }
 
     private fun setButtonsEnabled(enabled: Boolean, boardSize: Int) {

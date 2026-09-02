@@ -61,6 +61,9 @@ class DurakLogic {
     var opponentHand = mutableListOf<Card>()
     var tablePairs = mutableListOf<TablePair>()
 
+    /** Cards that were successfully defended and sent to "bito" — used by the harder bot for card counting. */
+    var beatenPile = mutableListOf<Card>()
+
     var isPlayerAttacker: Boolean = true
     var isDefenderTaking: Boolean = false // When defender declares taking, attacker can add more cards (Qo'shib berish)
     var isGameOver: Boolean = false
@@ -72,6 +75,7 @@ class DurakLogic {
 
     fun initNewGame(customTrumpCard: Card? = null, p1Cards: List<String>? = null, p2Cards: List<String>? = null) {
         tablePairs.clear()
+        beatenPile.clear()
         isGameOver = false
         isDefenderTaking = false
         winner = 0
@@ -127,6 +131,7 @@ class DurakLogic {
 
     fun initNewGameWithSyncedDeck(trump: Card, myCards: List<String>, oppCards: List<String>, deckCodes: List<String>) {
         tablePairs.clear()
+        beatenPile.clear()
         isGameOver = false
         isDefenderTaking = false
         winner = 0
@@ -136,6 +141,34 @@ class DurakLogic {
         opponentHand = oppCards.map { Card.fromCode(it) }.toMutableList()
         deck = deckCodes.map { Card.fromCode(it) }.toMutableList()
 
+        sortHand(playerHand)
+        sortHand(opponentHand)
+    }
+
+    /**
+     * Full authoritative-state restore used by the online reconnect / resync path.
+     * [table] is a list of (attackCode, defendCode?) pairs.
+     */
+    fun loadFullState(
+        trump: Card,
+        myCards: List<String>,
+        oppCards: List<String>,
+        deckCodes: List<String>,
+        table: List<Pair<String, String?>>,
+        playerIsAttacker: Boolean,
+        defenderTaking: Boolean
+    ) {
+        trumpCard = trump
+        playerHand = myCards.map { Card.fromCode(it) }.toMutableList()
+        opponentHand = oppCards.map { Card.fromCode(it) }.toMutableList()
+        deck = deckCodes.map { Card.fromCode(it) }.toMutableList()
+        tablePairs = table.map { (a, d) ->
+            TablePair(Card.fromCode(a), d?.let { Card.fromCode(it) })
+        }.toMutableList()
+        isPlayerAttacker = playerIsAttacker
+        isDefenderTaking = defenderTaking
+        isGameOver = false
+        winner = 0
         sortHand(playerHand)
         sortHand(opponentHand)
     }
@@ -196,6 +229,10 @@ class DurakLogic {
     }
 
     fun clearTableToBita() {
+        for (pair in tablePairs) {
+            beatenPile.add(pair.attackCard)
+            pair.defendCard?.let { beatenPile.add(it) }
+        }
         tablePairs.clear()
         isDefenderTaking = false
         refillHands()

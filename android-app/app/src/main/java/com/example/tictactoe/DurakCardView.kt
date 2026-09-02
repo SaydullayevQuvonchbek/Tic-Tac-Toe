@@ -29,10 +29,11 @@ class DurakCardView @JvmOverloads constructor(
             invalidate()
         }
 
+    // Visual-only "selected" state (mint glow). The owning fragment controls translationY/lift so
+    // the drag gesture and the selection highlight don't fight over the same property.
     var isSelectedCard: Boolean = false
         set(value) {
             field = value
-            translationY = if (value) -35f else 0f
             invalidate()
         }
 

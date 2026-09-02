@@ -286,7 +286,7 @@
         <item name="android:background">@drawable/bg_segment_item</item>
         <item name="android:fontFamily">@font/chakra_petch</item>
         <item name="android:gravity">center</item>
-        <item name="android:textColor">@color/text_muted</item>
+        <item name="android:textColor">@color/segment_tab_text</item>
         <item name="android:textSize">11sp</item>
         <item name="android:textStyle">bold</item>
     </style>

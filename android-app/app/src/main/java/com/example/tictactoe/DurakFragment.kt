@@ -55,6 +55,24 @@ class DurakFragment : Fragment() {
     private var selectedCard: Card? = null
     private val handler = Handler(Looper.getMainLooper())
 
+    // ---- Online resilience ----
+    // Per-sender action counters. Durak lets the attacker throw several cards in a row, so a single
+    // shared counter would collide (both players reuse the same number for different moves). Instead
+    // each client numbers its OWN outbound actions; the receiver tracks the last seq it applied from
+    // the peer and asks for a full resync the moment it sees a gap.
+    private var mySeq = 0     // my own outbound action counter
+    private var peerSeq = 0   // last action seq I have applied from the opponent
+    private var connectedNow = true
+    private var awaitingResync = false
+    private val stallHandler = Handler(Looper.getMainLooper())
+    private val stallRunnable = Runnable {
+        if (_binding != null && isOnlineMode && !logic.isGameOver) {
+            binding.tvStallBanner.visibility = View.VISIBLE
+        }
+    }
+
+    private val gameActions = setOf("attack", "defend", "pass", "take_declared", "finalize_take", "take")
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentDurakBinding.inflate(inflater, container, false)
         return binding.root
@@ -90,22 +108,14 @@ class DurakFragment : Fragment() {
             }
         })
 
-        // Action Buttons
-        binding.btnAttack.setOnClickListener {
-            selectedCard?.let { handlePlayerAttack(it) }
-        }
+        // Single context action button: attacker → BITA/BERDIM, defender → OLISH.
+        binding.btnPrimaryAction.setOnClickListener { handlePrimaryAction() }
 
-        binding.btnDefend.setOnClickListener {
-            selectedCard?.let { handlePlayerDefend(it) }
+        binding.tvStallBanner.setOnClickListener {
+            binding.tvStallBanner.visibility = View.GONE
+            handleOpponentForfeited()
         }
-
-        binding.btnPassBita.setOnClickListener {
-            handlePlayerPassBita()
-        }
-
-        binding.btnTakeCards.setOnClickListener {
-            handlePlayerTake()
-        }
+        binding.viewReconnectOverlay.setOnClickListener { /* eat touches while reconnecting */ }
 
         // Quick matchmaking from arguments if provided
         val isRematch = arguments?.getBoolean("isRematch", false) ?: false
@@ -121,6 +131,13 @@ class DurakFragment : Fragment() {
     private fun initSetupUI() {
         val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
         myPlayerId = sharedPref.getInt("user_id", -1)
+
+        DifficultySelector.bind(
+            binding.diffSelector.segDiffEasy,
+            binding.diffSelector.segDiffMedium,
+            binding.diffSelector.segDiffHard,
+            "durak"
+        )
 
         binding.rgMode.setOnCheckedChangeListener { _, checkedId ->
             binding.tilRoomCode.visibility = if (checkedId == R.id.rbJoinRoom) View.VISIBLE else View.GONE
@@ -219,7 +236,7 @@ class DurakFragment : Fragment() {
                     isAiMode = false
                     showGameplayScreen()
                     subscribePusherEvents()
-                    sendCardActionOnline("guest_joined", "", "")
+                    sendCardActionOnline("guest_joined", "", "", seqTagged = false)
                 } else {
                     Toast.makeText(context, response.body()?.message ?: "Room not found", Toast.LENGTH_SHORT).show()
                 }
@@ -234,6 +251,10 @@ class DurakFragment : Fragment() {
 
     private fun subscribePusherEvents() {
         PusherManager.connect()
+        PusherManager.connectionListener = { connected ->
+            activity?.runOnUiThread { onPusherConnectionChanged(connected) }
+        }
+        connectedNow = PusherManager.isConnected
         PusherManager.subscribeToRoom(roomCode,
             onGameStarted = { data ->
                 activity?.runOnUiThread {
@@ -276,6 +297,7 @@ class DurakFragment : Fragment() {
     }
 
     private fun hostBroadcastGameInit() {
+        resetSeq()
         logic.initNewGame()
         val trump = logic.trumpCard ?: Card(CardSuit.HEARTS, CardRank.ACE)
         val p1Cards = org.json.JSONArray(logic.playerHand.map { it.code })
@@ -291,7 +313,7 @@ class DurakFragment : Fragment() {
             put("host_attacks", hostAttacks)
         }.toString()
 
-        sendCardActionOnline("sync_init", trump.code, payload)
+        sendCardActionOnline("sync_init", trump.code, payload, seqTagged = false)
         showGameplayScreen()
         renderBoard()
     }
@@ -345,8 +367,15 @@ class DurakFragment : Fragment() {
         })
     }
 
+    private fun resetSeq() {
+        mySeq = 0
+        peerSeq = 0
+        awaitingResync = false
+    }
+
     private fun startGame() {
         selectedCard = null
+        resetSeq()
         logic.initNewGame()
 
         if (isOnlineMode) {
@@ -370,26 +399,9 @@ class DurakFragment : Fragment() {
         showGameplayScreen()
         renderBoard()
 
-        // Setup Quick Emotes Bar (Design 3c)
-        setupEmotes()
-
         if (isAiMode && !logic.isPlayerAttacker) {
             triggerBotAction()
         }
-    }
-
-    private fun setupEmotes() {
-        binding.layoutEmotesDurak.removeAllViews()
-        val emoteBar = EmoteHelper.createQuickEmoteBar(
-            context = requireContext(),
-            onEmoteClick = { emote -> sendEmote(emote) },
-            onMoreClick = {
-                ReactionBottomSheetDialog(requireContext()) { emote ->
-                    sendEmote(emote)
-                }.show()
-            }
-        )
-        binding.layoutEmotesDurak.addView(emoteBar)
     }
 
     private fun sendEmote(emote: String) {
@@ -504,7 +516,20 @@ class DurakFragment : Fragment() {
         for (pair in logic.tablePairs) {
             val pairContainer = FrameLayout(requireContext()).apply {
                 layoutParams = LinearLayout.LayoutParams(pairW, pairH).apply {
-                    setMargins(dp(6), 0, dp(6), 0)
+                    setMargins(dp(4), 0, dp(4), 0)
+                }
+                setOnClickListener {
+                    if (pair.defendCard != null || logic.isPlayerAttacker) return@setOnClickListener
+                    val chosen = selectedCard
+                    if (chosen != null && logic.canBeat(pair.attackCard, chosen)) {
+                        selectedCard = null
+                        selectedTargetAttackCard = null
+                        handlePlayerDefend(chosen, pair.attackCard)
+                    } else {
+                        selectedTargetAttackCard = if (selectedTargetAttackCard == pair.attackCard) null else pair.attackCard
+                        renderTablePairs()
+                        updateStatusAndButtons()
+                    }
                 }
             }
 
@@ -516,19 +541,6 @@ class DurakFragment : Fragment() {
                 isFaceDown = false
                 isSelectedCard = isTargeted
                 layoutParams = FrameLayout.LayoutParams(cardW, cardH)
-                setOnClickListener {
-                    if (pair.defendCard != null) return@setOnClickListener
-                    if (selectedCard != null && logic.canBeat(pair.attackCard, selectedCard!!)) {
-                        val c = selectedCard!!
-                        selectedCard = null
-                        selectedTargetAttackCard = null
-                        handlePlayerDefend(c, pair.attackCard)
-                    } else {
-                        selectedTargetAttackCard = if (selectedTargetAttackCard == pair.attackCard) null else pair.attackCard
-                        renderTablePairs()
-                        updateStatusAndButtons()
-                    }
-                }
             }
             pairContainer.addView(attackView)
 
@@ -569,29 +581,28 @@ class DurakFragment : Fragment() {
         }
     }
 
+    private var draggingCard: DurakCardView? = null
+    private var draggingModel: Card? = null
+    private var downX = 0f
+    private var downY = 0f
+    private var didDrag = false
+
     private fun renderPlayerHand() {
         if (_binding == null) return
         binding.layoutPlayerCards.removeAllViews()
         val count = logic.playerHand.size
         if (count == 0) return
 
-        // 1. Calculate usable width on screen
         val screenWidthPx = resources.displayMetrics.widthPixels
-        val paddingPx = dp(16)
-        val usableWidthPx = (screenWidthPx - paddingPx).coerceAtLeast(dp(280))
+        val usableWidthPx = (screenWidthPx - dp(20)).coerceAtLeast(dp(280))
 
-        // 2. Dynamic Card Dimensions in DP matching Design 3a
         val cardW = dp(60)
         val cardH = dp(88)
 
-        // 3. Exact Screen-Fit Fan Overlap: All cards fit neatly on screen with zero scrolling!
         val overlapMarginPx = if (count > 1) {
-            val neededStep = (usableWidthPx - cardW) / (count - 1)
-            val computedMargin = neededStep - cardW
-            computedMargin.coerceAtMost(dp(4))
-        } else {
-            0
-        }
+            val step = (usableWidthPx - cardW) / (count - 1)
+            (step - cardW).coerceAtMost(dp(4))
+        } else 0
 
         val maxAngle = 13f.coerceAtMost(count * 2.8f)
         val angleStep = if (count > 1) (maxAngle * 2) / (count - 1) else 0f
@@ -610,100 +621,129 @@ class DurakFragment : Fragment() {
                     setMargins(if (index == 0) 0 else overlapMarginPx, 0, 0, 0)
                 }
                 if (isSelected) {
-                    translationY = -dp(18).toFloat()
-                    bringToFront()
+                    translationY = -dp(22).toFloat()
+                    elevation = dp(8).toFloat()
                 }
             }
-
-            // Fluid Drag-to-Throw / Drag-and-Drop Support (Surib Tashlash)
-            var downRawX = 0f
-            var downRawY = 0f
-            var isDragging = false
-
-            cardView.setOnTouchListener { v, event ->
-                when (event.actionMasked) {
-                    android.view.MotionEvent.ACTION_DOWN -> {
-                        downRawX = event.rawX
-                        downRawY = event.rawY
-                        isDragging = false
-                        v.bringToFront()
-                        v.parent?.requestDisallowInterceptTouchEvent(true)
-                        true
-                    }
-                    android.view.MotionEvent.ACTION_MOVE -> {
-                        val deltaX = event.rawX - downRawX
-                        val deltaY = event.rawY - downRawY
-                        if (Math.abs(deltaY) > 15 || Math.abs(deltaX) > 15) {
-                            isDragging = true
-                            v.translationX = deltaX
-                            v.translationY = deltaY
-                        }
-                        true
-                    }
-                    android.view.MotionEvent.ACTION_UP, android.view.MotionEvent.ACTION_CANCEL -> {
-                        v.parent?.requestDisallowInterceptTouchEvent(false)
-                        val currTranslationY = v.translationY
-                        val dropX = event.rawX
-                        v.translationX = 0f
-                        v.translationY = 0f
-
-                        if (isDragging && currTranslationY < -60f) {
-                            // Dragged upwards to table -> safely execute on next loop tick
-                            v.post {
-                                if (logic.isPlayerAttacker) {
-                                    handlePlayerAttack(card)
-                                } else {
-                                    // Check if dropped directly over a specific table card (Tanlab urish)
-                                    var targetedAttackCard: Card? = null
-                                    for (i in 0 until binding.layoutTablePairs.childCount) {
-                                        val child = binding.layoutTablePairs.getChildAt(i)
-                                        val loc = IntArray(2)
-                                        child.getLocationOnScreen(loc)
-                                        val left = loc[0]
-                                        val right = left + child.width
-                                        if (dropX >= (left - 15) && dropX <= (right + 15)) {
-                                            val p = logic.tablePairs.getOrNull(i)
-                                            if (p != null && p.defendCard == null && logic.canBeat(p.attackCard, card)) {
-                                                targetedAttackCard = p.attackCard
-                                                break
-                                            }
-                                        }
-                                    }
-
-                                    val curTarget = selectedTargetAttackCard
-                                    if (targetedAttackCard == null && curTarget != null && logic.canBeat(curTarget, card)) {
-                                        targetedAttackCard = curTarget
-                                    }
-
-                                    handlePlayerDefend(card, targetedAttackCard)
-                                }
-                            }
-                        } else {
-                            // Tap to select or double-tap to play
-                            v.post {
-                                if (selectedCard == card) {
-                                    if (logic.isPlayerAttacker) {
-                                        handlePlayerAttack(card)
-                                    } else {
-                                        handlePlayerDefend(card, selectedTargetAttackCard)
-                                    }
-                                } else {
-                                    HapticHelper.performClick(v.context)
-                                    SoundHelper.playMoveSound(v.context)
-                                    selectedCard = card
-                                    renderPlayerHand()
-                                    updateStatusAndButtons()
-                                }
-                            }
-                        }
-                        true
-                    }
-                    else -> false
-                }
-            }
-
             binding.layoutPlayerCards.addView(cardView)
         }
+        binding.layoutPlayerCards.post {
+            for (i in 0 until binding.layoutPlayerCards.childCount) {
+                val v = binding.layoutPlayerCards.getChildAt(i)
+                if ((v as? DurakCardView)?.isSelectedCard == true) v.bringToFront()
+            }
+        }
+
+        attachHandTouchListener()
+    }
+
+    /** One listener on the hand area; manual top-most hit-testing so the fanned overlap works. */
+    private fun attachHandTouchListener() {
+        val slop = android.view.ViewConfiguration.get(requireContext()).scaledTouchSlop
+
+        binding.scrollPlayerHand.setOnTouchListener { host, event ->
+            val cards = binding.layoutPlayerCards
+            when (event.actionMasked) {
+                android.view.MotionEvent.ACTION_DOWN -> {
+                    val hit = cardAt(cards, event.x - cards.left, event.y - cards.top)
+                    if (hit == null) {
+                        draggingCard = null
+                        false
+                    } else {
+                        val (_, view) = hit
+                        draggingCard = view
+                        draggingModel = view.card
+                        downX = event.x
+                        downY = event.y
+                        didDrag = false
+                        view.elevation = dp(12).toFloat()
+                        view.bringToFront()
+                        host.parent?.requestDisallowInterceptTouchEvent(true)
+                        true
+                    }
+                }
+                android.view.MotionEvent.ACTION_MOVE -> {
+                    val view = draggingCard ?: return@setOnTouchListener false
+                    val dx = event.x - downX
+                    val dy = event.y - downY
+                    if (!didDrag && kotlin.math.hypot(dx, dy) > slop) didDrag = true
+                    if (didDrag) {
+                        view.translationX = dx
+                        view.translationY = dy
+                    }
+                    true
+                }
+                android.view.MotionEvent.ACTION_UP, android.view.MotionEvent.ACTION_CANCEL -> {
+                    host.parent?.requestDisallowInterceptTouchEvent(false)
+                    val view = draggingCard
+                    val model = draggingModel
+                    val lift = view?.translationY ?: 0f
+                    val rawX = event.rawX
+                    draggingCard = null
+                    draggingModel = null
+                    view?.translationX = 0f
+                    view?.translationY = 0f
+
+                    if (view != null && model != null && event.actionMasked == android.view.MotionEvent.ACTION_UP) {
+                        val playedByDrag = didDrag && lift < -dp(50).toFloat()
+                        host.post { onHandCardGesture(model, playedByDrag, rawX) }
+                    }
+                    true
+                }
+                else -> false
+            }
+        }
+    }
+
+    private fun onHandCardGesture(card: Card, playedByDrag: Boolean, rawX: Float) {
+        if (_binding == null || logic.isGameOver) return
+        val play = playedByDrag || selectedCard == card
+        if (play) {
+            if (logic.isPlayerAttacker) {
+                handlePlayerAttack(card)
+            } else {
+                var target: Card? = null
+                for (i in 0 until binding.layoutTablePairs.childCount) {
+                    val child = binding.layoutTablePairs.getChildAt(i)
+                    val loc = IntArray(2)
+                    child.getLocationOnScreen(loc)
+                    if (rawX in (loc[0] - dp(20)).toFloat()..(loc[0] + child.width + dp(20)).toFloat()) {
+                        val p = logic.tablePairs.getOrNull(i)
+                        if (p != null && p.defendCard == null && logic.canBeat(p.attackCard, card)) {
+                            target = p.attackCard
+                            break
+                        }
+                    }
+                }
+                if (target == null) {
+                    val cur = selectedTargetAttackCard
+                    if (cur != null && logic.canBeat(cur, card)) target = cur
+                    else target = logic.tablePairs.firstOrNull { it.defendCard == null && logic.canBeat(it.attackCard, card) }?.attackCard
+                }
+                handlePlayerDefend(card, target)
+            }
+        } else {
+            HapticHelper.performClick(requireContext())
+            SoundHelper.playMoveSound(requireContext())
+            selectedCard = card
+            renderPlayerHand()
+            updateStatusAndButtons()
+        }
+    }
+
+    /** Top-most [DurakCardView] under (x,y) given in [container]'s coordinate space. */
+    private fun cardAt(container: android.view.ViewGroup, x: Float, y: Float): Pair<Int, DurakCardView>? {
+        val inv = android.graphics.Matrix()
+        for (i in container.childCount - 1 downTo 0) {
+            val child = container.getChildAt(i) as? DurakCardView ?: continue
+            val pt = floatArrayOf(x - child.left, y - child.top)
+            if (!child.matrix.isIdentity) {
+                if (!child.matrix.invert(inv)) continue
+                inv.mapPoints(pt)
+            }
+            if (pt[0] in 0f..child.width.toFloat() && pt[1] in 0f..child.height.toFloat()) return i to child
+        }
+        return null
     }
 
     private fun updateRoomCodeTiles(code: String) {
@@ -714,70 +754,59 @@ class DurakFragment : Fragment() {
         binding.tvTile4.text = padded.getOrNull(3)?.toString() ?: ""
     }
 
+    /** Called by the one context button. Attacker → BITA / BERDIM, defender → OLISH. */
+    private fun handlePrimaryAction() {
+        if (logic.isGameOver) return
+        if (logic.isPlayerAttacker) handlePlayerPassBita() else handlePlayerTake()
+    }
+
     private fun updateStatusAndButtons() {
+        if (_binding == null) return
         val isAttacker = logic.isPlayerAttacker
         val unbeatCount = logic.tablePairs.count { it.defendCard == null }
+        val btn = binding.btnPrimaryAction
 
-        if (logic.isDefenderTaking) {
-            if (isAttacker) {
-                binding.tvGameStatus.text = "RAQIB KO'TARMOQDA — KARTA QO'SHING"
-                binding.btnAttack.visibility = View.VISIBLE
-                binding.btnAttack.isEnabled = (selectedCard != null && logic.canAttackWith(selectedCard!!, true))
-                binding.btnAttack.text = "⚔️ QO'SHISH"
-                binding.btnPassBita.visibility = View.VISIBLE
-                binding.btnPassBita.isEnabled = true
-                binding.btnPassBita.text = "✅ BERDIM"
-                binding.btnDefend.visibility = View.GONE
-                binding.btnTakeCards.visibility = View.GONE
-            } else {
-                binding.tvGameStatus.text = "KO'TARISHNI TANLADINGIZ — KUTING..."
-                binding.btnAttack.visibility = View.GONE
-                binding.btnDefend.visibility = View.GONE
-                binding.btnPassBita.visibility = View.GONE
-                binding.btnTakeCards.visibility = View.GONE
-            }
-        } else if (isAttacker) {
-            if (logic.tablePairs.isEmpty()) {
-                binding.tvGameStatus.text = "SIZ HUJUMDASIZ — KARTA TASHLANG"
-            } else if (unbeatCount == 0) {
-                binding.tvGameStatus.text = "HAMMASI URILDI — BITA DEYING"
-            } else {
-                binding.tvGameStatus.text = "RAQIB HIMOYALANMOQDA..."
-            }
-
-            binding.btnAttack.visibility = View.VISIBLE
-            binding.btnDefend.visibility = View.GONE
-            binding.btnPassBita.visibility = View.VISIBLE
-            binding.btnTakeCards.visibility = View.GONE
-
-            binding.btnAttack.isEnabled = (selectedCard != null && logic.canAttackWith(selectedCard!!, logic.tablePairs.isNotEmpty()))
-            binding.btnAttack.text = if (logic.tablePairs.isEmpty()) "⚔️ TASHLASH" else "⚔️ QO'SHISH"
-            binding.btnPassBita.isEnabled = (logic.tablePairs.isNotEmpty() && unbeatCount == 0)
-            binding.btnPassBita.text = "✋ BITA"
-        } else {
-            val targetUnbeat = selectedTargetAttackCard ?: logic.tablePairs.firstOrNull { it.defendCard == null }?.attackCard
-            if (targetUnbeat != null) {
-                binding.tvGameStatus.text = "SIZ HIMOYADASIZ — URING"
-            } else if (logic.tablePairs.isNotEmpty()) {
-                binding.tvGameStatus.text = "HAMMASI URILDI — BITA DEYING"
-            } else {
-                binding.tvGameStatus.text = "RAQIB HUJUM QILMOQDA..."
-            }
-
-            binding.btnAttack.visibility = View.GONE
-            binding.btnDefend.visibility = View.VISIBLE
-            binding.btnPassBita.visibility = View.GONE
-            binding.btnTakeCards.visibility = View.VISIBLE
-
-            binding.btnDefend.isEnabled = (selectedCard != null && targetUnbeat != null && logic.canBeat(targetUnbeat, selectedCard!!))
-            binding.btnTakeCards.isEnabled = (logic.tablePairs.isNotEmpty())
-            binding.btnTakeCards.text = "📥 OLISH"
+        fun show(text: String, bg: Int) {
+            btn.visibility = View.VISIBLE
+            btn.text = text
+            btn.isEnabled = true
+            btn.alpha = 1f
+            btn.setBackgroundResource(bg)
+        }
+        fun hide() {
+            btn.visibility = View.INVISIBLE
         }
 
-        binding.btnAttack.alpha = if (binding.btnAttack.isEnabled) 1.0f else 0.45f
-        binding.btnDefend.alpha = if (binding.btnDefend.isEnabled) 1.0f else 0.45f
-        binding.btnPassBita.alpha = if (binding.btnPassBita.isEnabled) 1.0f else 0.45f
-        binding.btnTakeCards.alpha = if (binding.btnTakeCards.isEnabled) 1.0f else 0.45f
+        when {
+            logic.isDefenderTaking && isAttacker -> {
+                binding.tvGameStatus.text = "RAQIB KO'TARMOQDA — KARTA QO'SHISHINGIZ MUMKIN"
+                show("✅ BERDIM", R.drawable.bg_durak_btn_pass)
+            }
+            logic.isDefenderTaking && !isAttacker -> {
+                binding.tvGameStatus.text = "KO'TARDINGIZ — KUTING…"
+                hide()
+            }
+            isAttacker && logic.tablePairs.isEmpty() -> {
+                binding.tvGameStatus.text = "SIZ HUJUMDASIZ — KARTANI YUQORIGA SURING"
+                hide()
+            }
+            isAttacker && unbeatCount > 0 -> {
+                binding.tvGameStatus.text = "RAQIB HIMOYALANMOQDA…"
+                hide()
+            }
+            isAttacker -> {
+                binding.tvGameStatus.text = "HAMMASI URILDI"
+                show("✋ BITA", R.drawable.bg_durak_btn_pass)
+            }
+            !isAttacker && unbeatCount > 0 -> {
+                binding.tvGameStatus.text = "SIZ HIMOYADASIZ — KARTANI TANLANG"
+                show("📥 OLISH", R.drawable.bg_durak_btn_take)
+            }
+            else -> {
+                binding.tvGameStatus.text = "RAQIB HUJUM QILMOQDA…"
+                hide()
+            }
+        }
     }
 
     private fun handlePlayerAttack(card: Card) {
@@ -893,7 +922,8 @@ class DurakFragment : Fragment() {
             if (!isAdded || logic.isGameOver) return@postDelayed
 
             val isBotAttacker = !logic.isPlayerAttacker
-            val decision = DurakAI.getBestAction(logic, isBotAttacker = isBotAttacker)
+            val difficulty = DifficultyStore.get(requireContext(), "durak")
+            val decision = DurakAI.getBestAction(logic, isBotAttacker = isBotAttacker, difficulty = difficulty)
 
             when (decision.type) {
                 DurakAI.ActionType.ATTACK -> {
@@ -955,11 +985,136 @@ class DurakFragment : Fragment() {
         }, delayMs)
     }
 
-    private fun sendCardActionOnline(action: String, card: String?, targetCard: String?) {
-        ApiClient.instance.sendCardAction(CardActionRequest(roomCode, myPlayerId, action, card, targetCard)).enqueue(object : Callback<CardActionResponse> {
-            override fun onResponse(call: Call<CardActionResponse>, response: Response<CardActionResponse>) {}
-            override fun onFailure(call: Call<CardActionResponse>, t: Throwable) {}
-        })
+    /** Sends a game action tagged with a game-level sequence number, retrying transient failures. */
+    private fun sendCardActionOnline(action: String, card: String?, targetCard: String?, seqTagged: Boolean = true) {
+        val taggedAction = if (seqTagged) {
+            mySeq += 1
+            "$action|$mySeq"
+        } else action
+        postCardAction(taggedAction, card, targetCard, attempt = 0)
+        scheduleStallCheck()
+    }
+
+    private fun postCardAction(action: String, card: String?, targetCard: String?, attempt: Int) {
+        ApiClient.instance.sendCardAction(CardActionRequest(roomCode, myPlayerId, action, card, targetCard))
+            .enqueue(object : Callback<CardActionResponse> {
+                override fun onResponse(call: Call<CardActionResponse>, response: Response<CardActionResponse>) {
+                    if (!response.isSuccessful && attempt < 2) retry(action, card, targetCard, attempt)
+                }
+                override fun onFailure(call: Call<CardActionResponse>, t: Throwable) {
+                    if (attempt < 2) retry(action, card, targetCard, attempt)
+                }
+            })
+    }
+
+    private fun retry(action: String, card: String?, targetCard: String?, attempt: Int) {
+        handler.postDelayed({
+            if (_binding != null && isOnlineMode) postCardAction(action, card, targetCard, attempt + 1)
+        }, 900L * (attempt + 1))
+    }
+
+    private fun scheduleStallCheck() {
+        if (!isOnlineMode) return
+        stallHandler.removeCallbacks(stallRunnable)
+        _binding?.tvStallBanner?.visibility = View.GONE
+        stallHandler.postDelayed(stallRunnable, 42_000L)
+    }
+
+    private fun cancelStallCheck() {
+        stallHandler.removeCallbacks(stallRunnable)
+        _binding?.tvStallBanner?.visibility = View.GONE
+    }
+
+    private fun onPusherConnectionChanged(connected: Boolean) {
+        if (_binding == null) return
+        val wasConnected = connectedNow
+        connectedNow = connected
+        val inGame = binding.gameplayContainer.visibility == View.VISIBLE && isOnlineMode
+        binding.viewReconnectOverlay.visibility = if (!connected && inGame) View.VISIBLE else View.GONE
+        if (connected && !wasConnected && inGame && !logic.isGameOver) {
+            // Reconnected mid-game — pull the authoritative state.
+            requestResync()
+        }
+    }
+
+    private fun requestResync() {
+        if (!isOnlineMode) return
+        if (isHost) {
+            broadcastFullState()
+        } else {
+            awaitingResync = true
+            postCardAction("resync_req", null, null, attempt = 0)
+        }
+    }
+
+    /** Host only: serialise the full authoritative game state and broadcast it. */
+    private fun broadcastFullState() {
+        if (!isHost) return
+        val trump = logic.trumpCard ?: return
+        val hostHand = logic.playerHand   // host's own hand
+        val guestHand = logic.opponentHand
+        val tableArr = org.json.JSONArray()
+        for (p in logic.tablePairs) {
+            tableArr.put(org.json.JSONObject().apply {
+                put("a", p.attackCard.code)
+                p.defendCard?.let { put("d", it.code) }
+            })
+        }
+        val payload = JSONObject().apply {
+            put("trump", trump.code)
+            put("host", org.json.JSONArray(hostHand.map { it.code }))
+            put("guest", org.json.JSONArray(guestHand.map { it.code }))
+            put("deck", org.json.JSONArray(logic.deck.map { it.code }))
+            put("table", tableArr)
+            put("hostAttacks", logic.isPlayerAttacker)
+            put("taking", logic.isDefenderTaking)
+            put("hostOut", mySeq)     // host's own outbound counter
+            put("guestOut", peerSeq)  // last guest action the host applied
+        }.toString()
+        postCardAction("sync_state", null, payload, attempt = 0)
+    }
+
+    private fun applyFullState(payloadJson: String) {
+        try {
+            val o = JSONObject(payloadJson)
+            val trump = Card.fromCode(o.getString("trump"))
+            fun arr(k: String) = o.getJSONArray(k).let { a -> (0 until a.length()).map { a.getString(it) } }
+            val hostCards = arr("host")
+            val guestCards = arr("guest")
+            val deckCards = arr("deck")
+            val tArr = o.getJSONArray("table")
+            val table = (0 until tArr.length()).map {
+                val e = tArr.getJSONObject(it)
+                e.getString("a") to (if (e.has("d")) e.getString("d") else null)
+            }
+            val hostAttacks = o.getBoolean("hostAttacks")
+            val taking = o.optBoolean("taking", false)
+            val hostOut = o.optInt("hostOut", 0)
+            val guestOut = o.optInt("guestOut", 0)
+
+            val myCards = if (isHost) hostCards else guestCards
+            val oppCards = if (isHost) guestCards else hostCards
+            logic.loadFullState(
+                trump, myCards, oppCards, deckCards, table,
+                playerIsAttacker = if (isHost) hostAttacks else !hostAttacks,
+                defenderTaking = taking
+            )
+            // Re-anchor both counters to the host's authoritative view. Any of my own moves the host
+            // never applied are rolled back by loadFullState, so my outbound counter rewinds too.
+            if (isHost) {
+                mySeq = hostOut; peerSeq = guestOut
+            } else {
+                mySeq = guestOut; peerSeq = hostOut
+            }
+            awaitingResync = false
+            selectedCard = null
+            selectedTargetAttackCard = null
+            binding.viewReconnectOverlay.visibility = View.GONE
+            renderBoard()
+            checkGameOver()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun handlePusherCardAction(eventData: String) {
@@ -973,9 +1128,30 @@ class DurakFragment : Fragment() {
             val senderId = json.optInt("player_id", json.optString("player_id", "-1").toIntOrNull() ?: -1)
             if (senderId != -1 && myPlayerId != -1 && senderId == myPlayerId) return
 
-            val action = json.optString("action", "")
+            // A genuine message from the opponent -> they are alive; clear any pending stall banner.
+            cancelStallCheck()
+
+            val rawAction = json.optString("action", "")
+            val action = rawAction.substringBefore('|')
+            val incomingSeq = rawAction.substringAfter('|', "").toIntOrNull() ?: -1
             val cardCode = json.optString("card", "")
             val targetCardCode = json.optString("target_card", "")
+
+            // Control messages bypass the sequence gate.
+            when (action) {
+                "resync_req" -> { if (isHost) broadcastFullState(); return }
+                "sync_state" -> { applyFullState(targetCardCode); return }
+            }
+
+            // Game actions: enforce per-sender ordering, request a resync if we missed one.
+            if (action in gameActions && incomingSeq >= 0) {
+                if (incomingSeq <= peerSeq) return // duplicate / already applied
+                if (incomingSeq > peerSeq + 1) {   // gap -> a move from the peer was lost
+                    if (!awaitingResync) requestResync()
+                    return
+                }
+                peerSeq = incomingSeq
+            }
 
             when (action) {
                 "guest_joined" -> {
@@ -997,6 +1173,7 @@ class DurakFragment : Fragment() {
                             val oppCards = (0 until p1Arr.length()).map { p1Arr.getString(it) }
                             val deckList = (0 until deckArr.length()).map { deckArr.getString(it) }
 
+                            resetSeq()
                             logic.initNewGameWithSyncedDeck(trump, myCards, oppCards, deckList)
                             logic.isPlayerAttacker = !hostAttacks
                             showGameplayScreen()
@@ -1157,6 +1334,9 @@ class DurakFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        handler.removeCallbacksAndMessages(null)
+        stallHandler.removeCallbacks(stallRunnable)
+        PusherManager.connectionListener = null
         if (isOnlineMode && roomCode.isNotEmpty()) {
             PusherManager.unsubscribeFromRoom(roomCode)
         }
