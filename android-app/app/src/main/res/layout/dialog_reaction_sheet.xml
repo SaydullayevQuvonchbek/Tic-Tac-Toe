@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_nav_bar"
+    android:background="@drawable/bg_reaction_sheet"
     android:orientation="vertical"
     android:paddingBottom="24dp">
 
@@ -37,15 +37,15 @@
                 android:letterSpacing="0.06"
                 android:text="REAKSIYALAR"
                 android:textColor="@color/text_color"
-                android:textSize="16sp" />
+                android:textSize="14sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:text="Bitta tegishda xabar yoki his-tuyg'uni yuboring"
-                android:textColor="@color/text_muted"
-                android:textSize="11sp" />
+                android:text="Tez panelga 4 tagacha mahkamlang"
+                android:textColor="#8492B0"
+                android:textSize="10sp" />
         </LinearLayout>
 
         <TextView
