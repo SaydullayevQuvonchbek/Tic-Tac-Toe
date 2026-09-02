@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cardEmote"
+    android:layout_width="match_parent"
+    android:layout_height="76dp"
+    android:layout_margin="4dp"
+    android:background="@drawable/bg_arena_card_sm"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="4dp">
+
+    <TextView
+        android:id="@+id/tvEmoteEmoji"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🔥"
+        android:textSize="26sp" />
+
+    <TextView
+        android:id="@+id/tvEmoteTag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:fontFamily="sans-serif-black"
+        android:text="BEPUL"
+        android:textColor="@color/accent_cyan"
+        android:textSize="8.5sp" />
+
+</LinearLayout>

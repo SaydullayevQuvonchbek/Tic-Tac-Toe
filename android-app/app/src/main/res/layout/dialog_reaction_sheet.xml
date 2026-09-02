@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_nav_bar"
+    android:orientation="vertical"
+    android:paddingBottom="24dp">
+
+    <!-- Grab Handle -->
+    <View
+        android:layout_width="38dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:background="#33FFFFFF" />
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="18dp"
+        android:paddingTop="12dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-black"
+                android:letterSpacing="0.06"
+                android:text="REAKSIYALAR"
+                android:textColor="@color/text_color"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Bitta tegishda xabar yoki his-tuyg'uni yuboring"
+                android:textColor="@color/text_muted"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvReactionCoins"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_pill_gold"
+            android:fontFamily="sans-serif-black"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="5dp"
+            android:text="🪙 0"
+            android:textColor="@color/accent_gold"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+    <!-- Category Tabs (Horizontal Scroll) -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:paddingHorizontal="14dp"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnTabQuick"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:layout_marginEnd="6dp"
+                android:backgroundTint="@color/accent_cyan"
+                android:fontFamily="sans-serif-black"
+                android:text="⭐ TEZ PANEL"
+                android:textColor="@color/on_accent"
+                android:textSize="11sp"
+                app:cornerRadius="10dp" />
+
+            <Button
+                android:id="@+id/btnTabFree"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:layout_marginEnd="6dp"
+                android:backgroundTint="@color/card_surface"
+                android:fontFamily="sans-serif-black"
+                android:text="BEPUL 8"
+                android:textColor="@color/text_muted"
+                android:textSize="11sp"
+                app:cornerRadius="10dp" />
+
+            <Button
+                android:id="@+id/btnTabPrem"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:layout_marginEnd="6dp"
+                android:backgroundTint="@color/card_surface"
+                android:fontFamily="sans-serif-black"
+                android:text="💎 PREMIUM 12"
+                android:textColor="@color/text_muted"
+                android:textSize="11sp"
+                app:cornerRadius="10dp" />
+
+            <Button
+                android:id="@+id/btnTabOwned"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:backgroundTint="@color/card_surface"
+                android:fontFamily="sans-serif-black"
+                android:text="SIZDA BOR"
+                android:textColor="@color/text_muted"
+                android:textSize="11sp"
+                app:cornerRadius="10dp" />
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <!-- Emotes Container (Grid / Scrollable) -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvEmotesGrid"
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:layout_marginTop="12dp"
+        android:paddingHorizontal="14dp"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:spanCount="4" />
+
+    <!-- Mute Opponent Toggle Row -->
+    <LinearLayout
+        android:id="@+id/rowMuteEmotes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_arena_card_sm"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🔇"
+            android:textSize="20sp" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-black"
+                android:text="Raqib reaksiyalarini o'chirish"
+                android:textColor="@color/text_color"
+                android:textSize="12.5sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:text="Bezovta qilsa — bitta tegishda susturish"
+                android:textColor="@color/accent_violet"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/switchMuteEmotes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -36,7 +36,23 @@ class DurakCardView @JvmOverloads constructor(
             invalidate()
         }
 
+    var isTrump: Boolean = false
+        set(value) {
+            field = value
+            invalidate()
+        }
+
     // Paints
+    private val trumpBadgePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#FBBF24")
+        style = Paint.Style.FILL
+    }
+
+    private val trumpTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#3B2508")
+        typeface = Typeface.DEFAULT_BOLD
+        textAlign = Paint.Align.CENTER
+    }
     private val cardBackgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#FFFFFF")
         style = Paint.Style.FILL
@@ -151,5 +167,17 @@ class DurakCardView @JvmOverloads constructor(
         textPaint.textSize = cornerSuitSize
         canvas.drawText(suitSymbol, leftMargin, topMargin + cornerRankSize + cornerSuitSize * 0.95f, textPaint)
         canvas.restore()
+
+        // 6. ZOD Gold Badge (if Trump)
+        if (isTrump) {
+            val badgeW = w * 0.42f
+            val badgeH = h * 0.16f
+            val badgeRect = RectF(w - badgeW - borderPad * 2, h - badgeH - borderPad * 2, w - borderPad * 2, h - borderPad * 2)
+            canvas.drawRoundRect(badgeRect, 6f, 6f, trumpBadgePaint)
+
+            trumpTextPaint.textSize = badgeH * 0.65f
+            val badgeY = badgeRect.centerY() - ((trumpTextPaint.descent() + trumpTextPaint.ascent()) / 2)
+            canvas.drawText("ZOD", badgeRect.centerX(), badgeY, trumpTextPaint)
+        }
     }
 }

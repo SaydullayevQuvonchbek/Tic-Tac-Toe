@@ -1,5 +1,7 @@
 package com.example.tictactoe
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
 import android.os.Handler
@@ -64,6 +66,18 @@ class DurakFragment : Fragment() {
         binding.btnCancelWaiting.setOnClickListener { cancelWaiting() }
         binding.btnInviteFriend.setOnClickListener {
             ShareInviteHelper.shareRoomCode(requireContext(), "Durak (Karta)", roomCode)
+        }
+        binding.btnCopyRoomCode.setOnClickListener {
+            val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText("Durak Room Code", roomCode)
+            clipboard.setPrimaryClip(clip)
+            HapticHelper.performClick(requireContext())
+            Toast.makeText(context, "Xona kodi nusxalandi: $roomCode", Toast.LENGTH_SHORT).show()
+        }
+        binding.btnOpenReaction.setOnClickListener {
+            ReactionBottomSheetDialog(requireContext()) { emote ->
+                sendEmote(emote)
+            }.show()
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
@@ -351,48 +365,84 @@ class DurakFragment : Fragment() {
         showGameplayScreen()
         renderBoard()
 
-        // Emotes
-        binding.layoutEmotesDurak.removeAllViews()
-        val emoteBar = EmoteHelper.createEmoteBar(requireContext()) { emote ->
-            EmoteHelper.showFloatingEmote(binding.root as ViewGroup, emote, isOpponent = false)
-            if (isOnlineMode && roomCode.isNotEmpty()) {
-                ApiClient.instance.sendEmote(EmoteRequest(roomCode, myPlayerId, emote)).enqueue(object : Callback<EmoteResponse> {
-                    override fun onResponse(call: Call<EmoteResponse>, response: Response<EmoteResponse>) {}
-                    override fun onFailure(call: Call<EmoteResponse>, t: Throwable) {}
-                })
-            }
-        }
-        binding.layoutEmotesDurak.addView(emoteBar)
+        // Setup Quick Emotes Bar (Design 3c)
+        setupEmotes()
 
         if (isAiMode && !logic.isPlayerAttacker) {
             triggerBotAction()
         }
     }
 
+    private fun setupEmotes() {
+        binding.layoutEmotesDurak.removeAllViews()
+        val emoteBar = EmoteHelper.createQuickEmoteBar(
+            context = requireContext(),
+            onEmoteClick = { emote -> sendEmote(emote) },
+            onMoreClick = {
+                ReactionBottomSheetDialog(requireContext()) { emote ->
+                    sendEmote(emote)
+                }.show()
+            }
+        )
+        binding.layoutEmotesDurak.addView(emoteBar)
+    }
+
+    private fun sendEmote(emote: String) {
+        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+        val myUsername = sharedPref.getString("username", "Siz") ?: "Siz"
+        EmoteHelper.showFloatingEmote(binding.root as ViewGroup, emote, isOpponent = false, senderName = myUsername)
+        if (isOnlineMode && roomCode.isNotEmpty()) {
+            ApiClient.instance.sendEmote(EmoteRequest(roomCode, myPlayerId, emote)).enqueue(object : Callback<EmoteResponse> {
+                override fun onResponse(call: Call<EmoteResponse>, response: Response<EmoteResponse>) {}
+                override fun onFailure(call: Call<EmoteResponse>, t: Throwable) {}
+            })
+        }
+    }
+
+    private fun initialsOf(name: String): String {
+        val parts = name.trim().split(Regex("\\s+")).filter { it.isNotEmpty() }
+        return when {
+            parts.size >= 2 -> (parts[0].take(1) + parts[1].take(1)).uppercase()
+            parts.size == 1 -> parts[0].take(2).uppercase()
+            else -> "?"
+        }
+    }
+
     private fun renderBoard() {
         if (_binding == null) return
 
-        // 1. Prominent ZOD (Trump) Badge & Deck Pile
+        // 0. Game & Room Headers
+        binding.tvRoomCodeHeader.text = if (isOnlineMode) "DURAK · ONLAYN" else if (isAiMode) "DURAK · BOT" else "DURAK · 2 O'YINCHI"
+        binding.tvRoomSubHeader.text = if (isOnlineMode) "XONA #$roomCode" else if (isAiMode) "BOT BLITZ" else "OFFLINE"
+
+        // 1. Prominent ZOD (Trump) Badge & Deck Pile (Design 3a)
         val suit = logic.trumpSuit
-        binding.tvTrumpHeaderSuit.text = suit.suitName
+        binding.tvTrumpHeaderSuit.text = suit.symbol
         binding.tvTrumpHeaderSuit.setTextColor(suit.colorInt)
 
         binding.viewTrumpCard.card = logic.trumpCard
         binding.viewTrumpCard.isFaceDown = false
+        binding.viewTrumpCard.isTrump = true
 
         binding.viewDeckPile.isFaceDown = true
         binding.viewDeckPile.visibility = if (logic.deck.size > 1) View.VISIBLE else View.INVISIBLE
         binding.viewTrumpCard.visibility = if (logic.deck.isNotEmpty()) View.VISIBLE else View.INVISIBLE
-        binding.tvDeckCount.text = "🂠 ${logic.deck.size}"
+        binding.tvDeckCount.text = "${logic.deck.size}"
 
-        // 2. Opponent Count & Backs
-        binding.tvOpponentCardsCount.text = "🂠 ${logic.opponentHand.size} ta"
+        // 2. Opponent Count & Initials Avatar & Fan Backs (Design 3a)
+        val oppName = binding.tvOpponentName.text.toString()
+        binding.tvOpponentAvatar.text = initialsOf(oppName)
+        binding.tvOpponentCardsCount.text = "${logic.opponentHand.size} karta"
         binding.layoutOpponentCards.removeAllViews()
-        val oppCount = logic.opponentHand.size.coerceAtMost(10)
+
+        val oppCount = logic.opponentHand.size.coerceAtMost(8)
+        val fanAngles = listOf(-10f, -7f, -4f, -1f, 2f, 5f, 8f, 11f)
         for (i in 0 until oppCount) {
+            val angle = fanAngles.getOrElse(i) { 0f }
             val miniCard = DurakCardView(requireContext()).apply {
                 isFaceDown = true
-                layoutParams = LinearLayout.LayoutParams(dp(50), dp(72)).apply {
+                rotation = angle
+                layoutParams = LinearLayout.LayoutParams(dp(44), dp(62)).apply {
                     setMargins(if (i == 0) 0 else dp(-16), 0, 0, 0)
                 }
             }
@@ -538,8 +588,9 @@ class DurakFragment : Fragment() {
             val isSelected = (selectedCard == card)
             val cardView = DurakCardView(requireContext()).apply {
                 this.card = card
-                isFaceDown = false
-                isSelectedCard = isSelected
+                this.isFaceDown = false
+                this.isSelectedCard = isSelected
+                this.isTrump = (card.suit == logic.trumpSuit)
                 layoutParams = LinearLayout.LayoutParams(cardW, cardH).apply {
                     setMargins(if (index == 0) 0 else overlapMarginPx, 0, 0, 0)
                 }

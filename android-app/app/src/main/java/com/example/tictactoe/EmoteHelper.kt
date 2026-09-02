@@ -4,17 +4,17 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.OvershootInterpolator
 import android.widget.FrameLayout
-import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import com.example.tictactoe.network.ApiClient
 import com.example.tictactoe.network.StoreBuyRequest
 import com.example.tictactoe.network.StoreBuyResponse
@@ -60,7 +60,6 @@ object EmoteHelper {
         EmoteItem("🖕", "Fake You :xd", 999999999, true)
     )
 
-    // Flat list of strings for quick lookup
     val EMOTES: List<String> by lazy { ALL_EMOTES.map { it.emoji } }
 
     fun isEmoteUnlocked(context: Context, item: EmoteItem): Boolean {
@@ -70,177 +69,137 @@ object EmoteHelper {
     }
 
     /**
-     * Builds and attaches a scrollable horizontal Emote Bar with Free + Premium locked emojis
+     * Builds a clean, compact Quick Reaction Bar (4 quick buttons + ⋯ more button)
      */
-    fun createEmoteBar(context: Context, onEmoteClick: (String) -> Unit): View {
-        val scrollView = HorizontalScrollView(context).apply {
-            isHorizontalScrollBarEnabled = false
-            overScrollMode = View.OVER_SCROLL_NEVER
+    fun createQuickEmoteBar(
+        context: Context,
+        onEmoteClick: (String) -> Unit,
+        onMoreClick: () -> Unit
+    ): View {
+        val container = LinearLayout(context).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
             layoutParams = LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            ).apply {
-                gravity = Gravity.CENTER_HORIZONTAL
-                setMargins(8, 6, 8, 6)
-            }
-        }
-
-        val card = CardView(context).apply {
-            radius = 32f
-            cardElevation = 6f
-            setCardBackgroundColor(Color.parseColor("#0F172A"))
-            layoutParams = ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
         }
 
-        val container = LinearLayout(context).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-            setPadding(10, 4, 10, 4)
+        val quickList = listOf("🔥", "😂", "👏", "💀")
+        for (emote in quickList) {
+            val btn = TextView(context).apply {
+                text = emote
+                textSize = 20f
+                gravity = Gravity.CENTER
+                background = ContextCompat.getDrawable(context, R.drawable.bg_arena_card_sm)
+                layoutParams = LinearLayout.LayoutParams(42.dpToPx(context), 42.dpToPx(context)).apply {
+                    marginEnd = 6.dpToPx(context)
+                }
+                setOnClickListener {
+                    HapticHelper.performClick(context)
+                    onEmoteClick(emote)
+                }
+            }
+            container.addView(btn)
         }
 
-        fun populateEmotes() {
-            container.removeAllViews()
-            for (item in ALL_EMOTES) {
-                val isUnlocked = isEmoteUnlocked(context, item)
-
-                val itemBox = FrameLayout(context).apply {
-                    setPadding(8, 4, 8, 4)
-                    background = android.util.TypedValue().let {
-                        context.theme.resolveAttribute(android.R.attr.selectableItemBackgroundBorderless, it, true)
-                        context.getDrawable(it.resourceId)
-                    }
-                }
-
-                val tvEmoji = TextView(context).apply {
-                    text = item.emoji
-                    textSize = 22f
-                    gravity = Gravity.CENTER
-                    alpha = if (isUnlocked) 1.0f else 0.45f
-                }
-                itemBox.addView(tvEmoji)
-
-                if (!isUnlocked) {
-                    val tvBadge = TextView(context).apply {
-                        text = "🔒"
-                        textSize = 10f
-                        layoutParams = FrameLayout.LayoutParams(
-                            ViewGroup.LayoutParams.WRAP_CONTENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT
-                        ).apply {
-                            gravity = Gravity.BOTTOM or Gravity.END
-                        }
-                    }
-                    itemBox.addView(tvBadge)
-                }
-
-                itemBox.setOnClickListener {
-                    if (isUnlocked) {
-                        HapticHelper.performClick(context)
-                        SoundHelper.playMoveSound(context)
-                        onEmoteClick(item.emoji)
-                    } else {
-                        showUnlockDialog(context, item) {
-                            populateEmotes()
-                            onEmoteClick(item.emoji)
-                        }
-                    }
-                }
-
-                container.addView(itemBox)
+        // ⋯ More button to open ReactionBottomSheetDialog
+        val btnMore = TextView(context).apply {
+            text = "⋯"
+            textSize = 18f
+            gravity = Gravity.CENTER
+            setTextColor(ContextCompat.getColor(context, R.color.accent_violet))
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            background = ContextCompat.getDrawable(context, R.drawable.bg_arena_card_sm)
+            layoutParams = LinearLayout.LayoutParams(42.dpToPx(context), 42.dpToPx(context))
+            setOnClickListener {
+                HapticHelper.performClick(context)
+                onMoreClick()
             }
         }
+        container.addView(btnMore)
 
-        populateEmotes()
-        card.addView(container)
-        scrollView.addView(card)
-        return scrollView
-    }
-
-    private fun showUnlockDialog(context: Context, item: EmoteItem, onUnlocked: () -> Unit) {
-        val prefs = context.getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
-        val coins = prefs.getInt("coins", 0)
-        val userId = prefs.getInt("user_id", -1)
-
-        if (item.cost >= 999999) {
-            // Hilarious Impossible Troll Easter Egg
-            AlertDialog.Builder(context)
-                .setTitle("🚫 O'zingcha ayyormisan? 😜")
-                .setMessage("Bu maxfiy 'Fake You' belgisi faqat afsonaviy o'yinchilarning tushiga kiradi!\n\nNarxi: 999,999,999 🪙\n\nSotib olishning umuman iloji yo'q, behuda urinma! :xd")
-                .setPositiveButton("Baribir Urinish 💸") { _, _ ->
-                    HapticHelper.performHeavyImpact(context)
-                    SoundHelper.playCaptureSound(context)
-                    Toast.makeText(context, "❌ Xatolik 404: Pul ham, asab ham yetmaydi! 🤣", Toast.LENGTH_LONG).show()
-                }
-                .setNegativeButton("Tushundim 😂", null)
-                .show()
-            return
-        }
-
-        AlertDialog.Builder(context)
-            .setTitle("✨ Premium Emote: ${item.emoji} ${item.name}")
-            .setMessage("Unlock this exclusive animated reaction for ${item.cost} 🪙?\n\nYour Balance: $coins 🪙")
-            .setPositiveButton("Buy (${item.cost} 🪙)") { _, _ ->
-                if (coins < item.cost) {
-                    Toast.makeText(context, "Not enough coins! You have $coins 🪙 (Needs ${item.cost} 🪙)", Toast.LENGTH_SHORT).show()
-                    return@setPositiveButton
-                }
-
-                val newCoins = coins - item.cost
-                prefs.edit()
-                    .putInt("coins", newCoins)
-                    .putBoolean("unlocked_emote_${item.emoji}", true)
-                    .apply()
-
-                HapticHelper.performVictory(context)
-                SoundHelper.playRewardSound(context)
-                Toast.makeText(context, "🎉 ${item.emoji} Unlocked permanently!", Toast.LENGTH_SHORT).show()
-
-                // Sync purchase to server
-                if (userId != -1) {
-                    ApiClient.instance.buyItem(StoreBuyRequest(userId, "emote_${item.name.lowercase().replace(" ", "_")}", item.cost)).enqueue(object : Callback<StoreBuyResponse> {
-                        override fun onResponse(call: Call<StoreBuyResponse>, response: Response<StoreBuyResponse>) {}
-                        override fun onFailure(call: Call<StoreBuyResponse>, t: Throwable) {}
-                    })
-                }
-
-                onUnlocked()
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
+        return container
     }
 
     /**
-     * Displays an animated floating bubble with the emote on the game screen
+     * Backward-compatible helper for other fragments
      */
-    fun showFloatingEmote(parent: ViewGroup, emote: String, isOpponent: Boolean = false) {
+    fun createEmoteBar(context: Context, onEmoteClick: (String) -> Unit): View {
+        return createQuickEmoteBar(
+            context = context,
+            onEmoteClick = onEmoteClick,
+            onMoreClick = {
+                ReactionBottomSheetDialog(context, onEmoteClick).show()
+            }
+        )
+    }
+
+    /**
+     * Displays an animated floating bubble with the emote and sender name on the screen
+     */
+    fun showFloatingEmote(parent: ViewGroup, emote: String, isOpponent: Boolean = false, senderName: String = "") {
         val context = parent.context
-        val tv = TextView(context).apply {
-            text = emote
-            textSize = 54f
-            gravity = Gravity.CENTER
+        val prefs = context.getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+
+        // If opponent emotes are muted, ignore opponent reactions
+        if (isOpponent && prefs.getBoolean("mute_opponent_emotes", false)) {
+            return
+        }
+
+        val name = if (senderName.isNotEmpty()) senderName else if (isOpponent) "Raqib" else "Siz"
+
+        // Floating pill bubble: [ 😎 Jahongir ]
+        val bubble = LinearLayout(context).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(12.dpToPx(context), 8.dpToPx(context), 14.dpToPx(context), 8.dpToPx(context))
+            background = GradientDrawable().apply {
+                setColor(Color.parseColor("#0B1424"))
+                cornerRadius = 20.dpToPx(context).toFloat()
+                setStroke(1.dpToPx(context), Color.parseColor("#38FFFFFF"))
+            }
+            elevation = 12f
             layoutParams = FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             ).apply {
-                gravity = if (isOpponent) Gravity.TOP or Gravity.CENTER_HORIZONTAL else Gravity.CENTER
-                topMargin = if (isOpponent) 120 else 0
+                gravity = if (isOpponent) Gravity.TOP or Gravity.CENTER_HORIZONTAL else Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+                topMargin = if (isOpponent) 90.dpToPx(context) else 0
+                bottomMargin = if (!isOpponent) 130.dpToPx(context) else 0
             }
             scaleX = 0f
             scaleY = 0f
             alpha = 1f
         }
 
-        parent.addView(tv)
-        HapticHelper.performHeavyImpact(context)
+        val tvEmoji = TextView(context).apply {
+            text = emote
+            textSize = 24f
+            layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        }
+
+        val tvName = TextView(context).apply {
+            text = name
+            textSize = 12f
+            setTextColor(Color.parseColor("#CBD5E1"))
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+                marginStart = 8.dpToPx(context)
+            }
+        }
+
+        bubble.addView(tvEmoji)
+        bubble.addView(tvName)
+        parent.addView(bubble)
+
+        HapticHelper.performClick(context)
         SoundHelper.playCaptureSound(context)
 
-        val scaleX = ObjectAnimator.ofFloat(tv, View.SCALE_X, 0f, 1.4f, 1f).apply { duration = 400; interpolator = OvershootInterpolator() }
-        val scaleY = ObjectAnimator.ofFloat(tv, View.SCALE_Y, 0f, 1.4f, 1f).apply { duration = 400; interpolator = OvershootInterpolator() }
-        val translateY = ObjectAnimator.ofFloat(tv, View.TRANSLATION_Y, 0f, -160f).apply { duration = 1600; startDelay = 400 }
-        val alpha = ObjectAnimator.ofFloat(tv, View.ALPHA, 1f, 0f).apply { duration = 500; startDelay = 1500 }
+        val scaleX = ObjectAnimator.ofFloat(bubble, View.SCALE_X, 0f, 1.15f, 1f).apply { duration = 320; interpolator = OvershootInterpolator() }
+        val scaleY = ObjectAnimator.ofFloat(bubble, View.SCALE_Y, 0f, 1.15f, 1f).apply { duration = 320; interpolator = OvershootInterpolator() }
+        val translateY = ObjectAnimator.ofFloat(bubble, View.TRANSLATION_Y, 0f, if (isOpponent) 40f else -60f).apply { duration = 1600; startDelay = 300 }
+        val alpha = ObjectAnimator.ofFloat(bubble, View.ALPHA, 1f, 0f).apply { duration = 400; startDelay = 1800 }
 
         AnimatorSet().apply {
             playTogether(scaleX, scaleY, translateY, alpha)
@@ -248,7 +207,9 @@ object EmoteHelper {
         }
 
         parent.postDelayed({
-            try { parent.removeView(tv) } catch (_: Exception) {}
-        }, 2100)
+            try { parent.removeView(bubble) } catch (_: Exception) {}
+        }, 2300)
     }
+
+    private fun Int.dpToPx(context: Context): Int = (this * context.resources.displayMetrics.density).toInt()
 }
