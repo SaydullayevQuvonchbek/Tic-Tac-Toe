@@ -557,7 +557,7 @@ class DurakFragment : Fragment() {
                 pairContainer.addView(defendView)
             }
 
-            if (pair.defendCard == null && !logic.isPlayerAttacker) {
+            if (pair.defendCard == null && !logic.isPlayerAttacker && !logic.isGameOver) {
                 val tvUrish = TextView(requireContext()).apply {
                     text = "URISH KERAK"
                     textSize = 8.5f
@@ -810,6 +810,12 @@ class DurakFragment : Fragment() {
         }
         fun hide() {
             btn.visibility = View.INVISIBLE
+        }
+
+        if (logic.isGameOver) {
+            binding.tvGameStatus.text = if (logic.winner == 1) "🏆 G'ALABA! (Durak emassiz)" else if (logic.winner == 0) "🤝 DURRANG!" else "💀 RAQIB YUTDI!"
+            hide()
+            return
         }
 
         when {
@@ -1268,6 +1274,8 @@ class DurakFragment : Fragment() {
     private fun checkGameOver() {
         logic.checkGameOver()
         if (logic.isGameOver) {
+            handler.removeCallbacksAndMessages(null)
+            renderBoard()
             handleGameOver()
         }
     }

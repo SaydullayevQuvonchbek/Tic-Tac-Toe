@@ -296,24 +296,15 @@ class DurakLogic {
 
     fun checkGameOver() {
         if (deck.isEmpty()) {
-            val unbeatCount = tablePairs.count { it.defendCard == null }
-            if (tablePairs.isEmpty() || unbeatCount == 0) {
-                if (playerHand.isEmpty() && opponentHand.isEmpty()) {
-                    isGameOver = true
-                    winner = 0 // Draw
-                } else if (playerHand.isEmpty()) {
-                    isGameOver = true
-                    winner = 1 // Player Won
-                } else if (opponentHand.isEmpty()) {
-                    isGameOver = true
-                    winner = 2 // Opponent Won
-                }
-            } else if (playerHand.isEmpty() && !isPlayerAttacker) {
+            if (playerHand.isEmpty() && opponentHand.isEmpty()) {
                 isGameOver = true
-                winner = 1
-            } else if (opponentHand.isEmpty() && isPlayerAttacker) {
+                winner = 0 // Draw
+            } else if (playerHand.isEmpty()) {
                 isGameOver = true
-                winner = 2
+                winner = 1 // Player Won immediately
+            } else if (opponentHand.isEmpty()) {
+                isGameOver = true
+                winner = 2 // Opponent Won immediately
             }
         }
     }
