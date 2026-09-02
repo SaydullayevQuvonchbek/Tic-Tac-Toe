@@ -798,9 +798,8 @@ class DurakFragment : Fragment() {
         if (isOnlineMode) {
             sendCardActionOnline("attack", card.code, null)
         } else if (isAiMode) {
-            // When defender is taking, human is adding cards (Qo'shib berish) -> don't trigger bot until human presses Berdim
             if (!logic.isDefenderTaking) {
-                triggerBotAction()
+                triggerBotAction(700L)
             }
         }
 
@@ -826,7 +825,7 @@ class DurakFragment : Fragment() {
         if (isOnlineMode) {
             sendCardActionOnline("defend", card.code, target.code)
         } else if (isAiMode) {
-            triggerBotAction()
+            triggerBotAction(700L)
         }
 
         checkGameOver()
@@ -837,7 +836,7 @@ class DurakFragment : Fragment() {
         SoundHelper.playMoveSound(requireContext())
 
         if (logic.isDefenderTaking) {
-            // Attacker finished adding cards -> Finalize Defender Take!
+            // Human attacker finished adding cards -> Bot takes all cards on table!
             logic.finalizeTakeByDefender(isDefenderPlayer = false)
             selectedCard = null
             selectedTargetAttackCard = null
@@ -845,13 +844,13 @@ class DurakFragment : Fragment() {
 
             if (isOnlineMode) {
                 sendCardActionOnline("finalize_take", null, null)
-            } else if (isAiMode) {
-                triggerBotAction()
             }
+            // In AI mode: Human remains attacker, so human attacks next. Do NOT trigger bot!
             checkGameOver()
             return
         }
 
+        // Standard BITA: All table cards were beaten
         logic.clearTableToBita()
         selectedCard = null
         selectedTargetAttackCard = null
@@ -860,7 +859,10 @@ class DurakFragment : Fragment() {
         if (isOnlineMode) {
             sendCardActionOnline("pass", null, null)
         } else if (isAiMode) {
-            triggerBotAction()
+            // If turns swapped and bot is now the attacker, trigger bot's attack!
+            if (!logic.isPlayerAttacker) {
+                triggerBotAction(750L)
+            }
         }
 
         checkGameOver()
@@ -880,21 +882,31 @@ class DurakFragment : Fragment() {
         if (isOnlineMode) {
             sendCardActionOnline("take_declared", null, null)
         } else if (isAiMode) {
-            triggerBotAction()
+            // Bot attacker can dump more cards or finalize take
+            triggerBotAction(600L)
         }
     }
 
-    private fun triggerBotAction() {
+    private fun triggerBotAction(delayMs: Long = 750L) {
+        handler.removeCallbacksAndMessages(null)
         handler.postDelayed({
             if (!isAdded || logic.isGameOver) return@postDelayed
 
-            val decision = DurakAI.getBestAction(logic, isBotAttacker = !logic.isPlayerAttacker)
+            val isBotAttacker = !logic.isPlayerAttacker
+            val decision = DurakAI.getBestAction(logic, isBotAttacker = isBotAttacker)
             when (decision.type) {
                 DurakAI.ActionType.ATTACK -> {
                     decision.card?.let {
                         logic.attack(it, false)
                         HapticHelper.performClick(requireContext())
                         SoundHelper.playMoveSound(requireContext())
+                    }
+                    renderBoard()
+                    checkGameOver()
+
+                    // If human is taking, bot can dump another card or finalize
+                    if (logic.isDefenderTaking && isBotAttacker && !logic.isGameOver) {
+                        triggerBotAction(650L)
                     }
                 }
                 DurakAI.ActionType.DEFEND -> {
@@ -903,27 +915,43 @@ class DurakFragment : Fragment() {
                         HapticHelper.performHeavyImpact(requireContext())
                         SoundHelper.playCaptureSound(requireContext())
                     }
+                    renderBoard()
+                    checkGameOver()
                 }
                 DurakAI.ActionType.PASS -> {
                     if (logic.isDefenderTaking) {
-                        // Only finalize if BOT was attacking and dumping cards on human
+                        // Human is taking cards -> Bot finishes dumping and finalizes take
                         if (!logic.isPlayerAttacker) {
                             logic.finalizeTakeByDefender(isDefenderPlayer = true)
+                            renderBoard()
+                            checkGameOver()
+
+                            // Bot remains attacker after defender takes -> trigger bot's next attack!
+                            if (!logic.isGameOver && !logic.isPlayerAttacker) {
+                                triggerBotAction(800L)
+                            }
                         }
                     } else {
+                        // Table beaten -> Bita!
                         logic.clearTableToBita()
+                        renderBoard()
+                        checkGameOver()
+
+                        // If turn swapped to bot, trigger bot's attack!
+                        if (!logic.isGameOver && !logic.isPlayerAttacker) {
+                            triggerBotAction(800L)
+                        }
                     }
                     HapticHelper.performClick(requireContext())
                 }
                 DurakAI.ActionType.TAKE -> {
                     logic.declareTakeByDefender()
                     HapticHelper.performHeavyImpact(requireContext())
+                    renderBoard()
+                    checkGameOver()
                 }
             }
-
-            renderBoard()
-            checkGameOver()
-        }, 750)
+        }, delayMs)
     }
 
     private fun sendCardActionOnline(action: String, card: String?, targetCard: String?) {
