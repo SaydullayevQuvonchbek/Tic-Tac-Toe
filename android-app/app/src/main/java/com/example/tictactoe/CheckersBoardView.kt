@@ -58,17 +58,6 @@ class CheckersBoardView @JvmOverloads constructor(
     private val lightSquarePaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val darkSquarePaint = Paint(Paint.ANTI_ALIAS_FLAG)
 
-    init {
-        updateThemePaints()
-    }
-
-    private fun updateThemePaints() {
-        lightSquarePaint.color = boardTheme.lightColor
-        darkSquarePaint.color = boardTheme.darkColor
-        p1RingPaint.color = pieceSkin.p1RingColor
-        p2RingPaint.color = pieceSkin.p2RingColor
-    }
-
     private val selectedRingPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#38BDF8") // Bright Cyan Glow
         style = Paint.Style.STROKE
@@ -135,6 +124,17 @@ class CheckersBoardView @JvmOverloads constructor(
     private var startX = 0f
     private var startY = 0f
     private var pieceRadius = 0f
+
+    init {
+        updateThemePaints()
+    }
+
+    private fun updateThemePaints() {
+        lightSquarePaint.color = boardTheme.lightColor
+        darkSquarePaint.color = boardTheme.darkColor
+        p1RingPaint.color = pieceSkin.p1RingColor
+        p2RingPaint.color = pieceSkin.p2RingColor
+    }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)

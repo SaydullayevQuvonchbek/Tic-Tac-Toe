@@ -169,7 +169,6 @@ class DurakLogic {
         isDefenderTaking = defenderTaking
         isGameOver = false
         winner = 0
-        sortHand(playerHand)
         sortHand(opponentHand)
     }
 
@@ -243,6 +242,13 @@ class DurakLogic {
         isDefenderTaking = true
     }
 
+    fun movePlayerCard(fromIndex: Int, toIndex: Int) {
+        if (fromIndex in playerHand.indices && toIndex in playerHand.indices && fromIndex != toIndex) {
+            val card = playerHand.removeAt(fromIndex)
+            playerHand.add(toIndex, card)
+        }
+    }
+
     fun finalizeTakeByDefender(isDefenderPlayer: Boolean) {
         val defenderHand = if (isDefenderPlayer) playerHand else opponentHand
         for (pair in tablePairs) {
@@ -250,7 +256,9 @@ class DurakLogic {
             pair.defendCard?.let { defenderHand.add(it) }
         }
         tablePairs.clear()
-        sortHand(defenderHand)
+        if (!isDefenderPlayer) {
+            sortHand(opponentHand)
+        }
         isDefenderTaking = false
         // Attacker refills up to 6, defender keeps cards and skips refill
         refillHandsAfterTake(isDefenderPlayer)
@@ -271,7 +279,6 @@ class DurakLogic {
             secondHand.add(deck.removeAt(0))
         }
 
-        sortHand(playerHand)
         sortHand(opponentHand)
     }
 
@@ -284,7 +291,6 @@ class DurakLogic {
         while (defenderHand.size < 6 && deck.isNotEmpty()) {
             defenderHand.add(deck.removeAt(0))
         }
-        sortHand(playerHand)
         sortHand(opponentHand)
     }
 

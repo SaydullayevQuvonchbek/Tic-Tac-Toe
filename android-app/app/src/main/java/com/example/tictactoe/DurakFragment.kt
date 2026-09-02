@@ -583,8 +583,9 @@ class DurakFragment : Fragment() {
 
     private var draggingCard: DurakCardView? = null
     private var draggingModel: Card? = null
-    private var downX = 0f
-    private var downY = 0f
+    private var dragIndex: Int = -1
+    private var downRawX = 0f
+    private var downRawY = 0f
     private var didDrag = false
 
     private fun renderPlayerHand() {
@@ -627,17 +628,11 @@ class DurakFragment : Fragment() {
             }
             binding.layoutPlayerCards.addView(cardView)
         }
-        binding.layoutPlayerCards.post {
-            for (i in 0 until binding.layoutPlayerCards.childCount) {
-                val v = binding.layoutPlayerCards.getChildAt(i)
-                if ((v as? DurakCardView)?.isSelectedCard == true) v.bringToFront()
-            }
-        }
 
         attachHandTouchListener()
     }
 
-    /** One listener on the hand area; manual top-most hit-testing so the fanned overlap works. */
+    /** Single robust touch listener for tap-to-select, drag-to-reorder, and drag-to-play. */
     private fun attachHandTouchListener() {
         val slop = android.view.ViewConfiguration.get(requireContext()).scaledTouchSlop
 
@@ -648,28 +643,56 @@ class DurakFragment : Fragment() {
                     val hit = cardAt(cards, event.x - cards.left, event.y - cards.top)
                     if (hit == null) {
                         draggingCard = null
+                        draggingModel = null
+                        dragIndex = -1
                         false
                     } else {
-                        val (_, view) = hit
+                        val (idx, view) = hit
+                        dragIndex = idx
                         draggingCard = view
                         draggingModel = view.card
-                        downX = event.x
-                        downY = event.y
+                        downRawX = event.rawX
+                        downRawY = event.rawY
                         didDrag = false
-                        view.elevation = dp(12).toFloat()
-                        view.bringToFront()
+                        view.elevation = dp(16).toFloat()
+                        view.rotation = 0f
                         host.parent?.requestDisallowInterceptTouchEvent(true)
                         true
                     }
                 }
                 android.view.MotionEvent.ACTION_MOVE -> {
                     val view = draggingCard ?: return@setOnTouchListener false
-                    val dx = event.x - downX
-                    val dy = event.y - downY
+                    val dx = event.rawX - downRawX
+                    val dy = event.rawY - downRawY
                     if (!didDrag && kotlin.math.hypot(dx, dy) > slop) didDrag = true
                     if (didDrag) {
                         view.translationX = dx
                         view.translationY = dy
+
+                        // If dragging horizontally within the hand, handle reordering!
+                        if (dy > -dp(35).toFloat() && logic.playerHand.size > 1 && dragIndex != -1) {
+                            val count = logic.playerHand.size
+                            val cardsLoc = IntArray(2)
+                            cards.getLocationOnScreen(cardsLoc)
+                            val relativeX = event.rawX - cardsLoc[0]
+                            val step = if (count > 0) (cards.width.toFloat() / count.toFloat()).coerceAtLeast(1f) else 1f
+                            val targetIdx = (relativeX / step).toInt().coerceIn(0, count - 1)
+
+                            if (targetIdx != dragIndex && targetIdx in logic.playerHand.indices) {
+                                logic.movePlayerCard(dragIndex, targetIdx)
+                                dragIndex = targetIdx
+                                HapticHelper.performClick(requireContext())
+                                downRawX = event.rawX
+                                view.translationX = 0f
+                                renderPlayerHand()
+                                val newView = cards.getChildAt(dragIndex) as? DurakCardView
+                                if (newView != null) {
+                                    draggingCard = newView
+                                    newView.elevation = dp(16).toFloat()
+                                    newView.rotation = 0f
+                                }
+                            }
+                        }
                     }
                     true
                 }
@@ -677,16 +700,28 @@ class DurakFragment : Fragment() {
                     host.parent?.requestDisallowInterceptTouchEvent(false)
                     val view = draggingCard
                     val model = draggingModel
-                    val lift = view?.translationY ?: 0f
+                    val totalDy = event.rawY - downRawY
                     val rawX = event.rawX
                     draggingCard = null
                     draggingModel = null
+                    dragIndex = -1
                     view?.translationX = 0f
                     view?.translationY = 0f
 
                     if (view != null && model != null && event.actionMasked == android.view.MotionEvent.ACTION_UP) {
-                        val playedByDrag = didDrag && lift < -dp(50).toFloat()
-                        host.post { onHandCardGesture(model, playedByDrag, rawX) }
+                        val playedByDrag = didDrag && totalDy < -dp(45).toFloat()
+                        if (playedByDrag) {
+                            host.post { onHandCardGesture(model, playedByDrag = true, rawX = rawX) }
+                        } else if (didDrag) {
+                            // Finished horizontal reorder
+                            HapticHelper.performClick(requireContext())
+                            renderPlayerHand()
+                        } else {
+                            // Simple tap
+                            host.post { onHandCardGesture(model, playedByDrag = false, rawX = rawX) }
+                        }
+                    } else {
+                        renderPlayerHand()
                     }
                     true
                 }
