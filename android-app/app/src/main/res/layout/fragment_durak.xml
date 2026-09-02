@@ -4,36 +4,39 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#022C22">
+    android:background="#070A12">
 
     <!-- ========================================================= -->
-    <!-- 1. SETUP SCREEN (Mode selection & Matchmaking - Design 3d) -->
+    <!-- 1. SETUP SCREEN (Design 3d: Durak sozlash)                -->
     <!-- ========================================================= -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/setupContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/background_color"
+        android:background="#070A12"
         android:visibility="visible">
 
-        <!-- Top App Bar -->
+        <!-- Top Header Navigation -->
         <LinearLayout
             android:id="@+id/layoutSetupHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingHorizontal="16dp"
-            android:paddingTop="12dp"
+            android:paddingHorizontal="18dp"
+            android:paddingTop="14dp"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageButton
+            <TextView
                 android:id="@+id/btnSetupBack"
-                android:layout_width="38dp"
-                android:layout_height="38dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_back"
-                app:tint="@color/text_color" />
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/bg_durak_top_btn"
+                android:fontFamily="sans-serif-black"
+                android:gravity="center"
+                android:text="‹"
+                android:textColor="#F2F5FF"
+                android:textSize="20sp" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -49,15 +52,16 @@
                     android:fontFamily="sans-serif-black"
                     android:letterSpacing="0.04"
                     android:text="DURAK"
-                    android:textColor="@color/text_color"
-                    android:textSize="20sp" />
+                    android:textColor="#F2F5FF"
+                    android:textSize="18sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="1dp"
                     android:text="Podkidnoy · 36 karta"
-                    android:textColor="@color/text_muted"
-                    android:textSize="11sp" />
+                    android:textColor="#8492B0"
+                    android:textSize="10.5sp" />
             </LinearLayout>
         </LinearLayout>
 
@@ -65,65 +69,115 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:fillViewport="true"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:scrollbars="none"
+            app:layout_constraintBottom_toTopOf="@+id/layoutSetupBottom"
             app:layout_constraintTop_toBottomOf="@+id/layoutSetupHeader">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:paddingHorizontal="18dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="16dp">
 
-                <!-- Decorative Hero Card Fan (Visual Polish from 3d) -->
+                <!-- Decorative Overlapping Cards Fan (Design 3d) -->
                 <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="90dp"
-                    android:layout_marginBottom="12dp">
+                    android:layout_height="88dp"
+                    android:layout_marginTop="4dp">
 
-                    <TextView
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="🂠 🂡 🂮 🂭 🂫"
-                        android:textColor="#34D399"
-                        android:textSize="38sp" />
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="56dp"
+                            android:layout_height="80dp"
+                            android:background="@drawable/bg_arena_card"
+                            android:fontFamily="sans-serif-black"
+                            android:gravity="center"
+                            android:rotation="-14"
+                            android:text="T♠"
+                            android:textColor="#0F172A"
+                            android:textSize="16sp" />
+
+                        <TextView
+                            android:layout_width="56dp"
+                            android:layout_height="80dp"
+                            android:layout_marginStart="-20dp"
+                            android:background="@drawable/bg_arena_card"
+                            android:fontFamily="sans-serif-black"
+                            android:gravity="center"
+                            android:rotation="-5"
+                            android:text="K♥"
+                            android:textColor="#DC2626"
+                            android:textSize="16sp" />
+
+                        <TextView
+                            android:layout_width="56dp"
+                            android:layout_height="80dp"
+                            android:layout_marginStart="-20dp"
+                            android:background="@drawable/bg_pill_gold"
+                            android:fontFamily="sans-serif-black"
+                            android:gravity="center"
+                            android:rotation="5"
+                            android:text="T♥"
+                            android:textColor="#DC2626"
+                            android:textSize="16sp" />
+
+                        <TextView
+                            android:layout_width="56dp"
+                            android:layout_height="80dp"
+                            android:layout_marginStart="-20dp"
+                            android:background="@drawable/bg_arena_card"
+                            android:fontFamily="sans-serif-black"
+                            android:gravity="center"
+                            android:rotation="14"
+                            android:text="V♣"
+                            android:textColor="#0F172A"
+                            android:textSize="16sp" />
+                    </LinearLayout>
                 </FrameLayout>
 
-                <!-- Mode Selection Label -->
+                <!-- Mode Selection Label (Design 3d) -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
                     android:fontFamily="sans-serif-black"
-                    android:letterSpacing="0.1"
+                    android:letterSpacing="0.12"
                     android:text="O'YIN REJIMI"
-                    android:textColor="@color/text_muted"
+                    android:textColor="#64748B"
                     android:textSize="11sp" />
 
-                <!-- Modes RadioGroup Container -->
+                <!-- 4 Selectable Mode Cards (Design 3d) -->
                 <RadioGroup
                     android:id="@+id/rgMode"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp">
 
-                    <!-- 1. Quick Match Option -->
+                    <!-- 1. Avto Qidiruv -->
                     <RadioButton
                         android:id="@+id/rbQuickMatch"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="8dp"
-                        android:background="@drawable/bg_arena_card_sm"
+                        android:background="@drawable/bg_durak_rules_card"
                         android:button="@null"
                         android:checked="true"
                         android:drawableStart="@drawable/ic_radio_state"
                         android:drawablePadding="12dp"
                         android:fontFamily="sans-serif-black"
-                        android:padding="14dp"
-                        android:text="⚡ Avto Qidiruv (1-Tap Match)"
-                        android:textColor="@color/text_color"
-                        android:textSize="14sp" />
+                        android:padding="13dp"
+                        android:text="⚡  Avto qidiruv\n1-tap · o'rtacha 8 soniya"
+                        android:textColor="#F2F5FF"
+                        android:textSize="12.5sp" />
 
-                    <!-- 2. AI Bot Option -->
+                    <!-- 2. Bot bilan (Offline) -->
                     <RadioButton
                         android:id="@+id/rbAi"
                         android:layout_width="match_parent"
@@ -134,12 +188,12 @@
                         android:drawableStart="@drawable/ic_radio_state"
                         android:drawablePadding="12dp"
                         android:fontFamily="sans-serif-black"
-                        android:padding="14dp"
-                        android:text="🤖 Bot bilan o'ynash (Offline AI)"
-                        android:textColor="@color/text_color"
-                        android:textSize="14sp" />
+                        android:padding="13dp"
+                        android:text="🤖  Bot bilan (Offline)\nDurakAI · internetsiz"
+                        android:textColor="#F2F5FF"
+                        android:textSize="12.5sp" />
 
-                    <!-- 3. Create Room Option -->
+                    <!-- 3. Xona ochish -->
                     <RadioButton
                         android:id="@+id/rbCreateRoom"
                         android:layout_width="match_parent"
@@ -150,12 +204,12 @@
                         android:drawableStart="@drawable/ic_radio_state"
                         android:drawablePadding="12dp"
                         android:fontFamily="sans-serif-black"
-                        android:padding="14dp"
-                        android:text="👑 Xona ochish (Do'stni taklif qilish)"
-                        android:textColor="@color/text_color"
-                        android:textSize="14sp" />
+                        android:padding="13dp"
+                        android:text="👑  Xona ochish\nDo'stni kod bilan taklif qilish"
+                        android:textColor="#F2F5FF"
+                        android:textSize="12.5sp" />
 
-                    <!-- 4. Join Room Option -->
+                    <!-- 4. Kod orqali kirish -->
                     <RadioButton
                         android:id="@+id/rbJoinRoom"
                         android:layout_width="match_parent"
@@ -165,10 +219,10 @@
                         android:drawableStart="@drawable/ic_radio_state"
                         android:drawablePadding="12dp"
                         android:fontFamily="sans-serif-black"
-                        android:padding="14dp"
-                        android:text="🚪 Kod orqali xonaga kirish"
-                        android:textColor="@color/text_color"
-                        android:textSize="14sp" />
+                        android:padding="13dp"
+                        android:text="🚪  Kod orqali kirish\n4-6 belgili xona kodi"
+                        android:textColor="#F2F5FF"
+                        android:textSize="12.5sp" />
                 </RadioGroup>
 
                 <!-- Room Code Input (when Join is selected) -->
@@ -176,7 +230,7 @@
                     android:id="@+id/tilRoomCode"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="10dp"
                     android:hint="Xona Kodi (masalan: 7KQZ)"
                     android:visibility="gone"
                     app:boxCornerRadiusBottomEnd="14dp"
@@ -201,12 +255,12 @@
                         android:textSize="20sp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Rules Info Card (2x2 Grid from Design 3d) -->
+                <!-- Rules Info Card (Design 3d 2x2 Grid) -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:background="@drawable/bg_arena_card"
+                    android:background="@drawable/bg_durak_rules_card"
                     android:orientation="vertical"
                     android:padding="14dp">
 
@@ -214,15 +268,15 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-black"
-                        android:letterSpacing="0.1"
+                        android:letterSpacing="0.12"
                         android:text="QOIDALAR"
-                        android:textColor="@color/accent_green"
+                        android:textColor="#6EE7B7"
                         android:textSize="11sp" />
 
                     <GridLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="11dp"
                         android:columnCount="2"
                         android:rowCount="2">
 
@@ -231,24 +285,25 @@
                             android:layout_height="wrap_content"
                             android:layout_columnWeight="1"
                             android:layout_margin="3dp"
-                            android:background="@drawable/bg_arena_card_sm"
+                            android:background="@drawable/bg_durak_opp_pill"
                             android:orientation="vertical"
-                            android:padding="9dp">
+                            android:padding="10dp">
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="sans-serif-black"
                                 android:text="36"
-                                android:textColor="@color/text_color"
-                                android:textSize="16sp" />
+                                android:textColor="#F2F5FF"
+                                android:textSize="15sp" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:layout_marginTop="1dp"
                                 android:text="karta (6–Tuz)"
-                                android:textColor="@color/text_muted"
-                                android:textSize="10sp" />
+                                android:textColor="#8492B0"
+                                android:textSize="9.5sp" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -256,24 +311,25 @@
                             android:layout_height="wrap_content"
                             android:layout_columnWeight="1"
                             android:layout_margin="3dp"
-                            android:background="@drawable/bg_arena_card_sm"
+                            android:background="@drawable/bg_durak_opp_pill"
                             android:orientation="vertical"
-                            android:padding="9dp">
+                            android:padding="10dp">
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="sans-serif-black"
                                 android:text="6"
-                                android:textColor="@color/text_color"
-                                android:textSize="16sp" />
+                                android:textColor="#F2F5FF"
+                                android:textSize="15sp" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:layout_marginTop="1dp"
                                 android:text="boshlang'ich qo'l"
-                                android:textColor="@color/text_muted"
-                                android:textSize="10sp" />
+                                android:textColor="#8492B0"
+                                android:textSize="9.5sp" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -281,24 +337,25 @@
                             android:layout_height="wrap_content"
                             android:layout_columnWeight="1"
                             android:layout_margin="3dp"
-                            android:background="@drawable/bg_arena_card_sm"
+                            android:background="@drawable/bg_durak_opp_pill"
                             android:orientation="vertical"
-                            android:padding="9dp">
+                            android:padding="10dp">
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="sans-serif-black"
                                 android:text="1 ZOD"
-                                android:textColor="@color/accent_gold"
-                                android:textSize="16sp" />
+                                android:textColor="#FBBF24"
+                                android:textSize="15sp" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:layout_marginTop="1dp"
                                 android:text="kozir masti"
-                                android:textColor="@color/text_muted"
-                                android:textSize="10sp" />
+                                android:textColor="#8492B0"
+                                android:textSize="9.5sp" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -306,326 +363,382 @@
                             android:layout_height="wrap_content"
                             android:layout_columnWeight="1"
                             android:layout_margin="3dp"
-                            android:background="@drawable/bg_arena_card_sm"
+                            android:background="@drawable/bg_durak_opp_pill"
                             android:orientation="vertical"
-                            android:padding="9dp">
+                            android:padding="10dp">
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="sans-serif-black"
                                 android:text="🏆"
-                                android:textColor="@color/accent_green"
-                                android:textSize="16sp" />
+                                android:textColor="#34D399"
+                                android:textSize="15sp" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:layout_marginTop="1dp"
                                 android:text="kartani tugatgan yutadi"
-                                android:textColor="@color/text_muted"
-                                android:textSize="10sp" />
+                                android:textColor="#8492B0"
+                                android:textSize="9.5sp" />
                         </LinearLayout>
                     </GridLayout>
                 </LinearLayout>
 
-                <!-- Start Game Action Button -->
-                <Button
-                    android:id="@+id/btnStartGame"
-                    android:layout_width="match_parent"
-                    android:layout_height="54dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginBottom="24dp"
-                    android:backgroundTint="@color/accent_green"
-                    android:fontFamily="sans-serif-black"
-                    android:letterSpacing="0.04"
-                    android:text="▶ O'YINNI BOSHLASH"
-                    android:textColor="@color/on_accent"
-                    android:textSize="14sp"
-                    app:cornerRadius="16dp" />
-
             </LinearLayout>
         </ScrollView>
+
+        <!-- Bottom Start Game Container (Design 3d) -->
+        <LinearLayout
+            android:id="@+id/layoutSetupBottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="18dp"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <TextView
+                android:id="@+id/btnStartGame"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="@drawable/bg_durak_btn_start"
+                android:fontFamily="sans-serif-black"
+                android:gravity="center"
+                android:letterSpacing="0.08"
+                android:text="▶ O'YINNI BOSHLASH"
+                android:textColor="#022C22"
+                android:textSize="14sp" />
+        </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- ========================================================= -->
-    <!-- 2. WAITING ROOM SCREEN (Clean Code Tiles from Design 3d)   -->
+    <!-- 2. WAITING ROOM SCREEN (Design 3d: Xona yaratildi)         -->
     <!-- ========================================================= -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/waitingContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/background_color"
-        android:padding="20dp"
+        android:background="#070A12"
+        android:padding="18dp"
         android:visibility="gone">
 
-        <TextView
-            android:id="@+id/tvWaitingTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-black"
-            android:letterSpacing="0.08"
-            android:text="XONA YARATILDI"
-            android:textColor="@color/text_muted"
-            android:textSize="12sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="40dp" />
-
-        <!-- Big Room Code Display -->
-        <TextView
-            android:id="@+id/tvCreatedRoomCode"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/bg_arena_card"
-            android:fontFamily="sans-serif-black"
-            android:letterSpacing="0.3"
-            android:paddingHorizontal="24dp"
-            android:paddingVertical="12dp"
-            android:text="7KQZ"
-            android:textColor="@color/accent_green"
-            android:textSize="36sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvWaitingTitle" />
-
         <LinearLayout
-            android:id="@+id/layoutWaitingStatus"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
+            android:background="@drawable/bg_durak_rules_card"
             android:gravity="center"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvCreatedRoomCode">
-
-            <ProgressBar
-                android:id="@+id/pbWaiting"
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:indeterminateTint="@color/accent_green" />
+            android:orientation="vertical"
+            android:padding="18dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
+                android:id="@+id/tvWaitingTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="Do'st kutilmoqda…"
-                android:textColor="@color/text_muted"
-                android:textSize="13sp" />
-        </LinearLayout>
-
-        <!-- Copy & Share Buttons Row -->
-        <LinearLayout
-            android:id="@+id/layoutWaitingActions"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
-            android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@+id/layoutWaitingStatus">
-
-            <Button
-                android:id="@+id/btnCopyRoomCode"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_marginEnd="6dp"
-                android:layout_weight="1"
-                android:backgroundTint="@color/card_surface"
                 android:fontFamily="sans-serif-black"
-                android:text="📋 NUSXA"
-                android:textColor="@color/text_color"
-                android:textSize="12sp"
-                app:cornerRadius="14dp" />
+                android:letterSpacing="0.14"
+                android:text="XONA YARATILDI"
+                android:textColor="#64748B"
+                android:textSize="10sp" />
 
-            <Button
-                android:id="@+id/btnInviteFriend"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_marginStart="6dp"
-                android:layout_weight="1"
-                android:backgroundTint="@color/accent_green"
+            <!-- 4 Distinct Room Code Tiles (Design 3d: [ 7 ] [ K ] [ Q ] [ Z ]) -->
+            <LinearLayout
+                android:id="@+id/layoutCodeTiles"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvTile1"
+                    android:layout_width="38dp"
+                    android:layout_height="48dp"
+                    android:layout_margin="3dp"
+                    android:background="@drawable/bg_durak_room_tile"
+                    android:fontFamily="sans-serif-black"
+                    android:gravity="center"
+                    android:text="7"
+                    android:textColor="#34D399"
+                    android:textSize="22sp" />
+
+                <TextView
+                    android:id="@+id/tvTile2"
+                    android:layout_width="38dp"
+                    android:layout_height="48dp"
+                    android:layout_margin="3dp"
+                    android:background="@drawable/bg_durak_room_tile"
+                    android:fontFamily="sans-serif-black"
+                    android:gravity="center"
+                    android:text="K"
+                    android:textColor="#34D399"
+                    android:textSize="22sp" />
+
+                <TextView
+                    android:id="@+id/tvTile3"
+                    android:layout_width="38dp"
+                    android:layout_height="48dp"
+                    android:layout_margin="3dp"
+                    android:background="@drawable/bg_durak_room_tile"
+                    android:fontFamily="sans-serif-black"
+                    android:gravity="center"
+                    android:text="Q"
+                    android:textColor="#34D399"
+                    android:textSize="22sp" />
+
+                <TextView
+                    android:id="@+id/tvTile4"
+                    android:layout_width="38dp"
+                    android:layout_height="48dp"
+                    android:layout_margin="3dp"
+                    android:background="@drawable/bg_durak_room_tile"
+                    android:fontFamily="sans-serif-black"
+                    android:gravity="center"
+                    android:text="Z"
+                    android:textColor="#34D399"
+                    android:textSize="22sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvCreatedRoomCode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ProgressBar
+                    android:id="@+id/pbWaiting"
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:indeterminateTint="#34D399" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Do'st kutilmoqda…"
+                    android:textColor="#8492B0"
+                    android:textSize="10.5sp" />
+            </LinearLayout>
+
+            <!-- Copy & Share Action Buttons (Design 3d) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/btnCopyRoomCode"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_durak_top_btn"
+                    android:fontFamily="sans-serif-black"
+                    android:gravity="center"
+                    android:text="📋 NUSXA"
+                    android:textColor="#CBD5E1"
+                    android:textSize="11sp" />
+
+                <TextView
+                    android:id="@+id/btnInviteFriend"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="4dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_durak_room_tile"
+                    android:fontFamily="sans-serif-black"
+                    android:gravity="center"
+                    android:text="🔗 ULASHISH"
+                    android:textColor="#34D399"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/btnCancelWaiting"
+                android:layout_width="match_parent"
+                android:layout_height="38dp"
+                android:layout_marginTop="10dp"
                 android:fontFamily="sans-serif-black"
-                android:text="🔗 ULASHISH"
-                android:textColor="@color/on_accent"
-                android:textSize="12sp"
-                app:cornerRadius="14dp" />
+                android:gravity="center"
+                android:text="BEKOR QILISH"
+                android:textColor="#F87171"
+                android:textSize="11sp" />
         </LinearLayout>
-
-        <Button
-            android:id="@+id/btnCancelWaiting"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="12dp"
-            android:backgroundTint="@color/card_surface"
-            android:fontFamily="sans-serif-black"
-            android:text="BEKOR QILISH"
-            android:textColor="@color/accent_red"
-            android:textSize="12sp"
-            app:cornerRadius="14dp"
-            app:layout_constraintTop_toBottomOf="@+id/layoutWaitingActions" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- ========================================================= -->
-    <!-- 3. GAMEPLAY SCREEN (Premium Felt Card Table - Design 3a)   -->
+    <!-- 3. GAMEPLAY SCREEN (Design 3a: Durak stoli)               -->
     <!-- ========================================================= -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/gameplayContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#04382A"
+        android:background="@drawable/bg_durak_felt"
         android:visibility="gone">
 
-        <!-- Top Navigation Header -->
-        <ImageButton
-            android:id="@+id/btnGameplayBack"
-            android:layout_width="38dp"
-            android:layout_height="38dp"
-            android:layout_margin="10dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_back"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/white" />
-
+        <!-- Top Header Navigation (Design 3a: ‹ DURAK · ONLAYN | ZOD ♥) -->
         <LinearLayout
-            android:id="@+id/layoutGameTitleHeader"
-            android:layout_width="0dp"
+            android:id="@+id/layoutTopHeader"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="@+id/btnGameplayBack"
-            app:layout_constraintEnd_toStartOf="@+id/layoutTrumpHeader"
-            app:layout_constraintStart_toEndOf="@+id/btnGameplayBack"
-            app:layout_constraintTop_toTopOf="@+id/btnGameplayBack">
-
-            <TextView
-                android:id="@+id/tvRoomCodeHeader"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-black"
-                android:letterSpacing="0.06"
-                android:text="DURAK · ONLAYN"
-                android:textColor="@color/white"
-                android:textSize="13sp" />
-
-            <TextView
-                android:id="@+id/tvRoomSubHeader"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-black"
-                android:text="XONA #7KQZ"
-                android:textColor="#6EE7B7"
-                android:textSize="10sp" />
-        </LinearLayout>
-
-        <!-- PROMINENT ZOD (TRUMP) BADGE PILL (Design 3a Top Right) -->
-        <LinearLayout
-            android:id="@+id/layoutTrumpHeader"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:background="@drawable/bg_pill_gold"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingHorizontal="11dp"
-            android:paddingVertical="5dp"
-            app:layout_constraintBottom_toBottomOf="@+id/btnGameplayBack"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/btnGameplayBack">
+            android:paddingHorizontal="14dp"
+            android:paddingTop="10dp"
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                android:id="@+id/tvTrumpHeaderLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:id="@+id/btnGameplayBack"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/bg_durak_top_btn"
                 android:fontFamily="sans-serif-black"
-                android:letterSpacing="0.1"
-                android:text="ZOD "
-                android:textColor="@color/accent_gold"
-                android:textSize="10sp" />
+                android:gravity="center"
+                android:text="‹"
+                android:textColor="#ECFDF5"
+                android:textSize="20sp" />
 
-            <TextView
-                android:id="@+id/tvTrumpHeaderSuit"
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="9dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvRoomCodeHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-black"
+                    android:letterSpacing="0.08"
+                    android:text="DURAK · ONLAYN"
+                    android:textColor="#ECFDF5"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/tvRoomSubHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="1dp"
+                    android:fontFamily="sans-serif-black"
+                    android:text="XONA #7KQZ"
+                    android:textColor="#6EE7B7"
+                    android:textSize="10sp" />
+            </LinearLayout>
+
+            <!-- ZOD Badge Pill (Design 3a: ZOD ♥) -->
+            <LinearLayout
+                android:id="@+id/layoutTrumpHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-black"
-                android:text="♥"
-                android:textColor="#F87171"
-                android:textSize="17sp" />
+                android:background="@drawable/bg_durak_zod_pill"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="11dp"
+                android:paddingVertical="6dp">
+
+                <TextView
+                    android:id="@+id/tvTrumpHeaderLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-black"
+                    android:letterSpacing="0.12"
+                    android:text="ZOD"
+                    android:textColor="#FBBF24"
+                    android:textSize="9sp" />
+
+                <TextView
+                    android:id="@+id/tvTrumpHeaderSuit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="7dp"
+                    android:fontFamily="sans-serif-black"
+                    android:text="♥"
+                    android:textColor="#F87171"
+                    android:textSize="17sp" />
+            </LinearLayout>
         </LinearLayout>
 
-        <!-- Opponent Info HUD (Top Center) -->
+        <!-- Opponent Header HUD (Design 3a: [JB] Jahongir [6 karta]) -->
         <LinearLayout
             android:id="@+id/layoutOpponentHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="10dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnGameplayBack">
+            app:layout_constraintTop_toBottomOf="@+id/layoutTopHeader">
 
-            <!-- Opponent Initials Avatar Badge -->
             <TextView
                 android:id="@+id/tvOpponentAvatar"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:background="@drawable/bg_avatar_gradient"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/bg_durak_opp_avatar"
                 android:fontFamily="sans-serif-black"
                 android:gravity="center"
                 android:text="JB"
-                android:textColor="@color/white"
+                android:textColor="#E2E8F0"
                 android:textSize="10sp" />
 
             <TextView
                 android:id="@+id/tvOpponentName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="9dp"
                 android:fontFamily="sans-serif-black"
                 android:text="Jahongir"
-                android:textColor="@color/white"
+                android:textColor="#ECFDF5"
                 android:textSize="13sp" />
 
             <TextView
                 android:id="@+id/tvOpponentCardsCount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:background="@drawable/bg_pill_cyan"
+                android:layout_marginStart="9dp"
+                android:background="@drawable/bg_durak_opp_pill"
                 android:fontFamily="sans-serif-black"
                 android:paddingHorizontal="9dp"
                 android:paddingVertical="3dp"
                 android:text="6 karta"
-                android:textColor="@color/accent_cyan"
+                android:textColor="#7DD3FC"
                 android:textSize="10.5sp" />
         </LinearLayout>
 
-        <!-- Opponent Cards Fan (Top) -->
+        <!-- Opponent Cards Fan (Design 3a: Fanned card backs) -->
         <LinearLayout
             android:id="@+id/layoutOpponentCards"
             android:layout_width="match_parent"
-            android:layout_height="58dp"
-            android:layout_marginTop="2dp"
+            android:layout_height="62dp"
+            android:layout_marginTop="8dp"
             android:gravity="center"
             android:orientation="horizontal"
             app:layout_constraintTop_toBottomOf="@+id/layoutOpponentHeader" />
 
-        <!-- Center Battle Area: Deck & Trump on Left, Table Pairs on Right -->
+        <!-- Center Battle Area: Deck & Trump on Left, Table Pairs on Right (Design 3a) -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layoutCenterArena"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:paddingHorizontal="10dp"
+            android:paddingHorizontal="14dp"
             app:layout_constraintBottom_toTopOf="@+id/tvGameStatus"
             app:layout_constraintTop_toBottomOf="@+id/layoutOpponentCards">
 
-            <!-- Deck Pile & Trump Card (Design 3a Left Side) -->
+            <!-- Deck Pile & Trump Card (Design 3a: Horizontal Trump under vertical deck) -->
             <FrameLayout
                 android:id="@+id/layoutDeckAndTrump"
-                android:layout_width="72dp"
-                android:layout_height="105dp"
+                android:layout_width="66dp"
+                android:layout_height="96dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -633,16 +746,16 @@
                 <!-- Horizontal Trump Card underneath -->
                 <com.example.tictactoe.DurakCardView
                     android:id="@+id/viewTrumpCard"
-                    android:layout_width="56dp"
-                    android:layout_height="80dp"
+                    android:layout_width="54dp"
+                    android:layout_height="76dp"
                     android:layout_gravity="center_vertical|start"
                     android:rotation="90" />
 
                 <!-- Vertical Face-Down Deck Pile on top -->
                 <com.example.tictactoe.DurakCardView
                     android:id="@+id/viewDeckPile"
-                    android:layout_width="56dp"
-                    android:layout_height="80dp"
+                    android:layout_width="54dp"
+                    android:layout_height="76dp"
                     android:layout_gravity="center_vertical|end" />
 
                 <!-- Deck Count Badge -->
@@ -651,21 +764,21 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|center_horizontal"
-                    android:background="@drawable/bg_pill_gold"
+                    android:background="@drawable/bg_durak_deck_count"
                     android:fontFamily="sans-serif-black"
                     android:paddingHorizontal="8dp"
                     android:paddingVertical="2dp"
                     android:text="24"
-                    android:textColor="@color/accent_gold"
+                    android:textColor="#FBBF24"
                     android:textSize="10sp" />
             </FrameLayout>
 
-            <!-- Table Battle Pairs (Spacious Center Area) -->
+            <!-- Table Battle Pairs (Design 3a: Pairs area) -->
             <HorizontalScrollView
                 android:id="@+id/scrollTablePairs"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="12dp"
                 android:fillViewport="true"
                 android:scrollbars="none"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -683,104 +796,129 @@
             </HorizontalScrollView>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!-- Turn & Game Status Banner (Design 3a Banner) -->
-        <TextView
-            android:id="@+id/tvGameStatus"
+        <!-- Turn Status Banner (Design 3a: SIZ HIMOYADASIZ — URING 0:18) -->
+        <LinearLayout
+            android:id="@+id/layoutStatusBanner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="14dp"
-            android:layout_marginBottom="6dp"
-            android:background="@drawable/bg_arena_card_sm"
-            android:fontFamily="sans-serif-black"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/bg_durak_status_banner"
             android:gravity="center"
-            android:letterSpacing="0.04"
+            android:orientation="horizontal"
             android:padding="8dp"
-            android:text="SIZNING NAVBATINGIZ — KARTA TASHLANG"
-            android:textColor="#FDE047"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toTopOf="@+id/layoutActionButtons" />
+            app:layout_constraintBottom_toTopOf="@+id/layoutActionButtons">
 
-        <!-- Action Buttons Row (Tashlash, Urish, Bita, Olish + Emote trigger) -->
+            <View
+                android:id="@+id/viewStatusDot"
+                android:layout_width="7dp"
+                android:layout_height="7dp"
+                android:background="@drawable/badge_dot_active" />
+
+            <TextView
+                android:id="@+id/tvGameStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:fontFamily="sans-serif-black"
+                android:letterSpacing="0.06"
+                android:text="SIZ HIMOYADASIZ — URING"
+                android:textColor="#FDE047"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tvTurnTimer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:fontFamily="sans-serif-black"
+                android:text="0:18"
+                android:textColor="#6EE7B7"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <!-- Action Buttons Row (Design 3a & 3c: 🛡 URISH | 📥 OLISH | 😎) -->
         <LinearLayout
             android:id="@+id/layoutActionButtons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="horizontal"
-            android:paddingHorizontal="12dp"
-            android:paddingBottom="4dp"
+            android:paddingHorizontal="14dp"
+            android:paddingBottom="6dp"
             app:layout_constraintBottom_toTopOf="@+id/scrollPlayerHand">
 
-            <Button
+            <TextView
                 android:id="@+id/btnAttack"
                 android:layout_width="0dp"
-                android:layout_height="44dp"
-                android:layout_marginEnd="4dp"
+                android:layout_height="46dp"
+                android:layout_marginEnd="6dp"
                 android:layout_weight="1"
-                android:backgroundTint="#0284C7"
+                android:background="@drawable/bg_durak_btn_defend"
                 android:fontFamily="sans-serif-black"
-                android:text="⚔️ Tashlash"
-                android:textColor="@color/white"
-                android:textSize="12sp"
-                app:cornerRadius="12dp" />
+                android:gravity="center"
+                android:text="⚔️ TASHLASH"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp" />
 
-            <Button
+            <TextView
                 android:id="@+id/btnDefend"
                 android:layout_width="0dp"
-                android:layout_height="44dp"
-                android:layout_marginEnd="4dp"
+                android:layout_height="46dp"
+                android:layout_marginEnd="6dp"
                 android:layout_weight="1"
-                android:backgroundTint="#16A34A"
+                android:background="@drawable/bg_durak_btn_defend"
                 android:fontFamily="sans-serif-black"
-                android:text="🛡️ Urish"
-                android:textColor="@color/white"
-                android:textSize="12sp"
-                app:cornerRadius="12dp" />
+                android:gravity="center"
+                android:text="🛡 URISH"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp" />
 
-            <Button
+            <TextView
                 android:id="@+id/btnPassBita"
                 android:layout_width="0dp"
-                android:layout_height="44dp"
-                android:layout_marginEnd="4dp"
+                android:layout_height="46dp"
+                android:layout_marginEnd="6dp"
                 android:layout_weight="1"
-                android:backgroundTint="#D97706"
+                android:background="@drawable/bg_durak_btn_pass"
                 android:fontFamily="sans-serif-black"
-                android:text="✋ Bita"
-                android:textColor="@color/white"
-                android:textSize="12sp"
-                app:cornerRadius="12dp" />
+                android:gravity="center"
+                android:text="✋ BITA"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp" />
 
-            <Button
+            <TextView
                 android:id="@+id/btnTakeCards"
                 android:layout_width="0dp"
-                android:layout_height="44dp"
-                android:layout_marginEnd="4dp"
+                android:layout_height="46dp"
+                android:layout_marginEnd="6dp"
                 android:layout_weight="1"
-                android:backgroundTint="#DC2626"
+                android:background="@drawable/bg_durak_btn_take"
                 android:fontFamily="sans-serif-black"
-                android:text="📥 Olish"
-                android:textColor="@color/white"
-                android:textSize="12sp"
-                app:cornerRadius="12dp" />
+                android:gravity="center"
+                android:text="📥 OLISH"
+                android:textColor="#FCA5A5"
+                android:textSize="13sp" />
 
-            <!-- Open Full Reaction Sheet Button -->
-            <ImageButton
+            <!-- Quick Reaction Button (Design 3a: 😎) -->
+            <TextView
                 android:id="@+id/btnOpenReaction"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:background="@drawable/bg_arena_card_sm"
-                android:src="@android:drawable/ic_menu_send"
-                app:tint="@color/accent_gold" />
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:background="@drawable/bg_durak_btn_action_sm"
+                android:gravity="center"
+                android:text="😎"
+                android:textSize="18sp" />
         </LinearLayout>
 
-        <!-- Player Hand (Arched fan cards area) -->
+        <!-- Player Hand Fan (Design 3a: Fanned cards) -->
         <FrameLayout
             android:id="@+id/scrollPlayerHand"
             android:layout_width="match_parent"
-            android:layout_height="160dp"
+            android:layout_height="130dp"
             android:clipChildren="false"
             android:clipToPadding="false"
-            android:paddingHorizontal="4dp"
+            android:paddingHorizontal="6dp"
             app:layout_constraintBottom_toTopOf="@+id/tvDragHint">
 
             <LinearLayout
@@ -792,30 +930,31 @@
                 android:clipToPadding="false"
                 android:gravity="center_horizontal|bottom"
                 android:orientation="horizontal"
-                android:paddingBottom="4dp" />
+                android:paddingBottom="2dp" />
         </FrameLayout>
 
-        <!-- Drag to Play Hint Subtitle -->
+        <!-- Drag to Play Subtitle (Design 3a: KARTANI YUQORIGA SURING) -->
         <TextView
             android:id="@+id/tvDragHint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:letterSpacing="0.08"
-            android:text="KARTANI YUQORIGA SURING YOKI TANLANG"
-            android:textColor="#80ECFDF5"
-            android:textSize="9.5sp"
+            android:letterSpacing="0.1"
+            android:paddingBottom="4dp"
+            android:text="KARTANI YUQORIGA SURING"
+            android:textColor="#66ECFDF5"
+            android:textSize="10sp"
             app:layout_constraintBottom_toTopOf="@+id/layoutEmotesDurak" />
 
-        <!-- 4-Reaction Quick Bar at Bottom (Design 3c) -->
+        <!-- Quick 4 Reactions Bar (Design 3c: 🔥 😂 👏 💀 ⋯) -->
         <LinearLayout
             android:id="@+id/layoutEmotesDurak"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="horizontal"
-            android:paddingBottom="10dp"
-            android:paddingTop="4dp"
+            android:paddingBottom="12dp"
+            android:paddingTop="2dp"
             app:layout_constraintBottom_toBottomOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

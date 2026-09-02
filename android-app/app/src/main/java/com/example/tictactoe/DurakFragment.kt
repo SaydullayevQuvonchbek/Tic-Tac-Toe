@@ -3,14 +3,18 @@ package com.example.tictactoe
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
@@ -183,6 +187,7 @@ class DurakFragment : Fragment() {
                     isOnlineMode = true
                     isAiMode = false
                     binding.tvCreatedRoomCode.text = code
+                    updateRoomCodeTiles(code)
 
                     subscribePusherEvents()
                 } else {
@@ -540,6 +545,21 @@ class DurakFragment : Fragment() {
                 pairContainer.addView(defendView)
             }
 
+            if (pair.defendCard == null && !logic.isPlayerAttacker) {
+                val tvUrish = TextView(requireContext()).apply {
+                    text = "URISH KERAK"
+                    textSize = 8.5f
+                    setTextColor(Color.parseColor("#FDE047"))
+                    typeface = Typeface.DEFAULT_BOLD
+                    letterSpacing = 0.08f
+                    gravity = Gravity.CENTER
+                    layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT).apply {
+                        gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+                    }
+                }
+                pairContainer.addView(tvUrish)
+            }
+
             binding.layoutTablePairs.addView(pairContainer)
         }
 
@@ -560,41 +580,37 @@ class DurakFragment : Fragment() {
         val paddingPx = dp(16)
         val usableWidthPx = (screenWidthPx - paddingPx).coerceAtLeast(dp(280))
 
-        // 2. Dynamic Massive Card Dimensions in DP!
-        val cardW = when {
-            count <= 6 -> dp(106)
-            count <= 9 -> dp(98)
-            count <= 13 -> dp(90)
-            else -> dp(82)
-        }
-        val cardH = when {
-            count <= 6 -> dp(162)
-            count <= 9 -> dp(150)
-            count <= 13 -> dp(138)
-            else -> dp(126)
-        }
+        // 2. Dynamic Card Dimensions in DP matching Design 3a
+        val cardW = dp(60)
+        val cardH = dp(88)
 
         // 3. Exact Screen-Fit Fan Overlap: All cards fit neatly on screen with zero scrolling!
         val overlapMarginPx = if (count > 1) {
             val neededStep = (usableWidthPx - cardW) / (count - 1)
             val computedMargin = neededStep - cardW
-            // Limit margin to max dp(6) when cards are few, and let it overlap tightly when cards are many
-            computedMargin.coerceAtMost(dp(6))
+            computedMargin.coerceAtMost(dp(4))
         } else {
             0
         }
 
+        val maxAngle = 13f.coerceAtMost(count * 2.8f)
+        val angleStep = if (count > 1) (maxAngle * 2) / (count - 1) else 0f
+
         for ((index, card) in logic.playerHand.withIndex()) {
             val isSelected = (selectedCard == card)
+            val angle = if (count > 1) -maxAngle + (index * angleStep) else 0f
+
             val cardView = DurakCardView(requireContext()).apply {
                 this.card = card
                 this.isFaceDown = false
                 this.isSelectedCard = isSelected
                 this.isTrump = (card.suit == logic.trumpSuit)
+                this.rotation = angle
                 layoutParams = LinearLayout.LayoutParams(cardW, cardH).apply {
                     setMargins(if (index == 0) 0 else overlapMarginPx, 0, 0, 0)
                 }
                 if (isSelected) {
+                    translationY = -dp(18).toFloat()
                     bringToFront()
                 }
             }
@@ -690,43 +706,64 @@ class DurakFragment : Fragment() {
         }
     }
 
+    private fun updateRoomCodeTiles(code: String) {
+        val padded = code.padEnd(4, ' ')
+        binding.tvTile1.text = padded.getOrNull(0)?.toString() ?: ""
+        binding.tvTile2.text = padded.getOrNull(1)?.toString() ?: ""
+        binding.tvTile3.text = padded.getOrNull(2)?.toString() ?: ""
+        binding.tvTile4.text = padded.getOrNull(3)?.toString() ?: ""
+    }
+
     private fun updateStatusAndButtons() {
         val isAttacker = logic.isPlayerAttacker
         val unbeatCount = logic.tablePairs.count { it.defendCard == null }
 
         if (logic.isDefenderTaking) {
             if (isAttacker) {
-                binding.tvGameStatus.text = "🔥 Raqib ko'tarmoqda! Yana karta qo'shing yoki '✅ Berdim' ni bosing"
+                binding.tvGameStatus.text = "RAQIB KO'TARMOQDA — KARTA QO'SHING"
                 binding.btnAttack.visibility = View.VISIBLE
                 binding.btnAttack.isEnabled = (selectedCard != null && logic.canAttackWith(selectedCard!!, true))
-                binding.btnAttack.text = "⚔️ Qo'shish"
+                binding.btnAttack.text = "⚔️ QO'SHISH"
                 binding.btnPassBita.visibility = View.VISIBLE
                 binding.btnPassBita.isEnabled = true
-                binding.btnPassBita.text = "✅ Berdim (Olib ket)"
+                binding.btnPassBita.text = "✅ BERDIM"
                 binding.btnDefend.visibility = View.GONE
                 binding.btnTakeCards.visibility = View.GONE
             } else {
-                binding.tvGameStatus.text = "📥 Ko'tarishni tanladingiz. Raqib karta qo'shmoqda..."
+                binding.tvGameStatus.text = "KO'TARISHNI TANLADINGIZ — KUTING..."
                 binding.btnAttack.visibility = View.GONE
                 binding.btnDefend.visibility = View.GONE
                 binding.btnPassBita.visibility = View.GONE
                 binding.btnTakeCards.visibility = View.GONE
             }
         } else if (isAttacker) {
-            binding.tvGameStatus.text = "Sizning navbatingiz (Hujum qiling) ⚔️"
-            binding.btnAttack.isEnabled = (selectedCard != null && logic.canAttackWith(selectedCard!!, true))
-            binding.btnAttack.text = "⚔️ Tashlash"
-            binding.btnDefend.visibility = View.GONE
+            if (logic.tablePairs.isEmpty()) {
+                binding.tvGameStatus.text = "SIZ HUJUMDASIZ — KARTA TASHLANG"
+            } else if (unbeatCount == 0) {
+                binding.tvGameStatus.text = "HAMMASI URILDI — BITA DEYING"
+            } else {
+                binding.tvGameStatus.text = "RAQIB HIMOYALANMOQDA..."
+            }
+
             binding.btnAttack.visibility = View.VISIBLE
+            binding.btnDefend.visibility = View.GONE
+            binding.btnPassBita.visibility = View.VISIBLE
             binding.btnTakeCards.visibility = View.GONE
 
-            // Can Pass/Bita only if table has at least 1 pair and all are defended
-            binding.btnPassBita.visibility = View.VISIBLE
+            binding.btnAttack.isEnabled = (selectedCard != null && logic.canAttackWith(selectedCard!!, logic.tablePairs.isNotEmpty()))
+            binding.btnAttack.text = if (logic.tablePairs.isEmpty()) "⚔️ TASHLASH" else "⚔️ QO'SHISH"
             binding.btnPassBita.isEnabled = (logic.tablePairs.isNotEmpty() && unbeatCount == 0)
-            binding.btnPassBita.text = "✋ Bita (Bo'ldi)"
+            binding.btnPassBita.text = "✋ BITA"
         } else {
             val targetUnbeat = selectedTargetAttackCard ?: logic.tablePairs.firstOrNull { it.defendCard == null }?.attackCard
-            binding.tvGameStatus.text = if (targetUnbeat != null) "Himoyalaning: ${targetUnbeat.rank.label}${targetUnbeat.suit.symbol} ni uring 🛡️" else "Raqib o'ylamoqda... ⚔️"
+            if (targetUnbeat != null) {
+                binding.tvGameStatus.text = "SIZ HIMOYADASIZ — URING"
+            } else if (logic.tablePairs.isNotEmpty()) {
+                binding.tvGameStatus.text = "HAMMASI URILDI — BITA DEYING"
+            } else {
+                binding.tvGameStatus.text = "RAQIB HUJUM QILMOQDA..."
+            }
+
             binding.btnAttack.visibility = View.GONE
             binding.btnDefend.visibility = View.VISIBLE
             binding.btnPassBita.visibility = View.GONE
@@ -734,7 +771,7 @@ class DurakFragment : Fragment() {
 
             binding.btnDefend.isEnabled = (selectedCard != null && targetUnbeat != null && logic.canBeat(targetUnbeat, selectedCard!!))
             binding.btnTakeCards.isEnabled = (logic.tablePairs.isNotEmpty())
-            binding.btnTakeCards.text = "📥 Ko'tarib Olish"
+            binding.btnTakeCards.text = "📥 OLISH"
         }
 
         binding.btnAttack.alpha = if (binding.btnAttack.isEnabled) 1.0f else 0.45f

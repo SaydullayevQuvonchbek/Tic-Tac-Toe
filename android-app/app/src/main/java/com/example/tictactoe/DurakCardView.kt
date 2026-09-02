@@ -54,17 +54,17 @@ class DurakCardView @JvmOverloads constructor(
         textAlign = Paint.Align.CENTER
     }
     private val cardBackgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#FFFFFF")
+        color = Color.parseColor("#FFFDF7")
         style = Paint.Style.FILL
     }
 
     private val cardBorderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#94A3B8")
+        color = Color.parseColor("#33000000")
         style = Paint.Style.STROKE
     }
 
     private val cardSelectedGlowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#F59E0B") // Golden Glow
+        color = Color.parseColor("#6EE7B7") // Neon Mint Glow (Design 3a)
         style = Paint.Style.STROKE
     }
 
