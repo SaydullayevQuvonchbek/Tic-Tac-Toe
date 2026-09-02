@@ -7,17 +7,55 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    
-    <!-- Light Mode Theme Colors -->
-    <color name="background_color">#F8FAFC</color>
+
+    <!-- ===== Premium Arena — LIGHT semantic tokens ===== -->
+    <color name="background_color">#F4F6FB</color>
     <color name="card_background">#FFFFFF</color>
     <color name="card_surface">#F1F5F9</color>
     <color name="text_color">#0F172A</color>
     <color name="text_secondary">#64748B</color>
+    <color name="text_muted">#94A3B8</color>
     <color name="yellow_accent">#FFCA28</color>
     <color name="red_accent">#EF5350</color>
     <color name="border_color">#E2E8F0</color>
     <color name="input_background">#F1F5F9</color>
     <color name="icon_tint">#0F172A</color>
     <color name="nav_background">#FFFFFF</color>
+    <color name="hairline">#1A0F172A</color>
+
+    <!-- ===== Premium Arena — accents (shared across themes) ===== -->
+    <color name="accent_cyan">#22D3EE</color>
+    <color name="accent_blue">#4F86FF</color>
+    <color name="accent_purple">#7C5CFF</color>
+    <color name="accent_violet">#A78BFA</color>
+    <color name="accent_gold">#FBBF24</color>
+    <color name="accent_red">#FB7185</color>
+    <color name="accent_lime">#A3E635</color>
+    <color name="accent_green">#10B981</color>
+    <color name="online_green">#4ADE80</color>
+    <color name="on_accent">#04121C</color>
+
+    <!-- pill fills / strokes (light) -->
+    <color name="pill_gold_bg">#1FFBBF24</color>
+    <color name="pill_gold_stroke">#4DFBBF24</color>
+    <color name="pill_gold_text">#B45309</color>
+    <color name="pill_red_bg">#1FFB7185</color>
+    <color name="pill_red_stroke">#4DFB7185</color>
+    <color name="pill_red_text">#BE123C</color>
+    <color name="pill_cyan_bg">#1F22D3EE</color>
+    <color name="pill_cyan_stroke">#4D22D3EE</color>
+    <color name="pill_muted_bg">#0A0F172A</color>
+    <color name="pill_muted_stroke">#140F172A</color>
+
+    <!-- hero gradient (light variant keeps the design's indigo→sky) -->
+    <color name="arena_hero_1">#4F46E5</color>
+    <color name="arena_hero_2">#4338CA</color>
+    <color name="arena_hero_3">#0EA5E9</color>
+    <color name="arena_hero_text">#FFFFFF</color>
+
+    <!-- tab pills -->
+    <color name="tab_bg">#FFFFFF</color>
+    <color name="tab_stroke">#140F172A</color>
+    <color name="tab_active_bg">#0F172A</color>
+    <color name="tab_active_text">#FFFFFF</color>
 </resources>

@@ -1,6 +1,7 @@
 package com.example.tictactoe
 
 import android.content.Context
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
@@ -53,7 +54,19 @@ class ResultFragment : Fragment() {
         roomCode = arguments?.getString("roomCode") ?: ""
         gameType = arguments?.getString("gameType") ?: "tic_tac_toe"
 
-        binding.tvResultMessage.text = resultMessage
+        val lower = resultMessage.lowercase()
+        val userWon = !isDraw && (lower.contains("won") || lower.contains("win"))
+        val userLost = !isDraw && (lower.contains("lost") || lower.contains("lose"))
+        binding.tvResultMessage.text = when {
+            isDraw -> "DURRANG!"
+            userWon -> "G'ALABA!"
+            userLost -> "MAG'LUBIYAT"
+            else -> resultMessage
+        }
+
+        populateStats(isDraw, userWon)
+
+        binding.btnShare.setOnClickListener { shareResult() }
 
         // Safe Back Navigation
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
@@ -63,41 +76,39 @@ class ResultFragment : Fragment() {
         })
 
         if (isDraw) {
-            binding.tvHeader.text = "Draw"
+            binding.tvHeader.text = "DURRANG"
             binding.ivResult.setImageResource(R.drawable.board)
-            binding.tvSubMessage.text = "Congrats to both of you for equally excelling in the art of not winning."
-            binding.btnAction.text = if (isOnlineMode) "REMATCH 🔄" else "REPLAY"
+            binding.tvSubMessage.text = "Kuchlar teng keldi — revansh vaqti!"
+            binding.btnAction.text = if (isOnlineMode) "↻ REVANSH" else "↻ QAYTA O'YIN"
         } else {
-            binding.tvHeader.text = "Winner"
+            binding.tvHeader.text = if (userLost) "YAKUN" else "G'OLIB"
             binding.ivResult.setImageResource(R.drawable.trophy)
-            binding.tvSubMessage.text = "Congrats on being the undisputed champion!"
-            binding.btnAction.text = if (isOnlineMode) "REMATCH 🔄" else "RESTART"
-            
-            // Trigger Confetti & Victory Audio/Haptics
-            val party = Party(
-                speed = 0f,
-                maxSpeed = 30f,
-                damping = 0.9f,
-                spread = 360,
-                colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
-                emitter = Emitter(duration = 100, TimeUnit.MILLISECONDS).max(100),
-                position = Position.Relative(0.5, 0.3)
-            )
-            binding.konfettiView.start(party)
-            ConfettiView.show(binding.root as ViewGroup)
-            HapticHelper.performVictory(requireContext())
-            SoundHelper.playVictorySound(requireContext())
+            binding.tvSubMessage.text = if (userLost) "Keyingi safar albatta! 💪" else "Zo'r o'yin bo'ldi — chempion!"
+            binding.btnAction.text = if (isOnlineMode) "↻ REVANSH" else "↻ QAYTA O'YIN"
+
+            if (!userLost) {
+                // Trigger Confetti & Victory Audio/Haptics
+                val party = Party(
+                    speed = 0f,
+                    maxSpeed = 30f,
+                    damping = 0.9f,
+                    spread = 360,
+                    colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
+                    emitter = Emitter(duration = 100, TimeUnit.MILLISECONDS).max(100),
+                    position = Position.Relative(0.5, 0.3)
+                )
+                binding.konfettiView.start(party)
+                ConfettiView.show(binding.root as ViewGroup)
+                HapticHelper.performVictory(requireContext())
+                SoundHelper.playVictorySound(requireContext())
+            }
         }
 
-        if (isOnlineMode && roomCode.isNotEmpty()) {
-            binding.btnSecondary.visibility = View.VISIBLE
-            binding.btnSecondary.setOnClickListener {
-                exitToMenu()
-            }
+        binding.btnSecondary.visibility = View.VISIBLE
+        binding.btnSecondary.setOnClickListener { exitToMenu() }
 
+        if (isOnlineMode && roomCode.isNotEmpty()) {
             listenToOnlineRematch()
-        } else {
-            binding.btnSecondary.visibility = View.GONE
         }
 
         binding.btnAction.setOnClickListener {
@@ -220,6 +231,48 @@ class ResultFragment : Fragment() {
             PusherManager.unsubscribeFromRoom(roomCode)
         }
         findNavController().navigate(R.id.action_resultFragment_to_dashboardFragment)
+    }
+
+    private fun populateStats(isDraw: Boolean, userWon: Boolean) {
+        val prefs = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+        val xp = prefs.getInt("xp", 0)
+        val level = prefs.getInt("level", 1)
+        val streak = prefs.getInt("streak_count", 0)
+
+        val xpEarned = arguments?.getInt("xpEarned", Int.MIN_VALUE) ?: Int.MIN_VALUE
+        val coinsEarned = arguments?.getInt("coinsEarned", Int.MIN_VALUE) ?: Int.MIN_VALUE
+
+        val xpVal = if (xpEarned != Int.MIN_VALUE) xpEarned else when {
+            isDraw -> 10
+            userWon -> if (isOnlineMode) 100 else 50
+            else -> -5
+        }
+        val coinVal = if (coinsEarned != Int.MIN_VALUE) coinsEarned else when {
+            isDraw -> 5
+            userWon -> if (isOnlineMode) 50 else 20
+            else -> 0
+        }
+
+        binding.tvStatXp.text = if (xpVal >= 0) "+$xpVal" else "$xpVal"
+        binding.tvStatCoins.text = "+$coinVal"
+        binding.tvStatStreak.text = "🔥 $streak"
+
+        binding.tvLevelRange.text = "LEVEL $level → ${level + 1}"
+        binding.tvLevelXp.text = "${LevelHelper.xpIntoLevel(xp, level)}/${LevelHelper.XP_PER_LEVEL} XP"
+        binding.pbLevel.progress = LevelHelper.levelProgressPercent(xp, level)
+    }
+
+    private fun shareResult() {
+        val prefs = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+        val name = prefs.getString("username", "Player") ?: "Player"
+        val level = prefs.getInt("level", 1)
+        val xp = prefs.getInt("xp", 0)
+        val msg = "🏆 $name — Mini Game Arena\n${binding.tvResultMessage.text} · LEVEL $level · $xp XP\n\nSen ham sinab ko'r! 🎮"
+        val send = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, msg)
+        }
+        runCatching { startActivity(Intent.createChooser(send, "Ulashish")) }
     }
 
     override fun onDestroyView() {

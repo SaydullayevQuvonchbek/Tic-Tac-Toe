@@ -13,6 +13,7 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.tictactoe.databinding.FragmentChessBinding
@@ -50,6 +51,34 @@ class ChessFragment : Fragment() {
 
     private var selectedPiecePos: Pair<Int, Int>? = null
     private var currentValidMoves: List<ChessMove> = emptyList()
+
+    // Undo (local modes only)
+    private data class ChessSnapshot(
+        val board: Array<Array<ChessPiece?>>,
+        val turn: PieceColor,
+        val ep: Pair<Int, Int>?,
+        val history: MutableList<ChessMove>,
+        val capW: MutableList<ChessPiece>,
+        val capB: MutableList<ChessPiece>,
+        val over: Boolean, val winner: PieceColor?, val draw: Boolean, val check: Boolean
+    )
+    private val undoStack = ArrayDeque<ChessSnapshot>()
+
+    // Local per-side clocks (display only, not networked)
+    private var whiteSeconds = 0
+    private var blackSeconds = 0
+    private val clockRunnable = object : Runnable {
+        override fun run() {
+            if (_binding == null) return
+            if (!logic.isGameOver && binding.gameplayContainer.visibility == View.VISIBLE) {
+                if (logic.currentTurn == PieceColor.WHITE) whiteSeconds++ else blackSeconds++
+                updateClocks()
+            }
+            handler.postDelayed(this, 1000)
+        }
+    }
+
+    private fun col(id: Int): Int = ContextCompat.getColor(requireContext(), id)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -207,6 +236,146 @@ class ChessFragment : Fragment() {
                 .setNegativeButton("Yo'q", null)
                 .show()
         }
+
+        binding.btnEmote.setOnClickListener {
+            binding.layoutEmotes.visibility =
+                if (binding.layoutEmotes.visibility == View.VISIBLE) View.GONE else View.VISIBLE
+        }
+
+        binding.btnHint.setOnClickListener { showHint() }
+
+        binding.btnUndo.setOnClickListener { undoMove() }
+    }
+
+    private fun applyModeControls() {
+        val localOnly = if (!isOnlineMode) View.VISIBLE else View.GONE
+        binding.btnHint.visibility = localOnly
+        binding.btnUndo.visibility = localOnly
+    }
+
+    private fun startClocks() {
+        whiteSeconds = 0
+        blackSeconds = 0
+        undoStack.clear()
+        updateClocks()
+        renderMoveHistory()
+        handler.removeCallbacks(clockRunnable)
+        handler.postDelayed(clockRunnable, 1000)
+    }
+
+    private fun stopClocks() {
+        handler.removeCallbacks(clockRunnable)
+    }
+
+    private fun fmt(s: Int) = "%d:%02d".format(s / 60, s % 60)
+
+    private fun updateClocks() {
+        if (_binding == null) return
+        val myClk: Int
+        val oppClk: Int
+        if (myColor == PieceColor.WHITE) {
+            myClk = whiteSeconds; oppClk = blackSeconds
+        } else {
+            myClk = blackSeconds; oppClk = whiteSeconds
+        }
+        binding.tvPlayerClock.text = fmt(myClk)
+        binding.tvOpponentClock.text = fmt(oppClk)
+        val playerActive = logic.currentTurn == myColor || isPassAndPlay
+        binding.tvPlayerClock.setTextColor(col(if (playerActive) R.color.accent_cyan else R.color.text_secondary))
+        binding.tvOpponentClock.setTextColor(col(if (!playerActive) R.color.accent_cyan else R.color.text_secondary))
+    }
+
+    private fun renderMoveHistory() {
+        if (_binding == null) return
+        val moves = logic.moveHistory
+        if (moves.isEmpty()) {
+            binding.tvMoveHistoryText.text = "—"
+            return
+        }
+        val sb = StringBuilder()
+        moves.forEachIndexed { i, m ->
+            if (i % 2 == 0) sb.append("${i / 2 + 1}. ")
+            sb.append(notation(m)).append("  ")
+        }
+        binding.tvMoveHistoryText.text = sb.toString().trim()
+        binding.tvMoveHistory.post {
+            _binding?.tvMoveHistory?.fullScroll(View.FOCUS_RIGHT)
+        }
+    }
+
+    private fun notation(m: ChessMove): String {
+        if (m.isCastling) return if (m.toC == 6) "O-O" else "O-O-O"
+        val files = "abcdefgh"
+        val dest = "${files[m.toC]}${8 - m.toR}"
+        val pc = when (m.piece.type) {
+            PieceType.KNIGHT -> "N"
+            PieceType.BISHOP -> "B"
+            PieceType.ROOK -> "R"
+            PieceType.QUEEN -> "Q"
+            PieceType.KING -> "K"
+            else -> ""
+        }
+        val cap = if (m.capturedPiece != null) "x" else ""
+        val promo = m.promotionType?.let {
+            "=" + when (it) {
+                PieceType.ROOK -> "R"
+                PieceType.BISHOP -> "B"
+                PieceType.KNIGHT -> "N"
+                else -> "Q"
+            }
+        } ?: ""
+        return "$pc$cap$dest$promo"
+    }
+
+    private fun pushSnapshot() {
+        undoStack.addLast(
+            ChessSnapshot(
+                board = Array(8) { r -> Array(8) { c -> logic.board[r][c]?.copy() } },
+                turn = logic.currentTurn,
+                ep = logic.enPassantTarget,
+                history = logic.moveHistory.toMutableList(),
+                capW = logic.capturedWhitePieces.toMutableList(),
+                capB = logic.capturedBlackPieces.toMutableList(),
+                over = logic.isGameOver, winner = logic.winner, draw = logic.isDraw, check = logic.isCheck
+            )
+        )
+        if (undoStack.size > 40) undoStack.removeFirst()
+    }
+
+    private fun restore(s: ChessSnapshot) {
+        for (r in 0..7) for (c in 0..7) logic.board[r][c] = s.board[r][c]?.copy()
+        logic.currentTurn = s.turn
+        logic.enPassantTarget = s.ep
+        logic.moveHistory.clear(); logic.moveHistory.addAll(s.history)
+        logic.capturedWhitePieces.clear(); logic.capturedWhitePieces.addAll(s.capW)
+        logic.capturedBlackPieces.clear(); logic.capturedBlackPieces.addAll(s.capB)
+        logic.isGameOver = s.over; logic.winner = s.winner; logic.isDraw = s.draw; logic.isCheck = s.check
+    }
+
+    private fun undoMove() {
+        if (isOnlineMode) return
+        if (undoStack.isEmpty()) {
+            Toast.makeText(context, "Qaytariladigan yurish yo'q", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val plies = if (isAiMode) 2 else 1
+        repeat(plies) { if (undoStack.isNotEmpty()) restore(undoStack.removeLast()) }
+        selectedPiecePos = null
+        currentValidMoves = emptyList()
+        binding.chessBoardView.lastMove = logic.moveHistory.lastOrNull()
+        HapticHelper.performClick(requireContext())
+        updateBoardUI()
+    }
+
+    private fun showHint() {
+        if (isOnlineMode || logic.isGameOver) return
+        if (isAiMode && logic.currentTurn != PieceColor.WHITE) return
+        val m = ChessAI.getBestMove(logic, depth = 2) ?: return
+        selectedPiecePos = Pair(m.fromR, m.fromC)
+        currentValidMoves = listOf(m)
+        updateSelectionUI()
+        binding.chessBoardView.invalidate()
+        binding.tvGameStatus.text = "💡 Maslahat: belgilangan yurish tavsiya etiladi"
     }
 
     private fun startLocalGame() {
@@ -220,10 +389,13 @@ class ChessFragment : Fragment() {
         binding.waitingContainer.visibility = View.GONE
         binding.gameplayContainer.visibility = View.VISIBLE
 
-        binding.tvRoomCodeHeader.text = if (isAiMode) "🤖 Shaxmat (Bot)" else "📱 Shaxmat (2 O'yinchi)"
+        binding.tvRoomCodeHeader.text = if (isAiMode) "SMART AI · BLITZ" else "PASS & PLAY"
         binding.tvPlayerName.text = if (isPassAndPlay) "Oqlar ⚪" else "Siz ⚪"
-        binding.tvOpponentName.text = if (isAiMode) "Bot 🤖 (Qora)" else if (isPassAndPlay) "Qoralar ⚫" else "Raqib ⚫"
+        binding.tvOpponentName.text = if (isAiMode) "AI Bot ⚫" else if (isPassAndPlay) "Qoralar ⚫" else "Raqib ⚫"
+        binding.layoutEmotes.visibility = View.GONE
 
+        applyModeControls()
+        startClocks()
         updateBoardUI()
     }
 
@@ -327,10 +499,13 @@ class ChessFragment : Fragment() {
         binding.waitingContainer.visibility = View.GONE
         binding.gameplayContainer.visibility = View.VISIBLE
 
-        binding.tvRoomCodeHeader.text = "Xona: $roomCode"
+        binding.tvRoomCodeHeader.text = "XONA · $roomCode"
         binding.tvPlayerName.text = "Siz (${if (myColor == PieceColor.WHITE) "⚪ Oqlar" else "⚫ Qoralar"})"
         binding.tvOpponentName.text = "Raqib (${if (myColor == PieceColor.WHITE) "⚫ Qoralar" else "⚪ Oqlar"})"
+        binding.layoutEmotes.visibility = View.GONE
 
+        applyModeControls()
+        startClocks()
         updateBoardUI()
     }
 
@@ -401,8 +576,12 @@ class ChessFragment : Fragment() {
     }
 
     private fun executePlayerMove(move: ChessMove) {
+        if (!isOnlineMode) pushSnapshot()
         val success = logic.makeMove(move)
-        if (!success) return
+        if (!success) {
+            if (!isOnlineMode && undoStack.isNotEmpty()) undoStack.removeLast()
+            return
+        }
 
         HapticHelper.performHeavyImpact(requireContext())
         if (move.capturedPiece != null) {
@@ -432,6 +611,7 @@ class ChessFragment : Fragment() {
 
             val botMove = ChessAI.getBestMove(logic, depth = 3)
             if (botMove != null) {
+                pushSnapshot()
                 logic.makeMove(botMove)
                 binding.chessBoardView.lastMove = botMove
                 HapticHelper.performHeavyImpact(requireContext())
@@ -585,6 +765,9 @@ class ChessFragment : Fragment() {
             binding.tvPlayerCaptured.text = whiteCapturedStr
             binding.tvOpponentCaptured.text = blackCapturedStr
         }
+
+        renderMoveHistory()
+        updateClocks()
     }
 
     private fun checkGameOver() {
@@ -668,6 +851,7 @@ class ChessFragment : Fragment() {
     }
 
     private fun showSetupScreen() {
+        stopClocks()
         binding.setupContainer.visibility = View.VISIBLE
         binding.waitingContainer.visibility = View.GONE
         binding.gameplayContainer.visibility = View.GONE
@@ -700,6 +884,7 @@ class ChessFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        handler.removeCallbacksAndMessages(null)
         if (roomCode.isNotEmpty()) {
             PusherManager.unsubscribeFromRoom(roomCode)
         }

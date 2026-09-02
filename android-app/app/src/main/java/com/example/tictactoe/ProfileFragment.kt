@@ -37,13 +37,28 @@ class ProfileFragment : Fragment() {
         val coins = sharedPref.getInt("coins", 0)
         val streak = sharedPref.getInt("streak_count", 0)
 
-        binding.tvProfileName.text = "$username ✏️"
-        binding.tvProfileLevel.text = "Level $level | $xp XP"
-        binding.tvProfileStreak.text = "🔥 Streak: $streak"
-        binding.tvProfileCoins.text = "🪙 Coins: $coins"
+        val wins = sharedPref.getInt("wins", 0)
+        val losses = sharedPref.getInt("losses", 0)
+        val tier = QuestManager.getLeagueTier(xp).first.replace(" League", "").uppercase()
 
-        binding.tvProfileName.setOnClickListener {
-            showEditUsernameDialog()
+        binding.tvProfileName.text = username
+        binding.tvAvatarInitials.text = initialsOf(username)
+        binding.tvProfileLevel.text = "LEVEL $level · $tier · $xp XP"
+        binding.tvProfileStreak.text = "🔥 $streak"
+        binding.tvProfileCoins.text = "🪙 $coins"
+        binding.tvStatWins.text = "$wins"
+        binding.tvStatWinRate.text = if (wins + losses > 0) "${wins * 100 / (wins + losses)}%" else "—"
+
+        binding.tvProfileName.setOnClickListener { showEditUsernameDialog() }
+        binding.rowEditProfile.setOnClickListener { showEditUsernameDialog() }
+    }
+
+    private fun initialsOf(name: String): String {
+        val parts = name.trim().split(Regex("\\s+")).filter { it.isNotEmpty() }
+        return when {
+            parts.size >= 2 -> (parts[0].take(1) + parts[1].take(1)).uppercase()
+            parts.size == 1 -> parts[0].take(2).uppercase()
+            else -> "?"
         }
     }
 
@@ -160,9 +175,9 @@ class ProfileFragment : Fragment() {
     private fun updateLanguageLabel() {
         val lang = LocaleHelper.getLanguage(requireContext())
         binding.tvCurrentLanguage.text = when (lang) {
-            "ru" -> "🇷🇺 Русский"
-            "uz" -> "🇺🇿 O'zbekcha"
-            else -> "🇬🇧 English"
+            "ru" -> "РУССКИЙ ›"
+            "uz" -> "O'ZBEK ›"
+            else -> "ENGLISH ›"
         }
     }
 

@@ -157,7 +157,7 @@
                         android:text="CREATE ROOM 🏠"
                         android:textColor="@color/white"
                         android:textStyle="bold"
-                        app:backgroundTint="#0052CC"
+                        app:backgroundTint="@color/accent_blue"
                         app:cornerRadius="12dp" />
 
                     <TextView
@@ -166,7 +166,7 @@
                         android:layout_gravity="center"
                         android:layout_marginVertical="8dp"
                         android:text="— OR —"
-                        android:textColor="#888888"
+                        android:textColor="@color/text_secondary"
                         android:textSize="13sp" />
 
                     <LinearLayout
@@ -209,7 +209,7 @@
             android:text="START GAME ▶"
             android:textColor="@color/white"
             android:textSize="18sp"
-            app:backgroundTint="#0052CC"
+            app:backgroundTint="@color/accent_blue"
             app:cornerRadius="16dp"
             app:layout_constraintBottom_toBottomOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -275,7 +275,7 @@
             android:text="INVITE FRIEND 📲"
             android:textColor="@color/white"
             android:textSize="15sp"
-            app:backgroundTint="#0052CC"
+            app:backgroundTint="@color/accent_blue"
             app:cornerRadius="14dp"
             app:layout_constraintBottom_toTopOf="@+id/btnCancelWaiting"
             app:layout_constraintEnd_toEndOf="parent"
@@ -389,7 +389,7 @@
                 android:layout_marginHorizontal="12dp"
                 android:fontFamily="sans-serif-black"
                 android:text="VS"
-                android:textColor="#94A3B8"
+                android:textColor="@color/text_secondary"
                 android:textSize="16sp" />
 
             <!-- Player 2 (Black) Card -->
@@ -398,7 +398,7 @@
                 android:layout_width="0dp"
                 android:layout_height="64dp"
                 android:layout_weight="1"
-                app:cardBackgroundColor="#334155"
+                app:cardBackgroundColor="@color/card_surface"
                 app:cardCornerRadius="14dp"
                 app:cardElevation="3dp">
 

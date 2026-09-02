@@ -52,6 +52,9 @@
         <action
             android:id="@+id/action_dashboardFragment_to_storeFragment"
             app:destination="@id/storeFragment" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_gameFragment"
+            app:destination="@id/gameFragment" />
     </fragment>
 
     <fragment

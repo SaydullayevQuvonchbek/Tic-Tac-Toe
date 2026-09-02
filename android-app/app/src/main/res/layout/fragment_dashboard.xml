@@ -1,1299 +1,866 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_color">
+    android:background="@color/background_color"
+    android:fillViewport="true"
+    android:scrollbars="none"
+    tools:context=".DashboardFragment">
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="14dp"
+        android:paddingBottom="28dp">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <!-- ===== Player header ===== -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="20dp">
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-            <!-- Profile Header -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardProfile"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardBackgroundColor="#312E81"
-                app:cardCornerRadius="18dp"
-                app:cardElevation="8dp"
-                app:layout_constraintTop_toTopOf="parent">
+            <FrameLayout
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:background="@drawable/bg_avatar_gradient">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <TextView
+                    android:id="@+id/tvAvatarInitials"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="16dp">
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/chakra_petch"
+                    android:gravity="center"
+                    android:text="AZ"
+                    android:textColor="@color/on_accent"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+            </FrameLayout>
 
-                    <ImageView
-                        android:id="@+id/ivAvatar"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:src="@android:drawable/ic_menu_myplaces"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:tint="#A5B4FC" />
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
                     <TextView
                         android:id="@+id/tvUsername"
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:fontFamily="sans-serif-black"
+                        android:maxWidth="180dp"
+                        android:ellipsize="end"
+                        android:maxLines="1"
                         android:text="Guest Player"
-                        android:textColor="@color/white"
-                        android:textSize="20sp"
-                        app:layout_constraintEnd_toStartOf="@+id/btnEditProfile"
-                        app:layout_constraintStart_toEndOf="@+id/ivAvatar"
-                        app:layout_constraintTop_toTopOf="@+id/ivAvatar" />
+                        android:textColor="@color/text_color"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvLeagueBadge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="7dp"
+                        android:background="@drawable/bg_pill_gold"
+                        android:fontFamily="@font/chakra_petch"
+                        android:paddingHorizontal="6dp"
+                        android:paddingVertical="2dp"
+                        android:text="🥉 BRONZE"
+                        android:textColor="@color/pill_gold_text"
+                        android:textSize="9sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ProgressBar
+                        android:id="@+id/pbXp"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="0dp"
+                        android:layout_height="6dp"
+                        android:layout_weight="1"
+                        android:max="100"
+                        android:progress="34"
+                        android:progressDrawable="@drawable/progress_xp" />
 
                     <TextView
                         android:id="@+id/tvLevelInfo"
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="4dp"
-                        android:text="Level 1 | 0 XP"
-                        android:textColor="#A5B4FC"
-                        android:textSize="14sp"
-                        app:layout_constraintEnd_toStartOf="@+id/btnEditProfile"
-                        app:layout_constraintStart_toEndOf="@+id/ivAvatar"
-                        app:layout_constraintTop_toBottomOf="@+id/tvUsername" />
+                        android:layout_marginStart="8dp"
+                        android:fontFamily="@font/chakra_petch"
+                        android:text="LVL 1 · 0 XP"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
 
-                    <!-- Streak, Coins and League -->
-                    <LinearLayout
-                        android:layout_width="0dp"
+        <!-- ===== Stat pills row ===== -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvCoins"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_pill_gold"
+                android:drawablePadding="5dp"
+                android:fontFamily="@font/chakra_petch"
+                android:paddingHorizontal="11dp"
+                android:paddingVertical="7dp"
+                android:text="🪙 0"
+                android:textColor="@color/pill_gold_text"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvStreak"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
+                android:background="@drawable/bg_pill_red"
+                android:fontFamily="@font/chakra_petch"
+                android:paddingHorizontal="11dp"
+                android:paddingVertical="7dp"
+                android:text="🔥 0"
+                android:textColor="@color/pill_red_text"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/btnQuickSound"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:background="@drawable/bg_pill_muted"
+                android:gravity="center"
+                android:text="🔊"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/btnQuickVibration"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:layout_marginStart="7dp"
+                android:background="@drawable/bg_pill_muted"
+                android:gravity="center"
+                android:text="📳"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/btnEditProfile"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:layout_marginStart="7dp"
+                android:background="@drawable/bg_pill_muted"
+                android:gravity="center"
+                android:text="⚙"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <!-- ===== Quick Match hero ===== -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_hero_arena"
+            android:orientation="vertical"
+            android:padding="18dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/chakra_petch"
+                        android:text="● 12 480 ONLAYN"
+                        android:textColor="@color/online_green"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.10" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:orientation="horizontal"
-                        android:layout_marginStart="16dp"
-                        app:layout_constraintStart_toEndOf="@+id/ivAvatar"
-                        app:layout_constraintTop_toBottomOf="@+id/tvLevelInfo">
-
-                        <TextView
-                            android:id="@+id/tvStreak"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="🔥 0"
-                            android:textColor="#F59E0B"
-                            android:textStyle="bold"
-                            android:textSize="13sp" />
-
-                        <TextView
-                            android:id="@+id/tvCoins"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:text="🪙 0"
-                            android:textColor="#FCD34D"
-                            android:textStyle="bold"
-                            android:textSize="13sp" />
-
-                        <TextView
-                            android:id="@+id/tvLeagueBadge"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:text="🥉 Bronze"
-                            android:textColor="#38BDF8"
-                            android:textStyle="bold"
-                            android:textSize="12sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/layoutHeaderActions"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
-
-                        <TextView
-                            android:id="@+id/btnQuickSound"
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:gravity="center"
-                            android:background="?attr/selectableItemBackgroundBorderless"
-                            android:text="🔊"
-                            android:textSize="18sp" />
-
-                        <TextView
-                            android:id="@+id/btnQuickVibration"
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:layout_marginStart="4dp"
-                            android:gravity="center"
-                            android:background="?attr/selectableItemBackgroundBorderless"
-                            android:text="📳"
-                            android:textSize="18sp" />
-
-                        <ImageButton
-                            android:id="@+id/btnEditProfile"
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:layout_marginStart="4dp"
-                            android:background="?attr/selectableItemBackgroundBorderless"
-                            android:src="@android:drawable/ic_menu_edit"
-                            app:tint="#A5B4FC" />
-                    </LinearLayout>
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- Daily Rewards Row (Daily Bonus & Lucky Wheel) -->
-            <LinearLayout
-                android:id="@+id/rowDailyBonus"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:orientation="horizontal"
-                app:layout_constraintTop_toBottomOf="@+id/cardProfile">
-
-                <!-- Daily Reward Card -->
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cardDailyReward"
-                    android:layout_width="0dp"
-                    android:layout_height="90dp"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="6dp"
-                    app:cardBackgroundColor="#F59E0B"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="6dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:padding="12dp"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="🎁"
-                            android:textSize="26sp" />
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_weight="1"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Daily Bonus"
-                                android:textColor="@color/white"
-                                android:textStyle="bold"
-                                android:textSize="14sp" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="+100 🪙 Claim"
-                                android:textColor="#FEF3C7"
-                                android:textSize="11sp" />
-                        </LinearLayout>
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
-
-                <!-- Lucky Spin Wheel Card -->
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cardLuckyWheel"
-                    android:layout_width="0dp"
-                    android:layout_height="90dp"
-                    android:layout_weight="1"
-                    android:layout_marginStart="6dp"
-                    app:cardBackgroundColor="#7C3AED"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="6dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:padding="12dp"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="🎡"
-                            android:textSize="26sp" />
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_weight="1"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Lucky Wheel"
-                                android:textColor="@color/white"
-                                android:textStyle="bold"
-                                android:textSize="14sp" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Free Daily Spin"
-                                android:textColor="#EDE9FE"
-                                android:textSize="11sp" />
-                        </LinearLayout>
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
-            </LinearLayout>
-
-            <!-- Central Cosmetics Store Card -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardStore"
-                android:layout_width="match_parent"
-                android:layout_height="86dp"
-                android:layout_marginTop="12dp"
-                app:cardBackgroundColor="#0F172A"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="6dp"
-                app:layout_constraintTop_toBottomOf="@+id/rowDailyBonus">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="16dp">
+                        android:fontFamily="@font/chakra_petch"
+                        android:text="QUICK\nMATCH"
+                        android:textColor="@color/arena_hero_text"
+                        android:textSize="25sp"
+                        android:textStyle="bold"
+                        android:lineSpacingMultiplier="1.0"
+                        android:letterSpacing="-0.02" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="🛍️🎨"
-                        android:textSize="28sp" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="14dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="sans-serif-black"
-                            android:text="MARKAZIY DO'KON (STORE)"
-                            android:textColor="@color/white"
-                            android:textSize="15sp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="Shaxmat &amp; Shashka doskalari, toshlar va Emojilar"
-                            android:textColor="#38BDF8"
-                            android:textSize="11sp" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/badge_pill"
-                        android:backgroundTint="#2563EB"
-                        android:fontFamily="sans-serif-black"
-                        android:paddingHorizontal="12dp"
-                        android:paddingVertical="6dp"
-                        android:text="KIRISH ➔"
-                        android:textColor="@color/white"
-                        android:textSize="11sp" />
+                        android:layout_marginTop="7dp"
+                        android:maxWidth="190dp"
+                        android:text="Bir tegishda raqib topamiz — o'rtacha 8 soniya"
+                        android:textColor="#C7D2FE"
+                        android:textSize="11.5sp" />
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- Daily Quests Hub Card -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardDailyQuests"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                app:cardBackgroundColor="@color/card_background"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="4dp"
-                app:layout_constraintTop_toBottomOf="@+id/cardStore">
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/bg_pill_muted"
                     android:orientation="vertical"
-                    android:padding="14dp">
+                    android:padding="8dp">
 
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical">
-
-                        <TextView
-                            android:id="@+id/tvDailyQuestsTitle"
-                            android:layout_width="0dp"
-                            android:layout_weight="1"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="sans-serif-black"
-                            android:text="@string/daily_quests_title"
-                            android:textColor="@color/text_color"
-                            android:textSize="14sp" />
-
-                        <TextView
-                            android:id="@+id/tvQuestsCountdown"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="⏳ 00:00:00"
-                            android:textColor="#38BDF8"
-                            android:textSize="12sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-
-                    <!-- Quest 1 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:gravity="center_vertical"
                         android:orientation="horizontal">
 
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:id="@+id/tvQuest1Title"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="🎯 Gomoku/Shashka (0/2)"
-                                android:textColor="@color/text_color"
-                                android:textSize="12sp"
-                                android:textStyle="bold" />
-
-                            <ProgressBar
-                                android:id="@+id/pbQuest1"
-                                style="?android:attr/progressBarStyleHorizontal"
-                                android:layout_width="match_parent"
-                                android:layout_height="6dp"
-                                android:layout_marginTop="4dp"
-                                android:max="2"
-                                android:progress="0"
-                                android:progressTint="#10B981" />
-                        </LinearLayout>
-
-                        <Button
-                            android:id="@+id/btnClaimQuest1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="34dp"
-                            android:layout_marginStart="10dp"
-                            android:text="+60 🪙"
-                            android:textColor="@color/white"
-                            android:textSize="11sp"
-                            app:backgroundTint="#059669"
-                            app:cornerRadius="8dp" />
+                        <View android:layout_width="12dp" android:layout_height="12dp" android:layout_margin="2dp" android:background="#40FFFFFF" />
+                        <View android:layout_width="12dp" android:layout_height="12dp" android:layout_margin="2dp" android:background="@color/accent_cyan" />
+                        <View android:layout_width="12dp" android:layout_height="12dp" android:layout_margin="2dp" android:background="#40FFFFFF" />
                     </LinearLayout>
 
-                    <!-- Quest 2 -->
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:gravity="center_vertical"
                         android:orientation="horizontal">
 
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:id="@+id/tvQuest2Title"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="💧 Water Sort (0/2)"
-                                android:textColor="@color/text_color"
-                                android:textSize="12sp"
-                                android:textStyle="bold" />
-
-                            <ProgressBar
-                                android:id="@+id/pbQuest2"
-                                style="?android:attr/progressBarStyleHorizontal"
-                                android:layout_width="match_parent"
-                                android:layout_height="6dp"
-                                android:layout_marginTop="4dp"
-                                android:max="2"
-                                android:progress="0"
-                                android:progressTint="#06B6D4" />
-                        </LinearLayout>
-
-                        <Button
-                            android:id="@+id/btnClaimQuest2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="34dp"
-                            android:layout_marginStart="10dp"
-                            android:text="+50 🪙"
-                            android:textColor="@color/white"
-                            android:textSize="11sp"
-                            app:backgroundTint="#059669"
-                            app:cornerRadius="8dp" />
+                        <View android:layout_width="12dp" android:layout_height="12dp" android:layout_margin="2dp" android:background="#40FFFFFF" />
+                        <View android:layout_width="12dp" android:layout_height="12dp" android:layout_margin="2dp" android:background="@color/accent_red" />
+                        <View android:layout_width="12dp" android:layout_height="12dp" android:layout_margin="2dp" android:background="#40FFFFFF" />
                     </LinearLayout>
 
-                    <!-- Quest 3 -->
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:gravity="center_vertical"
                         android:orientation="horizontal">
 
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:id="@+id/tvQuest3Title"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="🌐 Online Match (0/1)"
-                                android:textColor="@color/text_color"
-                                android:textSize="12sp"
-                                android:textStyle="bold" />
-
-                            <ProgressBar
-                                android:id="@+id/pbQuest3"
-                                style="?android:attr/progressBarStyleHorizontal"
-                                android:layout_width="match_parent"
-                                android:layout_height="6dp"
-                                android:layout_marginTop="4dp"
-                                android:max="1"
-                                android:progress="0"
-                                android:progressTint="#F59E0B" />
-                        </LinearLayout>
-
-                        <Button
-                            android:id="@+id/btnClaimQuest3"
-                            android:layout_width="wrap_content"
-                            android:layout_height="34dp"
-                            android:layout_marginStart="10dp"
-                            android:text="+100 🪙"
-                            android:textColor="@color/white"
-                            android:textSize="11sp"
-                            app:backgroundTint="#059669"
-                            app:cornerRadius="8dp" />
+                        <View android:layout_width="12dp" android:layout_height="12dp" android:layout_margin="2dp" android:background="@color/accent_cyan" />
+                        <View android:layout_width="12dp" android:layout_height="12dp" android:layout_margin="2dp" android:background="#40FFFFFF" />
+                        <View android:layout_width="12dp" android:layout_height="12dp" android:layout_margin="2dp" android:background="@color/accent_red" />
                     </LinearLayout>
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- Section 1: ⚔️ 1v1 BATTLE ARENA -->
-            <LinearLayout
-                android:id="@+id/layoutBattleArena"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:orientation="vertical"
-                app:layout_constraintTop_toBottomOf="@+id/cardDailyQuests">
-
-                <TextView
-                    android:id="@+id/tvSectionMultiplayer"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-black"
-                    android:text="⚔️ 1v1 BATTLE ARENA"
-                    android:textColor="@color/text_color"
-                    android:textSize="16sp"
-                    android:letterSpacing="0.03" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginBottom="10dp"
-                    android:text="Online &amp; Local Multiplayer Board Games"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="12sp" />
-
-                <!-- Row 1: Shashka & Tic Tac Toe -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="10dp">
-
-                    <!-- Checkers / Shashka Card -->
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/cardCheckers"
-                        android:layout_width="0dp"
-                        android:layout_height="120dp"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="5dp"
-                        app:cardBackgroundColor="#B91C1C"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="4dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:padding="10dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="👑"
-                                android:textSize="26sp" />
-
-                            <TextView
-                                android:id="@+id/tvCheckers"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:fontFamily="sans-serif-black"
-                                android:gravity="center"
-                                android:maxLines="1"
-                                android:ellipsize="end"
-                                android:text="👑 Shashka (Checkers)"
-                                android:textColor="@color/white"
-                                android:textSize="14sp" />
-
-                            <TextView
-                                android:id="@+id/tvRecordCheckers"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
-                                android:gravity="center"
-                                android:maxLines="1"
-                                android:ellipsize="end"
-                                android:text="🏆 Wins: 0"
-                                android:textColor="#FEE2E2"
-                                android:textSize="11sp" />
-                        </LinearLayout>
-                    </androidx.cardview.widget.CardView>
-
-                    <!-- Tic Tac Toe Card -->
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/cardTicTacToe"
-                        android:layout_width="0dp"
-                        android:layout_height="120dp"
-                        android:layout_weight="1"
-                        android:layout_marginStart="5dp"
-                        app:cardBackgroundColor="#009688"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="4dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:padding="10dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="❌⭕"
-                                android:textSize="24sp" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:fontFamily="sans-serif-black"
-                                android:gravity="center"
-                                android:maxLines="1"
-                                android:ellipsize="end"
-                                android:text="Tic Tac Toe PRO"
-                                android:textColor="@color/white"
-                                android:textSize="14sp" />
-
-                            <TextView
-                                android:id="@+id/tvRecordTicTacToe"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
-                                android:gravity="center"
-                                android:maxLines="1"
-                                android:ellipsize="end"
-                                android:text="🏆 Wins: 0"
-                                android:textColor="#E0F2F1"
-                                android:textSize="11sp" />
-                        </LinearLayout>
-                    </androidx.cardview.widget.CardView>
-                </LinearLayout>
-
-                <!-- Row 2: Connect 4 & Gomoku -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="10dp">
-
-                    <!-- Connect 4 Card -->
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/cardConnect4"
-                        android:layout_width="0dp"
-                        android:layout_height="120dp"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="5dp"
-                        app:cardBackgroundColor="#1D4ED8"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="4dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:padding="10dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="🔴🟡"
-                                android:textSize="24sp" />
-
-                            <TextView
-                                android:id="@+id/tvConnect4"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:fontFamily="sans-serif-black"
-                                android:gravity="center"
-                                android:maxLines="1"
-                                android:ellipsize="end"
-                                android:text="🔴 Connect 4 🟡"
-                                android:textColor="@color/white"
-                                android:textSize="14sp" />
-
-                            <TextView
-                                android:id="@+id/tvRecordConnect4"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
-                                android:gravity="center"
-                                android:maxLines="1"
-                                android:ellipsize="end"
-                                android:text="🏆 Wins: 0"
-                                android:textColor="#DBEAFE"
-                                android:textSize="11sp" />
-                        </LinearLayout>
-                    </androidx.cardview.widget.CardView>
-
-                    <!-- Gomoku Card -->
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/cardGomoku"
-                        android:layout_width="0dp"
-                        android:layout_height="120dp"
-                        android:layout_weight="1"
-                        android:layout_marginStart="5dp"
-                        app:cardBackgroundColor="#475569"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="4dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:padding="10dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="⚪⚫"
-                                android:textSize="24sp" />
-
-                            <TextView
-                                android:id="@+id/tvGomoku"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:fontFamily="sans-serif-black"
-                                android:gravity="center"
-                                android:maxLines="1"
-                                android:ellipsize="end"
-                                android:text="⚪⚫ Gomoku"
-                                android:textColor="@color/white"
-                                android:textSize="14sp" />
-
-                            <TextView
-                                android:id="@+id/tvRecordGomoku"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
-                                android:gravity="center"
-                                android:maxLines="1"
-                                android:ellipsize="end"
-                                android:text="🏆 Wins: 0"
-                                android:textColor="#E2E8F0"
-                                android:textSize="11sp" />
-                        </LinearLayout>
-                    </androidx.cardview.widget.CardView>
-                </LinearLayout>
-
-                <!-- Row 3: Dots & Boxes and Durak Card Game -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="20dp">
-
-                    <!-- Dots & Boxes Card -->
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/cardDotsAndBoxes"
-                        android:layout_width="0dp"
-                        android:layout_height="120dp"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="5dp"
-                        app:cardBackgroundColor="#E11D48"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="4dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:padding="10dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="🟥"
-                                android:textSize="26sp" />
-
-                            <TextView
-                                android:id="@+id/tvDotsAndBoxes"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:fontFamily="sans-serif-black"
-                                android:gravity="center"
-                                android:maxLines="1"
-                                android:ellipsize="end"
-                                android:text="🟥 Dots &amp; Boxes"
-                                android:textColor="@color/white"
-                                android:textSize="14sp" />
-
-                            <TextView
-                                android:id="@+id/tvRecordDotsAndBoxes"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
-                                android:gravity="center"
-                                android:maxLines="1"
-                                android:ellipsize="end"
-                                android:text="🏆 Wins: 0"
-                                android:textColor="#FFE4E6"
-                                android:textSize="11sp" />
-                        </LinearLayout>
-                    </androidx.cardview.widget.CardView>
-
-                    <!-- Durak Card Game -->
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/cardDurak"
-                        android:layout_width="0dp"
-                        android:layout_height="120dp"
-                        android:layout_weight="1"
-                        android:layout_marginStart="5dp"
-                        app:cardBackgroundColor="#059669"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="4dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:padding="10dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="🃏"
-                                android:textSize="26sp" />
-
-                            <TextView
-                                android:id="@+id/tvDurak"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:fontFamily="sans-serif-black"
-                                android:gravity="center"
-                                android:maxLines="1"
-                                android:ellipsize="end"
-                                android:text="🃏 Durak (Karta)"
-                                android:textColor="@color/white"
-                                android:textSize="14sp" />
-
-                            <TextView
-                                android:id="@+id/tvRecordDurak"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
-                                android:gravity="center"
-                                android:maxLines="1"
-                                android:ellipsize="end"
-                                android:text="🏆 Wins: 0"
-                                android:textColor="#D1FAE5"
-                                android:textSize="11sp" />
-                        </LinearLayout>
-                    </androidx.cardview.widget.CardView>
-                </LinearLayout>
-
-                <!-- Row 4: Chess / Shaxmat Card -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="20dp">
-
-                    <!-- Chess Card -->
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/cardChess"
-                        android:layout_width="match_parent"
-                        android:layout_height="90dp"
-                        app:cardBackgroundColor="#0F172A"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="4dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal"
-                            android:paddingHorizontal="16dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="👑♟️"
-                                android:textSize="30sp" />
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="14dp"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:id="@+id/tvChess"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:fontFamily="sans-serif-black"
-                                    android:text="👑 Shaxmat (Chess PRO)"
-                                    android:textColor="@color/white"
-                                    android:textSize="15sp" />
-
-                                <TextView
-                                    android:id="@+id/tvRecordChess"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="2dp"
-                                    android:text="🏆 Wins: 0 • Do'st bilan Onlayn &amp; AI Bot"
-                                    android:textColor="#38BDF8"
-                                    android:textSize="11sp" />
-                            </LinearLayout>
-
-                            <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:src="@android:drawable/ic_media_play"
-                                app:tint="#38BDF8" />
-                        </LinearLayout>
-                    </androidx.cardview.widget.CardView>
-                </LinearLayout>
-
-
-                <!-- Section 2: 🧠 BRAIN & PUZZLES -->
-                <TextView
-                    android:id="@+id/tvSectionBrain"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-black"
-                    android:text="🧠 BRAIN &amp; PUZZLES"
-                    android:textColor="@color/text_color"
-                    android:textSize="16sp"
-                    android:letterSpacing="0.03" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginBottom="10dp"
-                    android:text="30-Level Campaigns &amp; Logic Strategy"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="12sp" />
-
-                <!-- Row 1: Water Sort & Memory Matrix -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="10dp">
-
-                    <!-- Water Sort Card -->
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/cardWaterSort"
-                        android:layout_width="0dp"
-                        android:layout_height="120dp"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="5dp"
-                        app:cardBackgroundColor="#0D9488"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="4dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:padding="10dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="🧪💧"
-                                android:textSize="24sp" />
-
-                            <TextView
-                                android:id="@+id/tvWaterSort"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:fontFamily="sans-serif-black"
-                                android:gravity="center"
-                                android:maxLines="1"
-                                android:ellipsize="end"
-                                android:text="🧪 Water Sort 💧"
-                                android:textColor="@color/white"
-                                android:textSize="14sp" />
-
-                            <TextView
-                                android:id="@+id/tvRecordWaterSort"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
-                                android:gravity="center"
-                                android:maxLines="1"
-                                android:ellipsize="end"
-                                android:text="⭐ 30 Levels"
-                                android:textColor="#CCFBF1"
-                                android:textSize="11sp" />
-                        </LinearLayout>
-                    </androidx.cardview.widget.CardView>
-
-                    <!-- Memory Matrix Card -->
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/cardMemoryGame"
-                        android:layout_width="0dp"
-                        android:layout_height="120dp"
-                        android:layout_weight="1"
-                        android:layout_marginStart="5dp"
-                        app:cardBackgroundColor="#E91E63"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="4dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:padding="10dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="🧠"
-                                android:textSize="26sp" />
-
-                            <TextView
-                                android:id="@+id/tvMemoryGame"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:fontFamily="sans-serif-black"
-                                android:gravity="center"
-                                android:maxLines="1"
-                                android:ellipsize="end"
-                                android:text="🧠 Memory Game"
-                                android:textColor="@color/white"
-                                android:textSize="14sp" />
-
-                            <TextView
-                                android:id="@+id/tvRecordMemory"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
-                                android:gravity="center"
-                                android:maxLines="1"
-                                android:ellipsize="end"
-                                android:text="⭐ 30 Levels"
-                                android:textColor="#FCE4EC"
-                                android:textSize="11sp" />
-                        </LinearLayout>
-                    </androidx.cardview.widget.CardView>
-                </LinearLayout>
-
-                <!-- Row 2: 2048 Classic & Drop & Merge 2048 -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="20dp">
-
-                    <!-- 2048 Classic Card -->
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/card2048"
-                        android:layout_width="0dp"
-                        android:layout_height="120dp"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="5dp"
-                        app:cardBackgroundColor="#0284C7"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="4dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:padding="10dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="🔢"
-                                android:textSize="26sp" />
-
-                            <TextView
-                                android:id="@+id/tv2048"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:fontFamily="sans-serif-black"
-                                android:gravity="center"
-                                android:maxLines="1"
-                                android:ellipsize="end"
-                                android:text="🔢 2048 Classic"
-                                android:textColor="@color/white"
-                                android:textSize="14sp" />
-
-                            <TextView
-                                android:id="@+id/tvRecord2048"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
-                                android:gravity="center"
-                                android:maxLines="1"
-                                android:ellipsize="end"
-                                android:text="⭐ Best: 0"
-                                android:textColor="#E0F2FE"
-                                android:textSize="11sp" />
-                        </LinearLayout>
-                    </androidx.cardview.widget.CardView>
-
-                    <!-- Drop & Merge 2048 Card -->
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/cardDropNumber"
-                        android:layout_width="0dp"
-                        android:layout_height="120dp"
-                        android:layout_weight="1"
-                        android:layout_marginStart="5dp"
-                        app:cardBackgroundColor="#7C3AED"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="4dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:padding="10dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="🎯"
-                                android:textSize="26sp" />
-
-                            <TextView
-                                android:id="@+id/tvDropNumber"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:fontFamily="sans-serif-black"
-                                android:gravity="center"
-                                android:maxLines="1"
-                                android:ellipsize="end"
-                                android:text="🎯 Drop 2048"
-                                android:textColor="@color/white"
-                                android:textSize="14sp" />
-
-                            <TextView
-                                android:id="@+id/tvRecordDropNumber"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
-                                android:gravity="center"
-                                android:maxLines="1"
-                                android:ellipsize="end"
-                                android:text="⭐ Shoot &amp; Merge"
-                                android:textColor="#EDE9FE"
-                                android:textSize="11sp" />
-                        </LinearLayout>
-                    </androidx.cardview.widget.CardView>
-                </LinearLayout>
-
-
-                <!-- Section 3: ⚡ SPEED & FOCUS -->
-                <TextView
-                    android:id="@+id/tvSectionSpeed"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-black"
-                    android:text="⚡ SPEED &amp; FOCUS"
-                    android:textColor="@color/text_color"
-                    android:textSize="16sp"
-                    android:letterSpacing="0.03" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginBottom="10dp"
-                    android:text="Quick Reflexes &amp; High Score Challenges"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="12sp" />
-
-                <!-- Row 1: Math Master & Color Match -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="20dp">
-
-                    <!-- Math Game Card -->
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/cardMathGame"
-                        android:layout_width="0dp"
-                        android:layout_height="120dp"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="5dp"
-                        app:cardBackgroundColor="#EA580C"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="4dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:padding="10dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="✖️➗"
-                                android:textSize="24sp" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:fontFamily="sans-serif-black"
-                                android:gravity="center"
-                                android:maxLines="1"
-                                android:ellipsize="end"
-                                android:text="✖️ Math Master"
-                                android:textColor="@color/white"
-                                android:textSize="14sp" />
-
-                            <TextView
-                                android:id="@+id/tvRecordMath"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
-                                android:gravity="center"
-                                android:maxLines="1"
-                                android:ellipsize="end"
-                                android:text="⭐ Best: 0 pts"
-                                android:textColor="#FFEDD5"
-                                android:textSize="11sp" />
-                        </LinearLayout>
-                    </androidx.cardview.widget.CardView>
-
-                    <!-- Color Match Card -->
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/cardColorMatch"
-                        android:layout_width="0dp"
-                        android:layout_height="120dp"
-                        android:layout_weight="1"
-                        android:layout_marginStart="5dp"
-                        app:cardBackgroundColor="#9333EA"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="4dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:padding="10dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="🎨"
-                                android:textSize="26sp" />
-
-                            <TextView
-                                android:id="@+id/tvColorMatch"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:fontFamily="sans-serif-black"
-                                android:gravity="center"
-                                android:maxLines="1"
-                                android:ellipsize="end"
-                                android:text="🎨 Color Match"
-                                android:textColor="@color/white"
-                                android:textSize="14sp" />
-
-                            <TextView
-                                android:id="@+id/tvRecordColorMatch"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
-                                android:gravity="center"
-                                android:maxLines="1"
-                                android:ellipsize="end"
-                                android:text="⭐ High Score: 0"
-                                android:textColor="#F3E8FF"
-                                android:textSize="11sp" />
-                        </LinearLayout>
-                    </androidx.cardview.widget.CardView>
-                </LinearLayout>
-
             </LinearLayout>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/btnQuickPlay"
+                    android:layout_width="0dp"
+                    android:layout_height="46dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_gradient_cyan"
+                    android:fontFamily="@font/chakra_petch"
+                    android:gravity="center"
+                    android:text="▶ O'YNASH"
+                    android:textColor="@color/on_accent"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.05" />
+
+                <TextView
+                    android:id="@+id/btnQuickFriends"
+                    android:layout_width="46dp"
+                    android:layout_height="46dp"
+                    android:layout_marginStart="9dp"
+                    android:background="@drawable/bg_pill_muted"
+                    android:gravity="center"
+                    android:text="👥"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/btnQuickRoomId"
+                    android:layout_width="46dp"
+                    android:layout_height="46dp"
+                    android:layout_marginStart="9dp"
+                    android:background="@drawable/bg_pill_muted"
+                    android:fontFamily="@font/chakra_petch"
+                    android:gravity="center"
+                    android:text="#ID"
+                    android:textColor="@color/accent_violet"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- ===== Reward row ===== -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:baselineAligned="false"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/cardDailyReward"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/bg_arena_card_sm"
+                android:orientation="vertical"
+                android:padding="11dp">
+
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🎁" android:textSize="19sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="Daily Bonus" android:textColor="@color/text_color" android:textSize="11.5sp" android:textStyle="bold" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:fontFamily="@font/chakra_petch" android:text="+100 OLISH" android:textColor="@color/accent_gold" android:textSize="10sp" android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cardLuckyWheel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="9dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_arena_card_sm"
+                android:orientation="vertical"
+                android:padding="11dp">
+
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🎡" android:textSize="19sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="Lucky Wheel" android:textColor="@color/text_color" android:textSize="11.5sp" android:textStyle="bold" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:fontFamily="@font/chakra_petch" android:text="BEPUL SPIN" android:textColor="@color/accent_violet" android:textSize="10sp" android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cardSeasonPass"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="9dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_arena_card_sm"
+                android:orientation="vertical"
+                android:padding="11dp">
+
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🏅" android:textSize="19sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="Season Pass" android:textColor="@color/text_color" android:textSize="11.5sp" android:textStyle="bold" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:fontFamily="@font/chakra_petch" android:text="14 KUN" android:textColor="@color/accent_cyan" android:textSize="10sp" android:textStyle="bold" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- ===== Daily Quest ===== -->
+        <LinearLayout
+            android:id="@+id/cardDailyQuests"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_arena_card"
+            android:orientation="vertical"
+            android:padding="14dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/chakra_petch"
+                    android:text="KUNLIK QUEST"
+                    android:textColor="@color/text_color"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.10" />
+
+                <TextView
+                    android:id="@+id/tvQuestsCountdown"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_pill_cyan"
+                    android:fontFamily="@font/chakra_petch"
+                    android:paddingHorizontal="7dp"
+                    android:paddingVertical="3dp"
+                    android:text="⏳ 00:00:00"
+                    android:textColor="@color/accent_cyan"
+                    android:textSize="10.5sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- quest 1 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvQuest1Title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:text="Quest 1"
+                        android:textColor="@color/text_color"
+                        android:textSize="11.5sp"
+                        android:textStyle="bold" />
+
+                    <ProgressBar
+                        android:id="@+id/pbQuest1"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="5dp"
+                        android:layout_marginTop="6dp"
+                        android:max="1"
+                        android:progressDrawable="@drawable/progress_quest" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/btnClaimQuest1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:background="@drawable/bg_pill_cyan"
+                    android:fontFamily="@font/chakra_petch"
+                    android:minWidth="56dp"
+                    android:gravity="center"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="6dp"
+                    android:text="+60"
+                    android:textColor="@color/accent_cyan"
+                    android:textSize="10.5sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- quest 2 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="11dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvQuest2Title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:text="Quest 2"
+                        android:textColor="@color/text_color"
+                        android:textSize="11.5sp"
+                        android:textStyle="bold" />
+
+                    <ProgressBar
+                        android:id="@+id/pbQuest2"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="5dp"
+                        android:layout_marginTop="6dp"
+                        android:max="1"
+                        android:progressDrawable="@drawable/progress_quest" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/btnClaimQuest2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:background="@drawable/bg_pill_cyan"
+                    android:fontFamily="@font/chakra_petch"
+                    android:minWidth="56dp"
+                    android:gravity="center"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="6dp"
+                    android:text="+50"
+                    android:textColor="@color/accent_cyan"
+                    android:textSize="10.5sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- quest 3 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="11dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvQuest3Title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:text="Quest 3"
+                        android:textColor="@color/text_color"
+                        android:textSize="11.5sp"
+                        android:textStyle="bold" />
+
+                    <ProgressBar
+                        android:id="@+id/pbQuest3"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="5dp"
+                        android:layout_marginTop="6dp"
+                        android:max="1"
+                        android:progressDrawable="@drawable/progress_quest" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/btnClaimQuest3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:background="@drawable/bg_pill_cyan"
+                    android:fontFamily="@font/chakra_petch"
+                    android:minWidth="56dp"
+                    android:gravity="center"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="6dp"
+                    android:text="+100"
+                    android:textColor="@color/accent_cyan"
+                    android:textSize="10.5sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- ===== Category tabs ===== -->
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tabAll"
+                    style="@style/DashTab"
+                    android:text="HAMMASI 13" />
+
+                <TextView
+                    android:id="@+id/tabBattle"
+                    style="@style/DashTab"
+                    android:layout_marginStart="7dp"
+                    android:text="⚔ 1V1 ARENA" />
+
+                <TextView
+                    android:id="@+id/tabBrain"
+                    style="@style/DashTab"
+                    android:layout_marginStart="7dp"
+                    android:text="🧠 PUZZLE" />
+
+                <TextView
+                    android:id="@+id/tabSpeed"
+                    style="@style/DashTab"
+                    android:layout_marginStart="7dp"
+                    android:text="⚡ SPEED" />
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <!-- ===== Recommended carousel ===== -->
+        <LinearLayout
+            android:id="@+id/rowRecommended"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/chakra_petch"
+                android:text="TAVSIYA ETILADI"
+                android:textColor="@color/text_color"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.08" />
+        </LinearLayout>
+
+        <HorizontalScrollView
+            android:id="@+id/carouselRecommended"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:clipToPadding="false"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <LinearLayout android:id="@+id/recChess" style="@style/RecCard">
+                    <View style="@style/RecCardTop" android:background="#769656" />
+                    <TextView style="@style/RecCardGlyph" android:text="♛" />
+                    <TextView style="@style/RecCardName" android:text="Shaxmat" />
+                    <TextView style="@style/RecCardMeta" android:text="Onlayn · AI Bot" />
+                </LinearLayout>
+
+                <LinearLayout android:id="@+id/recCheckers" style="@style/RecCard" android:layout_marginStart="12dp">
+                    <View style="@style/RecCardTop" android:background="#B91C1C" />
+                    <TextView style="@style/RecCardGlyph" android:text="⬤" />
+                    <TextView style="@style/RecCardName" android:text="Shashka" />
+                    <TextView style="@style/RecCardMeta" android:text="Checkers · 1v1" />
+                </LinearLayout>
+
+                <LinearLayout android:id="@+id/recConnect4" style="@style/RecCard" android:layout_marginStart="12dp">
+                    <View style="@style/RecCardTop" android:background="#1D4ED8" />
+                    <TextView style="@style/RecCardGlyph" android:text="🔴" />
+                    <TextView style="@style/RecCardName" android:text="Connect 4" />
+                    <TextView style="@style/RecCardMeta" android:text="Onlayn · Xona kodi" />
+                </LinearLayout>
+
+                <LinearLayout android:id="@+id/recWaterSort" style="@style/RecCard" android:layout_marginStart="12dp">
+                    <View style="@style/RecCardTop" android:background="#0D9488" />
+                    <TextView style="@style/RecCardGlyph" android:text="🧪" />
+                    <TextView style="@style/RecCardName" android:text="Water Sort" />
+                    <TextView style="@style/RecCardMeta" android:text="30 daraja kampaniya" />
+                </LinearLayout>
+
+                <LinearLayout android:id="@+id/rec2048" style="@style/RecCard" android:layout_marginStart="12dp">
+                    <View style="@style/RecCardTop" android:background="#0284C7" />
+                    <TextView style="@style/RecCardGlyph" android:text="🔢" />
+                    <TextView style="@style/RecCardName" android:text="2048 Classic" />
+                    <TextView style="@style/RecCardMeta" android:text="Cheksiz rejim" />
+                </LinearLayout>
+
+                <LinearLayout android:id="@+id/recGomoku" style="@style/RecCard" android:layout_marginStart="12dp">
+                    <View style="@style/RecCardTop" android:background="#475569" />
+                    <TextView style="@style/RecCardGlyph" android:text="⚫" />
+                    <TextView style="@style/RecCardName" android:text="Gomoku" />
+                    <TextView style="@style/RecCardMeta" android:text="5 tosh qatorda · AI" />
+                </LinearLayout>
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <!-- ===== All games ===== -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/chakra_petch"
+                android:text="BARCHA O'YINLAR"
+                android:textColor="@color/text_color"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.08" />
+
+            <TextView
+                android:id="@+id/tvGamesCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="13 ta"
+                android:textColor="@color/text_secondary"
+                android:textSize="10.5sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical">
+
+            <!-- Tic Tac Toe -->
+            <LinearLayout android:id="@+id/cardTicTacToe" style="@style/GameRow">
+                <TextView style="@style/GameRowIcon" android:text="✕" />
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:orientation="vertical">
+                    <TextView style="@style/GameRowName" android:text="Tic Tac Toe PRO" />
+                    <TextView style="@style/GameRowMeta" android:text="3×3 · 4×4 · 5×5 · Onlayn" />
+                </LinearLayout>
+                <TextView android:id="@+id/tvRecordTicTacToe" style="@style/GameRowStat" android:text="🏆 0" />
+                <TextView style="@style/GameRowPlay" android:text="▶" />
+            </LinearLayout>
+
+            <!-- Gomoku -->
+            <LinearLayout android:id="@+id/cardGomoku" style="@style/GameRow">
+                <TextView style="@style/GameRowIcon" android:text="⚫" />
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:orientation="vertical">
+                    <TextView android:id="@+id/tvGomoku" style="@style/GameRowName" android:text="Gomoku" />
+                    <TextView style="@style/GameRowMeta" android:text="5 tosh qatorda · AI" />
+                </LinearLayout>
+                <TextView android:id="@+id/tvRecordGomoku" style="@style/GameRowStat" android:text="🏆 0" />
+                <TextView style="@style/GameRowPlay" android:text="▶" />
+            </LinearLayout>
+
+            <!-- Connect 4 -->
+            <LinearLayout android:id="@+id/cardConnect4" style="@style/GameRow">
+                <TextView style="@style/GameRowIcon" android:text="🔴" />
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:orientation="vertical">
+                    <TextView android:id="@+id/tvConnect4" style="@style/GameRowName" android:text="Connect 4" />
+                    <TextView style="@style/GameRowMeta" android:text="Onlayn · Xona kodi" />
+                </LinearLayout>
+                <TextView android:id="@+id/tvRecordConnect4" style="@style/GameRowStat" android:text="🏆 0" />
+                <TextView style="@style/GameRowPlay" android:text="▶" />
+            </LinearLayout>
+
+            <!-- Dots & Boxes -->
+            <LinearLayout android:id="@+id/cardDotsAndBoxes" style="@style/GameRow">
+                <TextView style="@style/GameRowIcon" android:text="▦" />
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:orientation="vertical">
+                    <TextView android:id="@+id/tvDotsAndBoxes" style="@style/GameRowName" android:text="Dots &amp; Boxes" />
+                    <TextView style="@style/GameRowMeta" android:text="Chiziq torting · 1v1" />
+                </LinearLayout>
+                <TextView android:id="@+id/tvRecordDotsAndBoxes" style="@style/GameRowStat" android:text="🏆 0" />
+                <TextView style="@style/GameRowPlay" android:text="▶" />
+            </LinearLayout>
+
+            <!-- Durak -->
+            <LinearLayout android:id="@+id/cardDurak" style="@style/GameRow">
+                <TextView style="@style/GameRowIcon" android:text="🃏" />
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:orientation="vertical">
+                    <TextView android:id="@+id/tvDurak" style="@style/GameRowName" android:text="Durak (Karta)" />
+                    <TextView style="@style/GameRowMeta" android:text="Klassik karta o'yini" />
+                </LinearLayout>
+                <TextView android:id="@+id/tvRecordDurak" style="@style/GameRowStat" android:text="🏆 0" />
+                <TextView style="@style/GameRowPlay" android:text="▶" />
+            </LinearLayout>
+
+            <!-- Checkers -->
+            <LinearLayout android:id="@+id/cardCheckers" style="@style/GameRow">
+                <TextView style="@style/GameRowIcon" android:text="⬤" />
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:orientation="vertical">
+                    <TextView android:id="@+id/tvCheckers" style="@style/GameRowName" android:text="Shashka" />
+                    <TextView style="@style/GameRowMeta" android:text="Checkers · 1v1 · AI" />
+                </LinearLayout>
+                <TextView android:id="@+id/tvRecordCheckers" style="@style/GameRowStat" android:text="🏆 0" />
+                <TextView style="@style/GameRowPlay" android:text="▶" />
+            </LinearLayout>
+
+            <!-- Chess -->
+            <LinearLayout android:id="@+id/cardChess" style="@style/GameRow">
+                <TextView style="@style/GameRowIcon" android:text="♛" />
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:orientation="vertical">
+                    <TextView android:id="@+id/tvChess" style="@style/GameRowName" android:text="Shaxmat" />
+                    <TextView style="@style/GameRowMeta" android:text="Onlayn · AI Bot · Elo" />
+                </LinearLayout>
+                <TextView android:id="@+id/tvRecordChess" style="@style/GameRowStat" android:text="🏆 0" />
+                <TextView style="@style/GameRowPlay" android:text="▶" />
+            </LinearLayout>
+
+            <!-- Water Sort -->
+            <LinearLayout android:id="@+id/cardWaterSort" style="@style/GameRow">
+                <TextView style="@style/GameRowIcon" android:text="🧪" />
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:orientation="vertical">
+                    <TextView android:id="@+id/tvWaterSort" style="@style/GameRowName" android:text="Water Sort" />
+                    <TextView style="@style/GameRowMeta" android:text="30 daraja kampaniya" />
+                </LinearLayout>
+                <TextView android:id="@+id/tvRecordWaterSort" style="@style/GameRowStat" android:text="⭐ 1/30" />
+                <TextView style="@style/GameRowPlay" android:text="▶" />
+            </LinearLayout>
+
+            <!-- Memory -->
+            <LinearLayout android:id="@+id/cardMemoryGame" style="@style/GameRow">
+                <TextView style="@style/GameRowIcon" android:text="🧠" />
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:orientation="vertical">
+                    <TextView android:id="@+id/tvMemoryGame" style="@style/GameRowName" android:text="Memory Game" />
+                    <TextView style="@style/GameRowMeta" android:text="30 daraja kampaniya" />
+                </LinearLayout>
+                <TextView android:id="@+id/tvRecordMemory" style="@style/GameRowStat" android:text="⭐ 0" />
+                <TextView style="@style/GameRowPlay" android:text="▶" />
+            </LinearLayout>
+
+            <!-- 2048 -->
+            <LinearLayout android:id="@+id/card2048" style="@style/GameRow">
+                <TextView style="@style/GameRowIcon" android:text="🔢" />
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:orientation="vertical">
+                    <TextView android:id="@+id/tv2048" style="@style/GameRowName" android:text="2048 Classic" />
+                    <TextView style="@style/GameRowMeta" android:text="Cheksiz rejim" />
+                </LinearLayout>
+                <TextView android:id="@+id/tvRecord2048" style="@style/GameRowStat" android:text="⭐ 0" />
+                <TextView style="@style/GameRowPlay" android:text="▶" />
+            </LinearLayout>
+
+            <!-- Drop Number -->
+            <LinearLayout android:id="@+id/cardDropNumber" style="@style/GameRow">
+                <TextView style="@style/GameRowIcon" android:text="🎯" />
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:orientation="vertical">
+                    <TextView android:id="@+id/tvDropNumber" style="@style/GameRowName" android:text="Drop 2048" />
+                    <TextView style="@style/GameRowMeta" android:text="Otib qo'shish · 2048" />
+                </LinearLayout>
+                <TextView android:id="@+id/tvRecordDropNumber" style="@style/GameRowStat" android:text="⭐ 0" />
+                <TextView style="@style/GameRowPlay" android:text="▶" />
+            </LinearLayout>
+
+            <!-- Math Master -->
+            <LinearLayout android:id="@+id/cardMathGame" style="@style/GameRow">
+                <TextView style="@style/GameRowIcon" android:text="➗" />
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:orientation="vertical">
+                    <TextView style="@style/GameRowName" android:text="Math Master" />
+                    <TextView style="@style/GameRowMeta" android:text="60 soniya · tezkor hisob" />
+                </LinearLayout>
+                <TextView android:id="@+id/tvRecordMath" style="@style/GameRowStat" android:text="⭐ 0" />
+                <TextView style="@style/GameRowPlay" android:text="▶" />
+            </LinearLayout>
+
+            <!-- Color Match -->
+            <LinearLayout android:id="@+id/cardColorMatch" style="@style/GameRow">
+                <TextView style="@style/GameRowIcon" android:text="🎨" />
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:orientation="vertical">
+                    <TextView android:id="@+id/tvColorMatch" style="@style/GameRowName" android:text="Color Match" />
+                    <TextView style="@style/GameRowMeta" android:text="Reflekslar sinovi" />
+                </LinearLayout>
+                <TextView android:id="@+id/tvRecordColorMatch" style="@style/GameRowStat" android:text="⭐ 0" />
+                <TextView style="@style/GameRowPlay" android:text="▶" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

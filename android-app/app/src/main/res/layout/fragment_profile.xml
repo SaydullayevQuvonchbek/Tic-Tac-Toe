@@ -5,239 +5,197 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_color"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:scrollbars="none"
+    tools:context=".ProfileFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:paddingHorizontal="18dp"
+        android:paddingTop="22dp"
+        android:paddingBottom="26dp">
+
+        <!-- Avatar + identity -->
+        <FrameLayout
+            android:layout_width="76dp"
+            android:layout_height="76dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/bg_avatar_gradient">
+
+            <TextView
+                android:id="@+id/tvAvatarInitials"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fontFamily="@font/chakra_petch"
+                android:gravity="center"
+                android:text="AZ"
+                android:textColor="@color/on_accent"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+        </FrameLayout>
 
         <TextView
-            android:id="@+id/tvTitle"
+            android:id="@+id/tvProfileName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="16dp"
-            android:fontFamily="sans-serif-black"
-            android:text="@string/profile_title"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="12dp"
+            android:text="Username"
             android:textColor="@color/text_color"
-            android:textSize="24sp" />
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
-        <!-- 1. Player Info Card -->
-        <androidx.cardview.widget.CardView
+        <TextView
+            android:id="@+id/tvProfileLevel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/chakra_petch"
+            android:text="LEVEL 1 · BRONZE · 0 XP"
+            android:textColor="@color/accent_cyan"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.06" />
+
+        <!-- Stat grid -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardBackgroundColor="@color/card_background"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="4dp">
+            android:layout_marginTop="18dp"
+            android:baselineAligned="false"
+            android:orientation="horizontal">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:padding="20dp">
-
-                <ImageView
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:src="@drawable/ic_launcher_foreground" />
-
-                <TextView
-                    android:id="@+id/tvProfileName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:fontFamily="sans-serif-black"
-                    android:text="Username"
-                    android:textColor="@color/text_color"
-                    android:textSize="22sp" />
-
-                <TextView
-                    android:id="@+id/tvProfileLevel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="Level 1 | 0 XP"
-                    android:textColor="#0052CC"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/tvProfileStreak"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="🔥 Streak: 0"
-                        android:textColor="#F59E0B"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-
-                    <View
-                        android:layout_width="1dp"
-                        android:layout_height="24dp"
-                        android:background="@color/border_color" />
-
-                    <TextView
-                        android:id="@+id/tvProfileCoins"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="🪙 Coins: 0"
-                        android:textColor="#EAB308"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
+            <LinearLayout style="@style/ProfileStat">
+                <TextView android:id="@+id/tvStatWins" style="@style/ProfileStatValue" android:textColor="@color/accent_cyan" android:text="0" />
+                <TextView style="@style/ProfileStatLabel" android:text="G'alaba" />
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
 
-        <!-- 2. Settings Card -->
-        <androidx.cardview.widget.CardView
+            <LinearLayout style="@style/ProfileStat" android:layout_marginStart="9dp">
+                <TextView android:id="@+id/tvStatWinRate" style="@style/ProfileStatValue" android:textColor="@color/accent_lime" android:text="0%" />
+                <TextView style="@style/ProfileStatLabel" android:text="Win rate" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            app:cardBackgroundColor="@color/card_background"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="4dp">
+            android:layout_marginTop="9dp"
+            android:baselineAligned="false"
+            android:orientation="horizontal">
+
+            <LinearLayout style="@style/ProfileStat">
+                <TextView android:id="@+id/tvProfileStreak" style="@style/ProfileStatValue" android:textColor="@color/accent_red" android:text="🔥 0" />
+                <TextView style="@style/ProfileStatLabel" android:text="Streak" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/ProfileStat" android:layout_marginStart="9dp">
+                <TextView android:id="@+id/tvProfileCoins" style="@style/ProfileStatValue" android:textColor="@color/accent_gold" android:text="🪙 0" />
+                <TextView style="@style/ProfileStatLabel" android:text="Tanga" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Arena PRO (visual only) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/bg_pro_card"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="14dp">
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="💎" android:textSize="24sp" />
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="20dp">
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:fontFamily="sans-serif-black"
-                    android:text="@string/settings_title"
-                    android:textColor="@color/text_color"
-                    android:textSize="18sp" />
-
-                <!-- Language Row -->
-                <LinearLayout
-                    android:id="@+id/rowLanguage"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="🌐 App Language"
-                        android:textColor="@color/text_color"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvCurrentLanguage"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="🇬🇧 English"
-                        android:textColor="#0052CC"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/border_color" />
-
-                <!-- Theme Switcher Row -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="🌙 Dark Mode"
-                        android:textColor="@color/text_color"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-
-                    <androidx.appcompat.widget.SwitchCompat
-                        android:id="@+id/switchDarkMode"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/border_color" />
-
-                <!-- Sound Effects Switcher -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/settings_sound"
-                        android:textColor="@color/text_color"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-
-                    <androidx.appcompat.widget.SwitchCompat
-                        android:id="@+id/switchSound"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:checked="true" />
-                </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/border_color" />
-
-                <!-- Vibration / Haptics Switcher -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/settings_vibration"
-                        android:textColor="@color/text_color"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-
-                    <androidx.appcompat.widget.SwitchCompat
-                        android:id="@+id/switchVibration"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:checked="true" />
-                </LinearLayout>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Arena PRO" android:textColor="@color/text_color" android:textSize="13sp" android:textStyle="bold" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text="Reklamasiz · 2× XP · barcha mavzular" android:textColor="@color/accent_violet" android:textSize="10.5sp" />
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_pill_muted"
+                android:fontFamily="@font/chakra_petch"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="8dp"
+                android:text="TEZ ORADA"
+                android:textColor="@color/accent_violet"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Settings -->
+        <TextView
+            style="@style/SectionLabel"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="8dp"
+            android:text="SOZLAMALAR" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_arena_card"
+            android:orientation="vertical"
+            android:paddingHorizontal="14dp">
+
+            <LinearLayout
+                android:id="@+id/rowLanguage"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🌐" android:textSize="15sp" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="12dp" android:layout_weight="1" android:text="Ilova tili" android:textColor="@color/text_color" android:textSize="13sp" android:textStyle="bold" />
+                <TextView android:id="@+id/tvCurrentLanguage" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="@font/chakra_petch" android:text="O'ZBEK ›" android:textColor="@color/accent_cyan" android:textSize="11sp" android:textStyle="bold" />
+            </LinearLayout>
+
+            <View style="@style/RowDivider" />
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="52dp" android:gravity="center_vertical" android:orientation="horizontal">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🌙" android:textSize="15sp" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="12dp" android:layout_weight="1" android:text="Tungi rejim" android:textColor="@color/text_color" android:textSize="13sp" android:textStyle="bold" />
+                <androidx.appcompat.widget.SwitchCompat android:id="@+id/switchDarkMode" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <View style="@style/RowDivider" />
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="52dp" android:gravity="center_vertical" android:orientation="horizontal">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🔊" android:textSize="15sp" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="12dp" android:layout_weight="1" android:text="Ovoz effektlari" android:textColor="@color/text_color" android:textSize="13sp" android:textStyle="bold" />
+                <androidx.appcompat.widget.SwitchCompat android:id="@+id/switchSound" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checked="true" />
+            </LinearLayout>
+
+            <View style="@style/RowDivider" />
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="52dp" android:gravity="center_vertical" android:orientation="horizontal">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="📳" android:textSize="15sp" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="12dp" android:layout_weight="1" android:text="Tebranish" android:textColor="@color/text_color" android:textSize="13sp" android:textStyle="bold" />
+                <androidx.appcompat.widget.SwitchCompat android:id="@+id/switchVibration" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checked="true" />
+            </LinearLayout>
+
+            <View style="@style/RowDivider" />
+
+            <LinearLayout
+                android:id="@+id/rowEditProfile"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="👤" android:textSize="15sp" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="12dp" android:layout_weight="1" android:text="Profilni tahrirlash" android:textColor="@color/text_color" android:textSize="13sp" android:textStyle="bold" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="›" android:textColor="@color/text_muted" android:textSize="15sp" />
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>

@@ -40,7 +40,44 @@ class LeaderboardFragment : Fragment() {
         binding.rvLeaderboard.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
         binding.rvLeaderboard.adapter = adapter
 
+        binding.tabGlobal.isActivated = true
+        binding.tabFriends.setOnClickListener {
+            Toast.makeText(context, "👥 Do'stlar reytingi tez orada!", Toast.LENGTH_SHORT).show()
+        }
+        binding.tabLeague.setOnClickListener {
+            Toast.makeText(context, "🏆 Liga reytingi tez orada!", Toast.LENGTH_SHORT).show()
+        }
+
         fetchLeaderboard()
+    }
+
+    private fun initialsOf(name: String): String {
+        val parts = name.trim().split(Regex("\\s+")).filter { it.isNotEmpty() }
+        return when {
+            parts.size >= 2 -> (parts[0].take(1) + parts[1].take(1)).uppercase()
+            parts.size == 1 -> parts[0].take(2).uppercase()
+            else -> "?"
+        }
+    }
+
+    private fun bindPodium(top: List<com.example.tictactoe.network.LeaderboardPlayer>) {
+        val slots = listOf(
+            Triple(binding.podium1Ini, binding.podium1Name, binding.podium1Xp),
+            Triple(binding.podium2Ini, binding.podium2Name, binding.podium2Xp),
+            Triple(binding.podium3Ini, binding.podium3Name, binding.podium3Xp)
+        )
+        slots.forEachIndexed { i, (ini, name, xp) ->
+            val p = top.getOrNull(i)
+            if (p != null) {
+                ini.text = initialsOf(p.username)
+                name.text = p.username
+                xp.text = "${p.xp} XP"
+            } else {
+                ini.text = "–"
+                name.text = "—"
+                xp.text = "0 XP"
+            }
+        }
     }
 
     private fun fetchLeaderboard() {
@@ -61,7 +98,8 @@ class LeaderboardFragment : Fragment() {
                     val myXp = sharedPref.getInt("xp", 0)
                     val myWins = sharedPref.getInt("wins", 0)
 
-                    adapter.updateData(top10, myUsername)
+                    bindPodium(top10)
+                    adapter.updateData(top10.drop(3), myUsername)
                     binding.rvLeaderboard.visibility = View.VISIBLE
 
                     // Check if current user is in full leaderboard list

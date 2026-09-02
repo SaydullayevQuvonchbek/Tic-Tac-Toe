@@ -118,12 +118,27 @@ class Connect4Logic {
             }
         }
         
-        // 3. Fallback: play center-ish columns
+        // 3. Avoid moves that hand the opponent an immediate winning drop anywhere.
         val pref = listOf(3, 4, 2, 5, 1, 6, 0)
-        for (c in pref) {
-            if (getDropRow(c) != -1) return c
+        val playable = pref.filter { getDropRow(it) != -1 }
+        val safe = playable.filter { c ->
+            val r = getDropRow(c)
+            board[r][c] = 2                 // bot plays here
+            val opponentCanWin = (0 until cols).any { oc ->
+                val or = getDropRow(oc)
+                if (or == -1) false else {
+                    board[or][oc] = 1
+                    val win = wouldWin(or, oc, 1)
+                    board[or][oc] = 0
+                    win
+                }
+            }
+            board[r][c] = 0
+            !opponentCanWin
         }
-        return 0
+
+        // 4. Prefer a safe center-ish column, else any playable column.
+        return safe.firstOrNull() ?: playable.firstOrNull() ?: 0
     }
     
     private fun getDropRow(col: Int): Int {

@@ -7,17 +7,55 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    
-    <!-- Dark Mode Theme Colors -->
-    <color name="background_color">#0F172A</color>
-    <color name="card_background">#1E293B</color>
-    <color name="card_surface">#334155</color>
-    <color name="text_color">#F8FAFC</color>
-    <color name="text_secondary">#94A3B8</color>
+
+    <!-- ===== Premium Arena — DARK semantic tokens ===== -->
+    <color name="background_color">#070A12</color>
+    <color name="card_background">#0E1424</color>
+    <color name="card_surface">#0C1220</color>
+    <color name="text_color">#F2F5FF</color>
+    <color name="text_secondary">#8492B0</color>
+    <color name="text_muted">#64748B</color>
     <color name="yellow_accent">#FFCA28</color>
     <color name="red_accent">#EF5350</color>
-    <color name="border_color">#334155</color>
-    <color name="input_background">#1E293B</color>
-    <color name="icon_tint">#F8FAFC</color>
-    <color name="nav_background">#0F172A</color>
+    <color name="border_color">#20263A</color>
+    <color name="input_background">#0C1220</color>
+    <color name="icon_tint">#F2F5FF</color>
+    <color name="nav_background">#0B0F1A</color>
+    <color name="hairline">#12FFFFFF</color>
+
+    <!-- ===== accents (shared across themes) ===== -->
+    <color name="accent_cyan">#22D3EE</color>
+    <color name="accent_blue">#4F86FF</color>
+    <color name="accent_purple">#7C5CFF</color>
+    <color name="accent_violet">#A78BFA</color>
+    <color name="accent_gold">#FBBF24</color>
+    <color name="accent_red">#FB7185</color>
+    <color name="accent_lime">#A3E635</color>
+    <color name="accent_green">#10B981</color>
+    <color name="online_green">#4ADE80</color>
+    <color name="on_accent">#04121C</color>
+
+    <!-- pill fills / strokes (dark) -->
+    <color name="pill_gold_bg">#1AFBBF24</color>
+    <color name="pill_gold_stroke">#38FBBF24</color>
+    <color name="pill_gold_text">#FBBF24</color>
+    <color name="pill_red_bg">#1AFB7185</color>
+    <color name="pill_red_stroke">#38FB7185</color>
+    <color name="pill_red_text">#FB7185</color>
+    <color name="pill_cyan_bg">#1A22D3EE</color>
+    <color name="pill_cyan_stroke">#3822D3EE</color>
+    <color name="pill_muted_bg">#0FFFFFFF</color>
+    <color name="pill_muted_stroke">#14FFFFFF</color>
+
+    <!-- hero gradient (dark "Premium Arena") -->
+    <color name="arena_hero_1">#141B33</color>
+    <color name="arena_hero_2">#1B1140</color>
+    <color name="arena_hero_3">#0B1524</color>
+    <color name="arena_hero_text">#F2F5FF</color>
+
+    <!-- tab pills -->
+    <color name="tab_bg">#0A0F1C</color>
+    <color name="tab_stroke">#14FFFFFF</color>
+    <color name="tab_active_bg">#1B2438</color>
+    <color name="tab_active_text">#F2F5FF</color>
 </resources>

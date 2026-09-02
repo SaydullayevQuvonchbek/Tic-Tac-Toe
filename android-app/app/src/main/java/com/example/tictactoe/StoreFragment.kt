@@ -14,6 +14,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.tictactoe.databinding.FragmentStoreBinding
@@ -116,10 +117,10 @@ class StoreFragment : Fragment() {
         subTabIndex = 0
 
         // Highlight Active Category Tab
-        val activeBg = Color.parseColor("#2563EB")
-        val inactiveBg = Color.parseColor("#1E293B")
-        val activeText = Color.WHITE
-        val inactiveText = Color.parseColor("#94A3B8")
+        val activeBg = col(R.color.accent_cyan)
+        val inactiveBg = col(R.color.card_surface)
+        val activeText = col(R.color.on_accent)
+        val inactiveText = col(R.color.text_muted)
 
         binding.btnCatChess.setBackgroundColor(if (category == StoreCategory.CHESS) activeBg else inactiveBg)
         binding.btnCatChess.setTextColor(if (category == StoreCategory.CHESS) activeText else inactiveText)
@@ -154,11 +155,13 @@ class StoreFragment : Fragment() {
         renderCurrentContent()
     }
 
+    private fun col(id: Int): Int = ContextCompat.getColor(requireContext(), id)
+
     private fun updateSubTabButtons() {
-        val activeBg = Color.parseColor("#334155")
+        val activeBg = col(R.color.tab_active_bg)
         val inactiveBg = Color.TRANSPARENT
-        val activeText = Color.WHITE
-        val inactiveText = Color.parseColor("#94A3B8")
+        val activeText = col(R.color.text_color)
+        val inactiveText = col(R.color.text_muted)
 
         binding.btnSubTab1.setBackgroundColor(if (subTabIndex == 0) activeBg else inactiveBg)
         binding.btnSubTab1.setTextColor(if (subTabIndex == 0) activeText else inactiveText)
@@ -474,8 +477,8 @@ class StoreFragment : Fragment() {
     ): CardView {
         val card = CardView(requireContext()).apply {
             radius = 16.dpToPx().toFloat()
-            cardElevation = 4.dpToPx().toFloat()
-            setCardBackgroundColor(Color.parseColor("#1E293B"))
+            cardElevation = 0f
+            setCardBackgroundColor(col(R.color.card_background))
             layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
                 bottomMargin = 10.dpToPx()
             }
@@ -499,14 +502,14 @@ class StoreFragment : Fragment() {
         }
         val nameTv = TextView(requireContext()).apply {
             text = title
-            textSize = 14f
-            setTextColor(Color.WHITE)
+            textSize = 13f
+            setTextColor(col(R.color.text_color))
             typeface = android.graphics.Typeface.DEFAULT_BOLD
         }
         val costTv = TextView(requireContext()).apply {
-            text = if (cost == 0) "BEPUL" else "$cost 🪙"
-            textSize = 12f
-            setTextColor(if (cost == 0) Color.parseColor("#34D399") else Color.parseColor("#FBBF24"))
+            text = if (cost == 0) "BEPUL" else "🪙 $cost"
+            textSize = 11f
+            setTextColor(if (cost == 0) col(R.color.accent_green) else col(R.color.accent_gold))
         }
         infoLayout.addView(nameTv)
         infoLayout.addView(costTv)
@@ -520,15 +523,15 @@ class StoreFragment : Fragment() {
 
             when {
                 isEquipped -> {
-                    text = "✅ O'RNATILGAN"
-                    setTextColor(Color.WHITE)
-                    setBackgroundColor(Color.parseColor("#059669"))
+                    text = "✓ O'RNATILGAN"
+                    setTextColor(col(R.color.accent_cyan))
+                    setBackgroundColor(col(R.color.pill_cyan_bg))
                     isEnabled = false
                 }
                 isUnlocked -> {
                     text = "O'RNATISH"
-                    setTextColor(Color.WHITE)
-                    setBackgroundColor(Color.parseColor("#2563EB"))
+                    setTextColor(col(R.color.on_accent))
+                    setBackgroundColor(col(R.color.accent_cyan))
                     setOnClickListener {
                         HapticHelper.performClick(requireContext())
                         onEquip()
@@ -537,8 +540,8 @@ class StoreFragment : Fragment() {
                 }
                 else -> {
                     text = "SOTIB OLISH"
-                    setTextColor(Color.WHITE)
-                    setBackgroundColor(Color.parseColor("#D97706"))
+                    setTextColor(col(R.color.on_accent))
+                    setBackgroundColor(col(R.color.accent_gold))
                     setOnClickListener {
                         onBuy()
                     }

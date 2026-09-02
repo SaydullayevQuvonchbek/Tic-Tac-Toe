@@ -2,18 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/dashboardFragment"
-        android:icon="@android:drawable/ic_menu_today"
-        android:title="Home" />
+        android:icon="@drawable/ic_arena"
+        android:title="ARENA" />
     <item
         android:id="@+id/storeFragment"
         android:icon="@drawable/ic_nav_store"
-        android:title="Do'kon" />
+        android:title="DO'KON" />
     <item
         android:id="@+id/leaderboardFragment"
-        android:icon="@android:drawable/ic_menu_sort_by_size"
-        android:title="Ranks" />
+        android:icon="@drawable/ic_nav_ranks"
+        android:title="RANKS" />
     <item
         android:id="@+id/profileFragment"
-        android:icon="@android:drawable/ic_menu_myplaces"
-        android:title="Profile" />
+        android:icon="@drawable/ic_nav_profile"
+        android:title="PROFIL" />
 </menu>

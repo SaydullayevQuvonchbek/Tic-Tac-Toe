@@ -126,13 +126,103 @@ class DashboardFragment : Fragment() {
             }
         }
 
-        binding.cardStore.setOnClickListener {
-            if (ensureProfile()) {
-                findNavController().navigate(R.id.action_dashboardFragment_to_storeFragment)
+        binding.cardSeasonPass.setOnClickListener {
+            Toast.makeText(context, "🏅 Season Pass tez orada!", Toast.LENGTH_SHORT).show()
+        }
+
+        setupQuickMatch()
+        setupCategoryTabs()
+        setupRecommendedCarousel()
+        initQuestsClickListeners()
+    }
+
+    // ===== Quick Match hero =====
+    private fun setupQuickMatch() {
+        binding.btnQuickPlay.setOnClickListener {
+            if (!ensureProfile()) return@setOnClickListener
+            val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+            val userId = sharedPref.getInt("user_id", -1)
+            val username = sharedPref.getString("username", "Player 1") ?: "Player 1"
+
+            MatchmakingHelper.startQuickMatch(requireContext(), "tictactoe", 3) { code, host, _, isBot ->
+                if (_binding == null) return@startQuickMatch
+                val bundle = Bundle().apply {
+                    putBoolean("isOnlineMode", !isBot)
+                    putBoolean("isAiMode", isBot)
+                    putInt("playerId", userId)
+                    putString("roomCode", code)
+                    putBoolean("isHost", host)
+                    putString("username", username)
+                    putInt("boardSize", 3)
+                    putBoolean("isInfinityMode", false)
+                    putBoolean("isArcadeMode", false)
+                    putString("startingPlayer", "X")
+                }
+                findNavController().navigate(R.id.action_dashboardFragment_to_gameFragment, bundle)
             }
         }
 
-        initQuestsClickListeners()
+        binding.btnQuickFriends.setOnClickListener {
+            if (ensureProfile()) findNavController().navigate(R.id.action_dashboardFragment_to_welcomeFragment)
+        }
+        binding.btnQuickRoomId.setOnClickListener {
+            if (ensureProfile()) findNavController().navigate(R.id.action_dashboardFragment_to_welcomeFragment)
+        }
+    }
+
+    // ===== Category tabs =====
+    private val categoryTabs get() = listOf(
+        binding.tabAll to "all",
+        binding.tabBattle to "battle",
+        binding.tabBrain to "brain",
+        binding.tabSpeed to "speed"
+    )
+
+    private fun gameRowsByCategory(): Map<String, List<View>> = mapOf(
+        "battle" to listOf(
+            binding.cardTicTacToe, binding.cardGomoku, binding.cardConnect4,
+            binding.cardDotsAndBoxes, binding.cardDurak, binding.cardCheckers, binding.cardChess
+        ),
+        "brain" to listOf(
+            binding.cardWaterSort, binding.cardMemoryGame, binding.card2048, binding.cardDropNumber
+        ),
+        "speed" to listOf(binding.cardMathGame, binding.cardColorMatch)
+    )
+
+    private var currentCategory = "all"
+
+    private fun setupCategoryTabs() {
+        categoryTabs.forEach { (view, key) ->
+            view.setOnClickListener {
+                currentCategory = key
+                applyCategoryFilter()
+            }
+        }
+        applyCategoryFilter()
+    }
+
+    private fun applyCategoryFilter() {
+        if (_binding == null) return
+        categoryTabs.forEach { (view, key) -> view.isActivated = (key == currentCategory) }
+
+        val groups = gameRowsByCategory()
+        var visible = 0
+        groups.forEach { (key, rows) ->
+            val show = currentCategory == "all" || currentCategory == key
+            rows.forEach { it.visibility = if (show) View.VISIBLE else View.GONE }
+            if (show) visible += rows.size
+        }
+        binding.tvGamesCount.text = "$visible ta"
+    }
+
+    // ===== Recommended carousel =====
+    private fun setupRecommendedCarousel() {
+        binding.recChess.setOnClickListener { binding.cardChess.performClick() }
+        binding.recCheckers.setOnClickListener { binding.cardCheckers.performClick() }
+        binding.recConnect4.setOnClickListener { binding.cardConnect4.performClick() }
+        binding.recWaterSort.setOnClickListener { binding.cardWaterSort.performClick() }
+        binding.rec2048.setOnClickListener { binding.card2048.performClick() }
+        binding.recGomoku.setOnClickListener { binding.cardGomoku.performClick() }
     }
 
     private fun initQuestsClickListeners() {
@@ -199,17 +289,17 @@ class DashboardFragment : Fragment() {
             }
         }
         
-        updateLock("dots_and_boxes", 2, binding.tvDotsAndBoxes, "🟥 Dots & Boxes")
-        updateLock("gomoku", 3, binding.tvGomoku, "⚪⚫ Gomoku (5 in a Row)")
-        updateLock("checkers", 4, binding.tvCheckers, "👑 Shashka (Checkers)")
-        updateLock("memory_game", 2, binding.tvMemoryGame, "🧠 Memory Game")
-        updateLock("color_match", 3, binding.tvColorMatch, "🎨 Color Match")
-        updateLock("water_sort", 3, binding.tvWaterSort, "🧪 Water Sort 💧")
-        updateLock("connect4", 4, binding.tvConnect4, "🔴 Connect 4 🟡")
-        updateLock("game_2048", 5, binding.tv2048, "🔢 2048 Classic")
-        updateLock("drop_number", 3, binding.tvDropNumber, "🎯 Drop 2048")
-        updateLock("durak", 2, binding.tvDurak, "🃏 Durak (Karta)")
-        updateLock("chess", 3, binding.tvChess, "👑 Shaxmat (Chess PRO)")
+        updateLock("dots_and_boxes", 2, binding.tvDotsAndBoxes, "Dots & Boxes")
+        updateLock("gomoku", 3, binding.tvGomoku, "Gomoku")
+        updateLock("checkers", 4, binding.tvCheckers, "Shashka")
+        updateLock("memory_game", 2, binding.tvMemoryGame, "Memory Game")
+        updateLock("color_match", 3, binding.tvColorMatch, "Color Match")
+        updateLock("water_sort", 3, binding.tvWaterSort, "Water Sort")
+        updateLock("connect4", 4, binding.tvConnect4, "Connect 4")
+        updateLock("game_2048", 5, binding.tv2048, "2048 Classic")
+        updateLock("drop_number", 3, binding.tvDropNumber, "Drop 2048")
+        updateLock("durak", 2, binding.tvDurak, "Durak (Karta)")
+        updateLock("chess", 3, binding.tvChess, "Shaxmat")
     }
 
     private fun handleGameClick(key: String, reqLevel: Int, cost: Int, tv: android.widget.TextView, title: String, actionId: Int) {
@@ -297,12 +387,14 @@ class DashboardFragment : Fragment() {
 
         if (username.isNotEmpty()) {
             binding.tvUsername.text = username
-            binding.tvLevelInfo.text = "Level $level | $xp XP"
+            binding.tvAvatarInitials.text = initialsOf(username)
+            binding.tvLevelInfo.text = "LVL $level · ${LevelHelper.xpIntoLevel(xp, level)}/${LevelHelper.XP_PER_LEVEL} XP"
+            binding.pbXp.progress = LevelHelper.levelProgressPercent(xp, level)
             binding.tvStreak.text = "🔥 $streak"
             binding.tvCoins.text = "🪙 $coins"
 
             val league = QuestManager.getLeagueTier(xp)
-            binding.tvLeagueBadge.text = league.first
+            binding.tvLeagueBadge.text = league.first.replace(" League", "").uppercase()
             binding.tvLeagueBadge.setTextColor(Color.parseColor(league.second))
 
             updateGameLocks()
@@ -338,10 +430,21 @@ class DashboardFragment : Fragment() {
             binding.tvRecordChess.text = "🏆 Wins: $chessWins • Do'st bilan Onlayn & AI Bot"
         } else {
             binding.tvUsername.text = "Guest Player"
-            binding.tvLevelInfo.text = "Click edit to set username"
+            binding.tvAvatarInitials.text = "GP"
+            binding.tvLevelInfo.text = "LVL 1 · 0/${LevelHelper.XP_PER_LEVEL} XP"
+            binding.pbXp.progress = 0
             binding.tvStreak.text = "🔥 0"
             binding.tvCoins.text = "🪙 0"
             showEditProfileDialog()
+        }
+    }
+
+    private fun initialsOf(name: String): String {
+        val parts = name.trim().split(Regex("\\s+")).filter { it.isNotEmpty() }
+        return when {
+            parts.size >= 2 -> (parts[0].take(1) + parts[1].take(1)).uppercase()
+            parts.size == 1 -> parts[0].take(2).uppercase()
+            else -> "?"
         }
     }
 

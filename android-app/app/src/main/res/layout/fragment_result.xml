@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,133 +7,246 @@
     android:background="@color/background_color"
     tools:context=".ResultFragment">
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_margin="32dp"
-        app:cardBackgroundColor="@color/card_background"
-        app:cardCornerRadius="20dp"
-        app:cardElevation="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:scrollbars="none">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="18dp"
+            android:paddingTop="26dp"
+            android:paddingBottom="20dp">
+
+            <!-- Trophy -->
+            <ImageView
+                android:id="@+id/ivResult"
+                android:layout_width="112dp"
+                android:layout_height="112dp"
+                android:layout_gravity="center_horizontal"
+                android:scaleType="fitCenter"
+                android:src="@drawable/trophy" />
 
             <TextView
                 android:id="@+id/tvHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="28dp"
-                android:text="Winner"
-                android:textColor="@color/text_secondary"
-                android:textSize="18sp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="14dp"
+                android:fontFamily="@font/chakra_petch"
+                android:text="WINNER"
+                android:textColor="@color/text_muted"
+                android:textSize="11sp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/ivResult"
-                android:layout_width="140dp"
-                android:layout_height="140dp"
-                android:layout_marginTop="16dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/trophy"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvHeader" />
+                android:letterSpacing="0.15" />
 
             <TextView
                 android:id="@+id/tvResultMessage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Player Won"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="6dp"
+                android:fontFamily="@font/chakra_petch"
+                android:gravity="center"
+                android:text="G'ALABA!"
                 android:textColor="@color/text_color"
-                android:textSize="26sp"
-                android:fontFamily="sans-serif-black"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ivResult" />
+                android:textSize="30sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.02" />
 
             <TextView
                 android:id="@+id/tvSubMessage"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginHorizontal="32dp"
+                android:layout_marginTop="7dp"
                 android:gravity="center"
                 android:text="Congrats on being the undisputed champion!"
                 android:textColor="@color/text_secondary"
-                android:textSize="14sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvResultMessage" />
+                android:textSize="12sp" />
 
-            <!-- Rematch Status Notice (For Online Match) -->
+            <!-- Stat tiles -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:baselineAligned="false"
+                android:orientation="horizontal">
+
+                <LinearLayout style="@style/ResultStat" android:background="@drawable/bg_pill_cyan">
+                    <TextView android:id="@+id/tvStatXp" style="@style/ResultStatValue" android:textColor="@color/accent_cyan" android:text="+0" />
+                    <TextView style="@style/ResultStatLabel" android:text="XP" />
+                </LinearLayout>
+
+                <LinearLayout style="@style/ResultStat" android:layout_marginStart="9dp" android:background="@drawable/bg_pill_gold">
+                    <TextView android:id="@+id/tvStatCoins" style="@style/ResultStatValue" android:textColor="@color/accent_gold" android:text="+0" />
+                    <TextView style="@style/ResultStatLabel" android:text="TANGA" />
+                </LinearLayout>
+
+                <LinearLayout style="@style/ResultStat" android:layout_marginStart="9dp" android:background="@drawable/bg_pill_red">
+                    <TextView android:id="@+id/tvStatStreak" style="@style/ResultStatValue" android:textColor="@color/accent_red" android:text="🔥 0" />
+                    <TextView style="@style/ResultStatLabel" android:text="STREAK" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Level progress -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_arena_card"
+                android:orientation="vertical"
+                android:padding="14dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvLevelRange"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/chakra_petch"
+                        android:text="LEVEL 1 → 2"
+                        android:textColor="@color/text_muted"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.10" />
+
+                    <TextView
+                        android:id="@+id/tvLevelXp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/chakra_petch"
+                        android:text="0/500 XP"
+                        android:textColor="@color/accent_cyan"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <ProgressBar
+                    android:id="@+id/pbLevel"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="8dp"
+                    android:layout_marginTop="10dp"
+                    android:max="100"
+                    android:progress="0"
+                    android:progressDrawable="@drawable/progress_xp" />
+
+                <LinearLayout
+                    android:id="@+id/rowQuestDone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:paddingTop="12dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="34dp"
+                        android:layout_height="34dp"
+                        android:background="@drawable/bg_pill_cyan"
+                        android:gravity="center"
+                        android:text="⚡"
+                        android:textSize="15sp" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="9dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Natija saqlandi"
+                            android:textColor="@color/text_color"
+                            android:textSize="11.5sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvQuestDoneSub"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="Reyting va quest progressi yangilandi"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="10sp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Rematch notice -->
             <TextView
                 android:id="@+id/tvRematchStatus"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:background="@drawable/edittext_bg"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_pill_cyan"
+                android:gravity="center"
                 android:paddingHorizontal="16dp"
-                android:paddingVertical="8dp"
+                android:paddingVertical="9dp"
                 android:text="⚡ Opponent requested a rematch!"
-                android:textColor="#38BDF8"
-                android:textSize="13sp"
+                android:textColor="@color/accent_cyan"
+                android:textSize="12sp"
                 android:textStyle="bold"
-                android:visibility="gone"
-                app:layout_constraintBottom_toTopOf="@+id/btnAction"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                android:visibility="gone" />
 
-            <Button
-                android:id="@+id/btnAction"
-                android:layout_width="240dp"
-                android:layout_height="52dp"
-                android:layout_marginBottom="8dp"
-                android:text="RESTART"
-                android:textColor="@color/white"
-                android:textSize="15sp"
-                android:fontFamily="sans-serif-black"
-                app:backgroundTint="#0052CC"
-                app:cornerRadius="16dp"
-                app:layout_constraintBottom_toTopOf="@+id/btnSecondary"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+            <!-- Actions -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/btnSecondary"
-                android:layout_width="240dp"
-                android:layout_height="48dp"
-                android:layout_marginBottom="24dp"
-                android:text="EXIT TO MENU 🚪"
-                android:textColor="@color/text_color"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:visibility="gone"
-                app:backgroundTint="@color/border_color"
-                app:cornerRadius="14dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                <Button
+                    android:id="@+id/btnAction"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/chakra_petch"
+                    android:text="↻ QAYTA O'YIN"
+                    android:textAllCaps="false"
+                    android:textColor="@color/on_accent"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.05"
+                    app:backgroundTint="@color/accent_cyan"
+                    app:cornerRadius="15dp" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
+                <TextView
+                    android:id="@+id/btnSecondary"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="9dp"
+                    android:background="@drawable/bg_pill_muted"
+                    android:gravity="center"
+                    android:text="🏠"
+                    android:textSize="17sp" />
+
+                <TextView
+                    android:id="@+id/btnShare"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="9dp"
+                    android:background="@drawable/bg_pill_muted"
+                    android:gravity="center"
+                    android:text="↗"
+                    android:textColor="@color/text_color"
+                    android:textSize="17sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 
     <nl.dionsegijn.konfetti.xml.KonfettiView
         android:id="@+id/konfettiView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="match_parent" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

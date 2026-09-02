@@ -505,10 +505,14 @@ class GameFragment : Fragment() {
 
         val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", android.content.Context.MODE_PRIVATE)
         val isUserWinner = if (isOnlineMode) winner == myOnlineSymbol else (username.isNotEmpty() && winner == arguments?.getString("startingPlayer")) || (!isAiMode && winner == "X") || (isAiMode && winner == "X")
+        var earnedXp = 0
+        var earnedCoins = 0
         if (winner != "Draw" && isUserWinner) {
             val currentWins = sharedPref.getInt("wins", 0) + 1
             val addCoins = if (isOnlineMode) 50 else 20
             val addXp = if (isOnlineMode) 100 else 50
+            earnedXp = addXp
+            earnedCoins = addCoins
             val currentCoins = sharedPref.getInt("coins", 0) + addCoins
             val currentXp = sharedPref.getInt("xp", 0) + addXp
             sharedPref.edit()
@@ -524,6 +528,8 @@ class GameFragment : Fragment() {
 
         val bundle = Bundle().apply {
             putString("gameType", "tic_tac_toe")
+            putInt("xpEarned", earnedXp)
+            putInt("coinsEarned", earnedCoins)
             if (winner == "Draw") {
                 putString("resultMessage", "It's a Draw!")
                 putBoolean("isDraw", true)
