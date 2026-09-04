@@ -47,7 +47,7 @@ object ChessThemeManager {
         BoardTheme(
             id = "wood",
             name = "🪵 Walnut Wood",
-            cost = 150,
+            cost = 500,
             lightColor = Color.parseColor("#F0D9B5"),
             darkColor = Color.parseColor("#B58863"),
             selectedColor = Color.parseColor("#D4A373"),
@@ -56,7 +56,7 @@ object ChessThemeManager {
         BoardTheme(
             id = "midnight",
             name = "🌌 Midnight Navy",
-            cost = 200,
+            cost = 1000,
             lightColor = Color.parseColor("#DEE3E6"),
             darkColor = Color.parseColor("#8CA2AD"),
             selectedColor = Color.parseColor("#64748B"),
@@ -65,7 +65,7 @@ object ChessThemeManager {
         BoardTheme(
             id = "gold",
             name = "👑 Royal Gold",
-            cost = 250,
+            cost = 2500,
             lightColor = Color.parseColor("#FDF6E2"),
             darkColor = Color.parseColor("#B7950B"),
             selectedColor = Color.parseColor("#F59E0B"),
@@ -74,7 +74,7 @@ object ChessThemeManager {
         BoardTheme(
             id = "cyberpunk",
             name = "⚡ Cyberpunk Neon",
-            cost = 300,
+            cost = 3500,
             lightColor = Color.parseColor("#22D3EE"),
             darkColor = Color.parseColor("#7C3AED"),
             selectedColor = Color.parseColor("#EC4899"),
@@ -83,7 +83,7 @@ object ChessThemeManager {
         BoardTheme(
             id = "marble",
             name = "🏛️ Luxury Marble",
-            cost = 350,
+            cost = 5000,
             lightColor = Color.parseColor("#F8FAFC"),
             darkColor = Color.parseColor("#334155"),
             selectedColor = Color.parseColor("#06B6D4"),
@@ -99,43 +99,52 @@ object ChessThemeManager {
             whiteColor = Color.parseColor("#FFFFFF"),
             whiteStrokeColor = Color.parseColor("#0F172A"),
             blackColor = Color.parseColor("#1E293B"),
-            blackStrokeColor = null
+            blackStrokeColor = Color.parseColor("#F1F5F9") // High-contrast silver stroke for dark squares
         ),
         PieceSkin(
-            id = "gold_obsidian",
-            name = "👑 Gold & Obsidian",
-            cost = 200,
-            whiteColor = Color.parseColor("#FBBF24"),
-            whiteStrokeColor = Color.parseColor("#78350F"),
-            blackColor = Color.parseColor("#0F172A"),
-            blackStrokeColor = Color.parseColor("#F59E0B")
+            id = "carved_wood",
+            name = "🪵 Carved Walnut & Maple",
+            cost = 500,
+            whiteColor = Color.parseColor("#FEF3C7"),
+            whiteStrokeColor = Color.parseColor("#92400E"),
+            blackColor = Color.parseColor("#451A03"),
+            blackStrokeColor = Color.parseColor("#FDE68A")
         ),
         PieceSkin(
             id = "crystal_sapphire",
             name = "💎 Crystal Ice & Sapphire",
-            cost = 250,
+            cost = 1200,
             whiteColor = Color.parseColor("#38BDF8"),
             whiteStrokeColor = Color.parseColor("#0284C7"),
-            blackColor = Color.parseColor("#6366F1"),
-            blackStrokeColor = Color.parseColor("#4338CA")
+            blackColor = Color.parseColor("#4338CA"),
+            blackStrokeColor = Color.parseColor("#C7D2FE")
         ),
         PieceSkin(
             id = "neon_cyber",
-            name = "⚡ Neon Pink & Emerald",
-            cost = 300,
-            whiteColor = Color.parseColor("#F43F5E"),
-            whiteStrokeColor = Color.parseColor("#9F1239"),
-            blackColor = Color.parseColor("#10B981"),
-            blackStrokeColor = Color.parseColor("#064E3B")
+            name = "⚡ Cyberpunk Neon Glow",
+            cost = 2500,
+            whiteColor = Color.parseColor("#22D3EE"),
+            whiteStrokeColor = Color.parseColor("#0891B2"),
+            blackColor = Color.parseColor("#EC4899"),
+            blackStrokeColor = Color.parseColor("#FBCFE8")
         ),
         PieceSkin(
-            id = "carved_wood",
-            name = "🪵 Carved Wooden",
-            cost = 200,
-            whiteColor = Color.parseColor("#FEF3C7"),
-            whiteStrokeColor = Color.parseColor("#92400E"),
-            blackColor = Color.parseColor("#78350F"),
-            blackStrokeColor = null
+            id = "luxury_marble",
+            name = "🏛️ Luxury Marble & Jade",
+            cost = 3500,
+            whiteColor = Color.parseColor("#F8FAFC"),
+            whiteStrokeColor = Color.parseColor("#64748B"),
+            blackColor = Color.parseColor("#064E3B"),
+            blackStrokeColor = Color.parseColor("#6EE7B7")
+        ),
+        PieceSkin(
+            id = "gold_obsidian",
+            name = "👑 Royal Gold & Obsidian",
+            cost = 5000,
+            whiteColor = Color.parseColor("#FBBF24"),
+            whiteStrokeColor = Color.parseColor("#78350F"),
+            blackColor = Color.parseColor("#09090B"),
+            blackStrokeColor = Color.parseColor("#F59E0B")
         )
     )
 

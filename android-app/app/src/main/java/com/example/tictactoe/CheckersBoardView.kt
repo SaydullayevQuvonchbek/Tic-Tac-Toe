@@ -98,13 +98,28 @@ class CheckersBoardView @JvmOverloads constructor(
     private val p1RingPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#FCA5A5")
         style = Paint.Style.STROKE
-        strokeWidth = 4f
+        strokeWidth = 3.5f
     }
 
     private val p2RingPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#E2E8F0") // High-contrast Silver metallic ring for Black pieces
+        color = Color.parseColor("#F1F5F9") // High-contrast Silver metallic ring for Black pieces
         style = Paint.Style.STROKE
-        strokeWidth = 5f
+        strokeWidth = 3.5f
+    }
+
+    private val pieceShadowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#55000000") // 33% black drop shadow for 3D elevation
+        style = Paint.Style.FILL
+    }
+
+    private val p1OuterRimPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeWidth = 4.5f
+    }
+
+    private val p2OuterRimPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeWidth = 5.5f
     }
 
     private val crownPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -134,6 +149,8 @@ class CheckersBoardView @JvmOverloads constructor(
         darkSquarePaint.color = boardTheme.darkColor
         p1RingPaint.color = pieceSkin.p1RingColor
         p2RingPaint.color = pieceSkin.p2RingColor
+        p1OuterRimPaint.color = pieceSkin.p1RingColor
+        p2OuterRimPaint.color = pieceSkin.p2RingColor
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -256,6 +273,9 @@ class CheckersBoardView @JvmOverloads constructor(
                     val cx = startX + sc * cellSize + cellSize / 2f
                     val cy = startY + sr * cellSize + cellSize / 2f
 
+                    // 1. Drop shadow for 3D elevation from dark squares
+                    canvas.drawCircle(cx, cy + 4f, pieceRadius, pieceShadowPaint)
+
                     if (l.isP1(piece)) {
                         // P1 Player
                         p1PiecePaint.shader = RadialGradient(
@@ -265,18 +285,22 @@ class CheckersBoardView @JvmOverloads constructor(
                             null, Shader.TileMode.CLAMP
                         )
                         canvas.drawCircle(cx, cy, pieceRadius, p1PiecePaint)
-                        canvas.drawCircle(cx, cy, pieceRadius * 0.75f, p1RingPaint)
+                        canvas.drawCircle(cx, cy, pieceRadius - 2f, p1OuterRimPaint)
+                        canvas.drawCircle(cx, cy, pieceRadius * 0.65f, p1RingPaint)
+                        canvas.drawCircle(cx, cy, pieceRadius * 0.35f, p1RingPaint)
                     } else {
-                        // P2 Player
+                        // P2 Player (Dark / Opponent)
                         p2PiecePaint.shader = RadialGradient(
                             cx - pieceRadius * 0.3f, cy - pieceRadius * 0.3f,
                             pieceRadius * 1.2f,
-                            intArrayOf(pieceSkin.p2Color, Color.parseColor("#020617")),
+                            intArrayOf(pieceSkin.p2Color, Color.parseColor("#0F172A")),
                             null, Shader.TileMode.CLAMP
                         )
                         canvas.drawCircle(cx, cy, pieceRadius, p2PiecePaint)
-                        canvas.drawCircle(cx, cy, pieceRadius - 2f, p2RingPaint)
+                        // High-contrast outer rim right on the perimeter so dark piece clearly pops against dark squares!
+                        canvas.drawCircle(cx, cy, pieceRadius - 2f, p2OuterRimPaint)
                         canvas.drawCircle(cx, cy, pieceRadius * 0.65f, p2RingPaint)
+                        canvas.drawCircle(cx, cy, pieceRadius * 0.35f, p2RingPaint)
                     }
 
                     // Highlight selected piece with cyan glow

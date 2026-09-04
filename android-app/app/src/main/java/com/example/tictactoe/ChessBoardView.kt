@@ -122,9 +122,7 @@ class ChessBoardView @JvmOverloads constructor(
         pieceWhiteStrokePaint.color = pieceSkin.whiteStrokeColor
 
         pieceBlackPaint.color = pieceSkin.blackColor
-        if (pieceSkin.blackStrokeColor != null) {
-            pieceBlackStrokePaint.color = pieceSkin.blackStrokeColor!!
-        }
+        pieceBlackStrokePaint.color = pieceSkin.blackStrokeColor ?: Color.parseColor("#F1F5F9")
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -220,11 +218,11 @@ class ChessBoardView @JvmOverloads constructor(
             val pieceFontSize = cellSize * 0.82f
             pieceWhitePaint.textSize = pieceFontSize
             pieceWhiteStrokePaint.textSize = pieceFontSize
-            pieceWhiteStrokePaint.strokeWidth = cellSize * 0.035f
+            pieceWhiteStrokePaint.strokeWidth = cellSize * 0.045f
 
             pieceBlackPaint.textSize = pieceFontSize
             pieceBlackStrokePaint.textSize = pieceFontSize
-            pieceBlackStrokePaint.strokeWidth = cellSize * 0.035f
+            pieceBlackStrokePaint.strokeWidth = cellSize * 0.045f
 
             val yOffset = ((pieceWhitePaint.descent() + pieceWhitePaint.ascent()) / 2f)
 
@@ -245,10 +243,8 @@ class ChessBoardView @JvmOverloads constructor(
                         canvas.drawText(symbol, cx, cy, pieceWhiteStrokePaint)
                         canvas.drawText(symbol, cx, cy, pieceWhitePaint)
                     } else {
-                        // Black Piece (with optional stroke if configured)
-                        if (pieceSkin.blackStrokeColor != null) {
-                            canvas.drawText(symbol, cx, cy, pieceBlackStrokePaint)
-                        }
+                        // Black Piece with High-Contrast Stroke (pop on dark squares)
+                        canvas.drawText(symbol, cx, cy, pieceBlackStrokePaint)
                         canvas.drawText(symbol, cx, cy, pieceBlackPaint)
                     }
                 }

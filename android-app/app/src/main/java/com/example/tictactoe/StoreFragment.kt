@@ -228,12 +228,30 @@ class StoreFragment : Fragment() {
             val isUnlocked = ChessThemeManager.isPieceSkinUnlocked(requireContext(), skin.id)
             val isEquipped = (skin.id == currentEquipped.id)
 
-            val preview = TextView(requireContext()).apply {
-                text = "♚ ♞"
-                textSize = 22f
-                setTextColor(skin.whiteColor)
-                setShadowLayer(4f, 0f, 0f, skin.whiteStrokeColor)
-                layoutParams = LinearLayout.LayoutParams(40.dpToPx(), LinearLayout.LayoutParams.WRAP_CONTENT)
+            val preview = LinearLayout(requireContext()).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER
+                setPadding(8.dpToPx(), 4.dpToPx(), 8.dpToPx(), 4.dpToPx())
+                background = android.graphics.drawable.GradientDrawable().apply {
+                    setColor(Color.parseColor("#1E293B"))
+                    cornerRadius = 8.dpToPx().toFloat()
+                }
+                val wTv = TextView(requireContext()).apply {
+                    text = "♚"
+                    textSize = 20f
+                    setTextColor(skin.whiteColor)
+                    setShadowLayer(4f, 0f, 0f, skin.whiteStrokeColor)
+                }
+                val bTv = TextView(requireContext()).apply {
+                    text = "♚"
+                    textSize = 20f
+                    setTextColor(skin.blackColor)
+                    val sColor = skin.blackStrokeColor ?: Color.parseColor("#F1F5F9")
+                    setShadowLayer(4f, 0f, 0f, sColor)
+                    setPadding(6.dpToPx(), 0, 0, 0)
+                }
+                addView(wTv)
+                addView(bTv)
             }
 
             val card = createItemCard(
@@ -300,10 +318,34 @@ class StoreFragment : Fragment() {
             val isUnlocked = CheckersThemeManager.isPieceSkinUnlocked(requireContext(), skin.id)
             val isEquipped = (skin.id == currentEquipped.id)
 
-            val preview = TextView(requireContext()).apply {
-                text = "🔴 ⚫"
-                textSize = 20f
-                layoutParams = LinearLayout.LayoutParams(40.dpToPx(), LinearLayout.LayoutParams.WRAP_CONTENT)
+            val preview = LinearLayout(requireContext()).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                setPadding(8.dpToPx(), 6.dpToPx(), 8.dpToPx(), 6.dpToPx())
+                background = android.graphics.drawable.GradientDrawable().apply {
+                    setColor(Color.parseColor("#1E293B"))
+                    cornerRadius = 8.dpToPx().toFloat()
+                }
+                val p1Circle = View(requireContext()).apply {
+                    background = android.graphics.drawable.GradientDrawable().apply {
+                        shape = android.graphics.drawable.GradientDrawable.OVAL
+                        setColor(skin.p1Color)
+                        setStroke(2.dpToPx(), skin.p1RingColor)
+                    }
+                    layoutParams = LinearLayout.LayoutParams(18.dpToPx(), 18.dpToPx())
+                }
+                val p2Circle = View(requireContext()).apply {
+                    background = android.graphics.drawable.GradientDrawable().apply {
+                        shape = android.graphics.drawable.GradientDrawable.OVAL
+                        setColor(skin.p2Color)
+                        setStroke(2.dpToPx(), skin.p2RingColor)
+                    }
+                    layoutParams = LinearLayout.LayoutParams(18.dpToPx(), 18.dpToPx()).apply {
+                        marginStart = 8.dpToPx()
+                    }
+                }
+                addView(p1Circle)
+                addView(p2Circle)
             }
 
             val card = createItemCard(

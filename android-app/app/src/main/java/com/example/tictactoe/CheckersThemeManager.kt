@@ -44,28 +44,28 @@ object CheckersThemeManager {
         BoardTheme(
             id = "emerald_forest",
             name = "🌿 Emerald Forest",
-            cost = 150,
+            cost = 500,
             lightColor = Color.parseColor("#E2E8F0"),
             darkColor = Color.parseColor("#065F46")
         ),
         BoardTheme(
             id = "midnight_obsidian",
             name = "🌌 Midnight Obsidian",
-            cost = 200,
+            cost = 1000,
             lightColor = Color.parseColor("#94A3B8"),
             darkColor = Color.parseColor("#0F172A")
         ),
         BoardTheme(
             id = "lava_crimson",
             name = "🔥 Lava Crimson",
-            cost = 250,
+            cost = 2500,
             lightColor = Color.parseColor("#FED7AA"),
             darkColor = Color.parseColor("#991B1B")
         ),
         BoardTheme(
             id = "royal_gold",
             name = "👑 Royal Gold",
-            cost = 300,
+            cost = 5000,
             lightColor = Color.parseColor("#FEF3C7"),
             darkColor = Color.parseColor("#B45309")
         )
@@ -74,39 +74,57 @@ object CheckersThemeManager {
     val PIECE_SKINS = listOf(
         PieceSkin(
             id = "classic",
-            name = "🔴 Classic Crimson & Dark",
+            name = "🔴 Classic Crimson & Slate",
             cost = 0,
             p1Color = Color.parseColor("#EF4444"),
             p1RingColor = Color.parseColor("#FCA5A5"),
             p2Color = Color.parseColor("#1E293B"),
-            p2RingColor = Color.parseColor("#E2E8F0")
-        ),
-        PieceSkin(
-            id = "gold_platinum",
-            name = "👑 Gold & Platinum",
-            cost = 200,
-            p1Color = Color.parseColor("#F59E0B"),
-            p1RingColor = Color.parseColor("#FEF3C7"),
-            p2Color = Color.parseColor("#334155"),
-            p2RingColor = Color.parseColor("#CBD5E1")
-        ),
-        PieceSkin(
-            id = "neon_cyber",
-            name = "⚡ Neon Cyan & Magenta",
-            cost = 250,
-            p1Color = Color.parseColor("#EC4899"),
-            p1RingColor = Color.parseColor("#FBCFE8"),
-            p2Color = Color.parseColor("#06B6D4"),
-            p2RingColor = Color.parseColor("#A5F3FC")
+            p2RingColor = Color.parseColor("#F1F5F9") // High-contrast silver ring
         ),
         PieceSkin(
             id = "carved_mahogany",
-            name = "🪵 Carved Mahogany Wood",
-            cost = 200,
-            p1Color = Color.parseColor("#B45309"),
-            p1RingColor = Color.parseColor("#FDE68A"),
+            name = "🪵 Amber Maple & Dark Walnut",
+            cost = 500,
+            p1Color = Color.parseColor("#D97706"),
+            p1RingColor = Color.parseColor("#FEF3C7"),
             p2Color = Color.parseColor("#451A03"),
-            p2RingColor = Color.parseColor("#D97706")
+            p2RingColor = Color.parseColor("#F59E0B")
+        ),
+        PieceSkin(
+            id = "crystal_ice",
+            name = "💎 Crystal Ice & Sapphire",
+            cost = 1200,
+            p1Color = Color.parseColor("#38BDF8"),
+            p1RingColor = Color.parseColor("#BAE6FD"),
+            p2Color = Color.parseColor("#4338CA"),
+            p2RingColor = Color.parseColor("#C7D2FE")
+        ),
+        PieceSkin(
+            id = "neon_cyber",
+            name = "⚡ Cyberpunk Neon Glow",
+            cost = 2500,
+            p1Color = Color.parseColor("#EC4899"),
+            p1RingColor = Color.parseColor("#FBCFE8"),
+            p2Color = Color.parseColor("#06B6D4"),
+            p2RingColor = Color.parseColor("#CFFAFE")
+        ),
+        PieceSkin(
+            id = "luxury_marble",
+            name = "🏛️ Luxury Marble & Jade",
+            cost = 3500,
+            p1Color = Color.parseColor("#F8FAFC"),
+            p1RingColor = Color.parseColor("#94A3B8"),
+            p2Color = Color.parseColor("#064E3B"),
+            p2RingColor = Color.parseColor("#6EE7B7")
+        ),
+        PieceSkin(
+            id = "gold_platinum",
+            name = "👑 Royal Gold & Obsidian",
+            cost = 5000,
+            p1Color = Color.parseColor("#F59E0B"),
+            p1RingColor = Color.parseColor("#FEF3C7"),
+            p2Color = Color.parseColor("#09090B"),
+            p2RingColor = Color.parseColor("#FBBF24")
         )
     )
 
