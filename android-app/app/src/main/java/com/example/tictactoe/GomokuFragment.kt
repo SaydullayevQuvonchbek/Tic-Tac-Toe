@@ -141,6 +141,8 @@ class GomokuFragment : Fragment() {
         val resultBundle = Bundle().apply {
             putString("resultMessage", getString(R.string.forfeit_opponent_won))
             putBoolean("isDraw", false)
+            putBoolean("userWon", true)
+            putBoolean("isUserWin", true)
             putBoolean("isOnlineMode", true)
             putString("roomCode", roomCode)
             putBoolean("isHost", isHost)
@@ -351,6 +353,8 @@ class GomokuFragment : Fragment() {
             }
             putString("resultMessage", winMsg)
             putBoolean("isDraw", logic.winner == 0)
+            putBoolean("userWon", isUserWinner)
+            putBoolean("isUserWin", isUserWinner)
             putBoolean("isAiMode", isAiMode)
             putBoolean("isOnlineMode", isOnlineMode)
             putString("roomCode", roomCode)

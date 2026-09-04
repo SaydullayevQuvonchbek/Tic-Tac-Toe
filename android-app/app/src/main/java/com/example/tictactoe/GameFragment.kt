@@ -204,6 +204,8 @@ class GameFragment : Fragment() {
             putString("gameType", "tic_tac_toe")
             putString("resultMessage", getString(R.string.forfeit_opponent_won))
             putBoolean("isDraw", false)
+            putBoolean("userWon", true)
+            putBoolean("isUserWin", true)
             putBoolean("isOnlineMode", true)
             putString("roomCode", roomCode)
             putInt("playerId", playerId)
@@ -547,6 +549,8 @@ class GameFragment : Fragment() {
                 putString("resultMessage", display)
                 putBoolean("isDraw", false)
             }
+            putBoolean("userWon", isUserWinner)
+            putBoolean("isUserWin", isUserWinner)
             
             // Pass the exact same configuration so ResultFragment can replay
             putBoolean("isInfinityMode", isInfinityMode)

@@ -146,6 +146,8 @@ class Connect4Fragment : Fragment() {
             putString("gameType", "connect4")
             putString("resultMessage", getString(R.string.forfeit_opponent_won))
             putBoolean("isDraw", false)
+            putBoolean("userWon", true)
+            putBoolean("isUserWin", true)
             putBoolean("isOnlineMode", true)
             putString("roomCode", roomCode)
             putBoolean("isHost", isHost)
@@ -640,6 +642,8 @@ class Connect4Fragment : Fragment() {
             }
             putString("resultMessage", winMsg)
             putBoolean("isDraw", logic.winner == 0)
+            putBoolean("userWon", isWinner)
+            putBoolean("isUserWin", isWinner)
             putBoolean("isAiMode", isAiMode)
             putBoolean("isOnlineMode", isOnlineMode)
             putString("roomCode", roomCode)

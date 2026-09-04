@@ -144,6 +144,8 @@ class CheckersFragment : Fragment() {
         val resultBundle = Bundle().apply {
             putString("resultMessage", getString(R.string.forfeit_opponent_won))
             putBoolean("isDraw", false)
+            putBoolean("userWon", true)
+            putBoolean("isUserWin", true)
             putBoolean("isOnlineMode", true)
             putString("roomCode", roomCode)
             putBoolean("isHost", isHost)
@@ -412,6 +414,8 @@ class CheckersFragment : Fragment() {
         val resultBundle = Bundle().apply {
             putString("resultMessage", if (logic.winner == 0) "Draw!" else "$winnerName Won!")
             putBoolean("isDraw", logic.winner == 0)
+            putBoolean("userWon", isUserWin)
+            putBoolean("isUserWin", isUserWin)
             putBoolean("isOnlineMode", isOnlineMode)
             putString("roomCode", roomCode)
             putBoolean("isHost", isHost)

@@ -54,9 +54,22 @@ class ResultFragment : Fragment() {
         roomCode = arguments?.getString("roomCode") ?: ""
         gameType = arguments?.getString("gameType") ?: "tic_tac_toe"
 
+        val hasExplicitWon = arguments?.containsKey("userWon") == true || arguments?.containsKey("isUserWin") == true
+        val explicitWon = arguments?.getBoolean("userWon", false) ?: arguments?.getBoolean("isUserWin", false) ?: false
+
         val lower = resultMessage.lowercase()
-        val userWon = !isDraw && (lower.contains("won") || lower.contains("win"))
-        val userLost = !isDraw && (lower.contains("lost") || lower.contains("lose"))
+        val isBotWin = lower.contains("bot won") || lower.contains("bot win") || lower.contains("bot g'alaba")
+        val isOpponentWin = lower.contains("opponent won") || lower.contains("opponent win") || lower.contains("player 2") || lower.contains("lost") || lower.contains("lose")
+
+        val userWon = when {
+            isDraw -> false
+            hasExplicitWon -> explicitWon
+            isBotWin || isOpponentWin -> false
+            lower.contains("you won") || lower.contains("you win") || lower.contains("g'alaba") -> true
+            else -> false
+        }
+        val userLost = !isDraw && !userWon
+
         binding.tvResultMessage.text = when {
             isDraw -> "DURRANG!"
             userWon -> "G'ALABA!"
@@ -81,12 +94,12 @@ class ResultFragment : Fragment() {
             binding.tvSubMessage.text = "Kuchlar teng keldi — revansh vaqti!"
             binding.btnAction.text = if (isOnlineMode) "↻ REVANSH" else "↻ QAYTA O'YIN"
         } else {
-            binding.tvHeader.text = if (userLost) "YAKUN" else "G'OLIB"
-            binding.ivResult.setImageResource(R.drawable.trophy)
-            binding.tvSubMessage.text = if (userLost) "Keyingi safar albatta! 💪" else "Zo'r o'yin bo'ldi — chempion!"
+            binding.tvHeader.text = if (userWon) "G'OLIB" else "MAG'LUBIYAT"
+            binding.ivResult.setImageResource(if (userWon) R.drawable.trophy else R.drawable.board)
+            binding.tvSubMessage.text = if (userWon) "Zo'r o'yin bo'ldi — chempion!" else "Keyingi safar albatta! 💪"
             binding.btnAction.text = if (isOnlineMode) "↻ REVANSH" else "↻ QAYTA O'YIN"
 
-            if (!userLost) {
+            if (userWon) {
                 // Trigger Confetti & Victory Audio/Haptics
                 val party = Party(
                     speed = 0f,
