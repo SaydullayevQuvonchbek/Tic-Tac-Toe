@@ -135,6 +135,10 @@ object EmoteHelper {
         )
     }
 
+    private var currentAnimatorSet: AnimatorSet? = null
+    private var currentRemoveRunnable: Runnable? = null
+    private var currentBubble: View? = null
+
     /**
      * Displays an animated floating bubble with the emote and sender name on the screen
      */
@@ -145,6 +149,12 @@ object EmoteHelper {
         // If opponent emotes are muted, ignore opponent reactions
         if (isOpponent && prefs.getBoolean("mute_opponent_emotes", false)) {
             return
+        }
+
+        currentAnimatorSet?.cancel()
+        currentRemoveRunnable?.let { parent.removeCallbacks(it) }
+        currentBubble?.let {
+            try { (it.parent as? ViewGroup)?.removeView(it) } catch (_: Exception) {}
         }
 
         val name = if (senderName.isNotEmpty()) senderName else if (isOpponent) "Raqib" else "Siz"
@@ -172,6 +182,7 @@ object EmoteHelper {
             scaleY = 0f
             alpha = 1f
         }
+        currentBubble = bubble
 
         val tvEmoji = TextView(context).apply {
             text = emote
@@ -201,14 +212,21 @@ object EmoteHelper {
         val translateY = ObjectAnimator.ofFloat(bubble, View.TRANSLATION_Y, 0f, if (isOpponent) 40f else -60f).apply { duration = 1600; startDelay = 300 }
         val alpha = ObjectAnimator.ofFloat(bubble, View.ALPHA, 1f, 0f).apply { duration = 400; startDelay = 1800 }
 
-        AnimatorSet().apply {
+        currentAnimatorSet = AnimatorSet().apply {
             playTogether(scaleX, scaleY, translateY, alpha)
             start()
         }
 
-        parent.postDelayed({
+        val removeRunnable = Runnable {
             try { parent.removeView(bubble) } catch (_: Exception) {}
-        }, 2300)
+            if (currentBubble == bubble) {
+                currentBubble = null
+                currentAnimatorSet = null
+                currentRemoveRunnable = null
+            }
+        }
+        currentRemoveRunnable = removeRunnable
+        parent.postDelayed(removeRunnable, 2300)
     }
 
     private fun Int.dpToPx(context: Context): Int = (this * context.resources.displayMetrics.density).toInt()

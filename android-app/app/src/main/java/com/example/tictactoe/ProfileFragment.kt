@@ -105,15 +105,13 @@ class ProfileFragment : Fragment() {
         sharedPref.edit().putString("username", newUsername).apply()
         loadProfile()
 
-        val pd = android.app.ProgressDialog(context).apply {
-            setMessage("Profil saqlanmoqda...")
-            show()
-        }
+        // TODO: Removed ProgressDialog
+        // val pd = android.app.ProgressDialog(context).apply { ... }
 
         com.example.tictactoe.network.ApiClient.instance.auth(com.example.tictactoe.network.AuthRequest(deviceId, newUsername))
             .enqueue(object : retrofit2.Callback<com.example.tictactoe.network.AuthResponse> {
                 override fun onResponse(call: retrofit2.Call<com.example.tictactoe.network.AuthResponse>, response: retrofit2.Response<com.example.tictactoe.network.AuthResponse>) {
-                    try { pd.dismiss() } catch (_: Exception) {}
+                    if (!isAdded || _binding == null) return
                     if (response.isSuccessful && response.body()?.status == "success") {
                         val user = response.body()?.user
                         if (user != null) {
@@ -135,7 +133,7 @@ class ProfileFragment : Fragment() {
                 }
 
                 override fun onFailure(call: retrofit2.Call<com.example.tictactoe.network.AuthResponse>, t: Throwable) {
-                    try { pd.dismiss() } catch (_: Exception) {}
+                    if (!isAdded || _binding == null) return
                     android.widget.Toast.makeText(context, "Ism saqlandi: $newUsername", android.widget.Toast.LENGTH_SHORT).show()
                 }
             })

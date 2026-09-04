@@ -7,7 +7,7 @@ import kotlin.math.min
 object ChessAI {
 
     // Search time budget (elapsedRealtime deadline); 0 = unlimited. Always runs on a bg thread.
-    private var deadline: Long = 0L
+    @Volatile private var deadline: Long = 0L
     private fun timeUp() = deadline != 0L && SystemClock.elapsedRealtime() >= deadline
 
     /** Difficulty-aware entry point used by ChessFragment (via AiThinker). */

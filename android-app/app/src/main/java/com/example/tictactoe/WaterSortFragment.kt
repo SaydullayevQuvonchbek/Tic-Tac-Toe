@@ -295,6 +295,7 @@ class WaterSortFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        tubeViews.clear()
         _binding = null
     }
 

@@ -197,6 +197,7 @@ class DurakFragment : Fragment() {
 
         ApiClient.instance.createRoom(RoomCreateRequest(myPlayerId, 36, false, "durak")).enqueue(object : Callback<RoomCreateResponse> {
             override fun onResponse(call: Call<RoomCreateResponse>, response: Response<RoomCreateResponse>) {
+                    if (!isAdded || _binding == null) return
                 val code = response.body()?.room_code
                 if (response.isSuccessful && !code.isNullOrEmpty()) {
                     roomCode = code
@@ -214,6 +215,7 @@ class DurakFragment : Fragment() {
             }
 
             override fun onFailure(call: Call<RoomCreateResponse>, t: Throwable) {
+                    if (!isAdded || _binding == null) return
                 Toast.makeText(context, "Network Error: ${t.message}", Toast.LENGTH_SHORT).show()
                 showSetupScreen()
             }
@@ -221,14 +223,21 @@ class DurakFragment : Fragment() {
     }
 
     private fun joinOnlineRoom(code: String) {
-        val pd = android.app.ProgressDialog(context).apply {
-            setMessage("Joining Durak room...")
-            show()
+        val safeContext = context
+        val pd = safeContext?.let {
+            try {
+                android.app.ProgressDialog(it).apply {
+                    setMessage("Joining Durak room...")
+                    setCancelable(false)
+                    show()
+                }
+            } catch (_: Exception) { null }
         }
 
         ApiClient.instance.joinRoom(RoomJoinRequest(myPlayerId, code)).enqueue(object : Callback<RoomJoinResponse> {
             override fun onResponse(call: Call<RoomJoinResponse>, response: Response<RoomJoinResponse>) {
-                pd.dismiss()
+                if (!isAdded || _binding == null) return
+                try { pd?.dismiss() } catch (_: Exception) {}
                 if (response.isSuccessful && response.body()?.status == "success") {
                     roomCode = code
                     isHost = false
@@ -243,7 +252,8 @@ class DurakFragment : Fragment() {
             }
 
             override fun onFailure(call: Call<RoomJoinResponse>, t: Throwable) {
-                pd.dismiss()
+                if (!isAdded || _binding == null) return
+                try { pd?.dismiss() } catch (_: Exception) {}
                 Toast.makeText(context, "Network Error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
@@ -252,12 +262,14 @@ class DurakFragment : Fragment() {
     private fun subscribePusherEvents() {
         PusherManager.connect()
         PusherManager.connectionListener = { connected ->
-            activity?.runOnUiThread { onPusherConnectionChanged(connected) }
+            activity?.runOnUiThread {
+                    if (!isAdded || _binding == null) return@runOnUiThread onPusherConnectionChanged(connected) }
         }
         connectedNow = PusherManager.isConnected
         PusherManager.subscribeToRoom(roomCode,
             onGameStarted = { data ->
                 activity?.runOnUiThread {
+                    if (!isAdded || _binding == null) return@runOnUiThread
                     binding.waitingContainer.visibility = View.GONE
                     if (isHost) {
                         hostBroadcastGameInit()
@@ -266,16 +278,19 @@ class DurakFragment : Fragment() {
             },
             onMoveMade = { eventData ->
                 activity?.runOnUiThread {
+                    if (!isAdded || _binding == null) return@runOnUiThread
                     handlePusherCardAction(eventData)
                 }
             },
             onOpponentLeft = {
                 activity?.runOnUiThread {
+                    if (!isAdded || _binding == null) return@runOnUiThread
                     handleOpponentForfeited()
                 }
             },
             onEmoteReceived = { eventData ->
                 activity?.runOnUiThread {
+                    if (!isAdded || _binding == null) return@runOnUiThread
                     try {
                         var json = JSONObject(eventData)
                         if (json.has("data")) {
@@ -353,6 +368,7 @@ class DurakFragment : Fragment() {
         // Fallback: Fetch directly from server API
         ApiClient.instance.startCardGame(CardStartRequest(roomCode, myPlayerId)).enqueue(object : Callback<CardStartResponse> {
             override fun onResponse(call: Call<CardStartResponse>, response: Response<CardStartResponse>) {
+                    if (!isAdded || _binding == null) return
                 val body = response.body()
                 if (response.isSuccessful && body != null && body.trump_card != null) {
                     val trump = Card.fromCode(body.trump_card)
@@ -363,7 +379,11 @@ class DurakFragment : Fragment() {
                     renderBoard()
                 }
             }
-            override fun onFailure(call: Call<CardStartResponse>, t: Throwable) {}
+            override fun onFailure(call: Call<CardStartResponse>, t: Throwable) {
+                    if (!isAdded || _binding == null) return
+    t.printStackTrace()
+    context?.let { android.widget.Toast.makeText(it, "Tarmoq xatosi!", android.widget.Toast.LENGTH_SHORT).show() }
+}
         })
     }
 
@@ -382,6 +402,7 @@ class DurakFragment : Fragment() {
             subscribePusherEvents()
             ApiClient.instance.startCardGame(CardStartRequest(roomCode, myPlayerId)).enqueue(object : Callback<CardStartResponse> {
                 override fun onResponse(call: Call<CardStartResponse>, response: Response<CardStartResponse>) {
+                    if (!isAdded || _binding == null) return
                     val body = response.body()
                     if (response.isSuccessful && body != null && body.trump_card != null) {
                         val trump = Card.fromCode(body.trump_card)
@@ -392,7 +413,11 @@ class DurakFragment : Fragment() {
                         renderBoard()
                     }
                 }
-                override fun onFailure(call: Call<CardStartResponse>, t: Throwable) {}
+                override fun onFailure(call: Call<CardStartResponse>, t: Throwable) {
+                    if (!isAdded || _binding == null) return
+    t.printStackTrace()
+    context?.let { android.widget.Toast.makeText(it, "Tarmoq xatosi!", android.widget.Toast.LENGTH_SHORT).show() }
+}
             })
         }
 
@@ -410,8 +435,15 @@ class DurakFragment : Fragment() {
         EmoteHelper.showFloatingEmote(binding.root as ViewGroup, emote, isOpponent = false, senderName = myUsername)
         if (isOnlineMode && roomCode.isNotEmpty()) {
             ApiClient.instance.sendEmote(EmoteRequest(roomCode, myPlayerId, emote)).enqueue(object : Callback<EmoteResponse> {
-                override fun onResponse(call: Call<EmoteResponse>, response: Response<EmoteResponse>) {}
-                override fun onFailure(call: Call<EmoteResponse>, t: Throwable) {}
+                override fun onResponse(call: Call<EmoteResponse>, response: Response<EmoteResponse>) {
+                    if (!isAdded || _binding == null) return
+                        if (!isAdded || _binding == null) return
+                    }
+                override fun onFailure(call: Call<EmoteResponse>, t: Throwable) {
+                    if (!isAdded || _binding == null) return
+    t.printStackTrace()
+    context?.let { android.widget.Toast.makeText(it, "Tarmoq xatosi!", android.widget.Toast.LENGTH_SHORT).show() }
+}
             })
         }
     }
@@ -1040,9 +1072,11 @@ class DurakFragment : Fragment() {
         ApiClient.instance.sendCardAction(CardActionRequest(roomCode, myPlayerId, action, card, targetCard))
             .enqueue(object : Callback<CardActionResponse> {
                 override fun onResponse(call: Call<CardActionResponse>, response: Response<CardActionResponse>) {
+                    if (!isAdded || _binding == null) return
                     if (!response.isSuccessful && attempt < 2) retry(action, card, targetCard, attempt)
                 }
                 override fun onFailure(call: Call<CardActionResponse>, t: Throwable) {
+                    if (!isAdded || _binding == null) return
                     if (attempt < 2) retry(action, card, targetCard, attempt)
                 }
             })

@@ -155,23 +155,35 @@ class ReactionBottomSheetDialog(
             return
         }
 
-        val newCoins = coins - item.cost
-        prefs.edit()
-            .putInt("coins", newCoins)
-            .putBoolean("unlocked_emote_${item.emoji}", true)
-            .apply()
+        val successAction = {
+            val newCoins = coins - item.cost
+            prefs.edit()
+                .putInt("coins", newCoins)
+                .putBoolean("unlocked_emote_${item.emoji}", true)
+                .apply()
+            HapticHelper.performVictory(context)
+            Toast.makeText(context, "🎉 ${item.emoji} ochildi!", Toast.LENGTH_SHORT).show()
+            binding.tvReactionCoins.text = "🪙 $newCoins"
+            renderCategory(currentCategory)
+        }
 
         if (userId != -1) {
             ApiClient.instance.buyItem(StoreBuyRequest(userId, "emote_${item.name.lowercase().replace(" ", "_")}", item.cost))
                 .enqueue(object : Callback<StoreBuyResponse> {
-                    override fun onResponse(call: Call<StoreBuyResponse>, response: Response<StoreBuyResponse>) {}
-                    override fun onFailure(call: Call<StoreBuyResponse>, t: Throwable) {}
+                    override fun onResponse(call: Call<StoreBuyResponse>, response: Response<StoreBuyResponse>) {
+                        if (response.isSuccessful) {
+                            successAction()
+                        } else {
+                            context?.let { Toast.makeText(it, "Server xatosi: ${response.code()}", Toast.LENGTH_SHORT).show() }
+                        }
+                    }
+                    override fun onFailure(call: Call<StoreBuyResponse>, t: Throwable) {
+                        t.printStackTrace()
+                        context?.let { Toast.makeText(it, "Tarmoq xatosi!", Toast.LENGTH_SHORT).show() }
+                    }
                 })
+        } else {
+            successAction()
         }
-
-        HapticHelper.performVictory(context)
-        Toast.makeText(context, "🎉 ${item.emoji} ochildi!", Toast.LENGTH_SHORT).show()
-        binding.tvReactionCoins.text = "🪙 $newCoins"
-        renderCategory(currentCategory)
     }
 }

@@ -64,6 +64,12 @@ class LuckyWheelView @JvmOverloads constructor(
 
     private var currentRotation = 0f
     private var isSpinning = false
+    private var animator: ValueAnimator? = null
+
+    override fun onDetachedFromWindow() {
+        animator?.cancel()
+        super.onDetachedFromWindow()
+    }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
@@ -120,7 +126,7 @@ class LuckyWheelView @JvmOverloads constructor(
         val fullRotations = (5 + Random.nextInt(3)) * 360f
         val finalRotation = currentRotation + fullRotations + ((targetAngle - (currentRotation % 360f) + 360f) % 360f)
 
-        ValueAnimator.ofFloat(currentRotation, finalRotation).apply {
+        animator = ValueAnimator.ofFloat(currentRotation, finalRotation).apply {
             duration = 4200
             interpolator = DecelerateInterpolator(1.8f)
             addUpdateListener { anim ->

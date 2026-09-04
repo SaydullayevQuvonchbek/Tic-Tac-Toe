@@ -165,7 +165,9 @@ object CheckersThemeManager {
             ApiClient.instance.buyItem(StoreBuyRequest(userId, "checkers_board_${theme.id}", theme.cost))
                 .enqueue(object : Callback<StoreBuyResponse> {
                     override fun onResponse(call: Call<StoreBuyResponse>, response: Response<StoreBuyResponse>) {}
-                    override fun onFailure(call: Call<StoreBuyResponse>, t: Throwable) {}
+                    override fun onFailure(call: Call<StoreBuyResponse>, t: Throwable) {
+    t.printStackTrace()
+}
                 })
         }
 
@@ -193,7 +195,9 @@ object CheckersThemeManager {
             ApiClient.instance.buyItem(StoreBuyRequest(userId, "checkers_piece_${skin.id}", skin.cost))
                 .enqueue(object : Callback<StoreBuyResponse> {
                     override fun onResponse(call: Call<StoreBuyResponse>, response: Response<StoreBuyResponse>) {}
-                    override fun onFailure(call: Call<StoreBuyResponse>, t: Throwable) {}
+                    override fun onFailure(call: Call<StoreBuyResponse>, t: Throwable) {
+    t.printStackTrace()
+}
                 })
         }
 

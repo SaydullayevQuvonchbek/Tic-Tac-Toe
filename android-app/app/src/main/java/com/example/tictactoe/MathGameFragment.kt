@@ -314,14 +314,20 @@ class MathGameFragment : Fragment() {
             if (correctCount >= targetCount) {
                 handleLevelWin()
             } else {
-                binding.root.postDelayed({ generateQuestion() }, 250)
+                binding.root.postDelayed({
+                    if (!isAdded || _binding == null) return@postDelayed
+                    generateQuestion()
+                }, 250)
             }
         } else {
             combo = 0
             HapticHelper.performHeavyImpact(requireContext())
             binding.tvFeedback.text = "Wrong! ❌ Try next"
             binding.tvFeedback.setTextColor(Color.parseColor("#EF4444"))
-            binding.root.postDelayed({ generateQuestion() }, 300)
+            binding.root.postDelayed({
+                if (!isAdded || _binding == null) return@postDelayed
+                generateQuestion()
+            }, 300)
         }
     }
 

@@ -82,8 +82,12 @@ class GomokuFragment : Fragment() {
                 val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
                 val myUserId = sharedPref.getInt("user_id", -1)
                 ApiClient.instance.makeMove(MoveRequest(roomCode, myUserId, -99, -99, -1)).enqueue(object : Callback<MoveResponse> {
-                    override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) {}
-                    override fun onFailure(call: Call<MoveResponse>, t: Throwable) {}
+                    override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) { if (!isAdded || _binding == null) return }
+                    override fun onFailure(call: Call<MoveResponse>, t: Throwable) {
+                        if (!isAdded || _binding == null) return
+                        t.printStackTrace()
+                        context?.let { android.widget.Toast.makeText(it, "Tarmoq xatosi!", android.widget.Toast.LENGTH_SHORT).show() }
+                    }
                 })
             }
         }
@@ -99,8 +103,12 @@ class GomokuFragment : Fragment() {
                         val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
                         val myUserId = sharedPref.getInt("user_id", -1)
                         ApiClient.instance.makeMove(MoveRequest(roomCode, myUserId, -999, -999, -1)).enqueue(object : Callback<MoveResponse> {
-                            override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) {}
-                            override fun onFailure(call: Call<MoveResponse>, t: Throwable) {}
+                            override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) { if (!isAdded || _binding == null) return }
+                            override fun onFailure(call: Call<MoveResponse>, t: Throwable) {
+                                if (!isAdded || _binding == null) return
+                                t.printStackTrace()
+                                context?.let { android.widget.Toast.makeText(it, "Tarmoq xatosi!", android.widget.Toast.LENGTH_SHORT).show() }
+                            }
                         })
                         PusherManager.unsubscribeFromRoom(roomCode)
                         Toast.makeText(context, getString(R.string.forfeit_you_lost), Toast.LENGTH_SHORT).show()
@@ -221,8 +229,12 @@ class GomokuFragment : Fragment() {
                 val userId = sharedPref.getInt("user_id", -1)
 
                 ApiClient.instance.makeMove(MoveRequest(roomCode, userId, r, c, -1)).enqueue(object : Callback<MoveResponse> {
-                    override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) {}
-                    override fun onFailure(call: Call<MoveResponse>, t: Throwable) {}
+                    override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) { if (!isAdded || _binding == null) return }
+                    override fun onFailure(call: Call<MoveResponse>, t: Throwable) {
+                        if (!isAdded || _binding == null) return
+                        t.printStackTrace()
+                        context?.let { android.widget.Toast.makeText(it, "Tarmoq xatosi!", android.widget.Toast.LENGTH_SHORT).show() }
+                    }
                 })
 
                 if (logic.isGameOver) {
@@ -305,6 +317,7 @@ class GomokuFragment : Fragment() {
         QuestManager.recordGamePlayed(requireContext(), "gomoku", isOnlineMode, isUserWinner)
 
         handler.postDelayed({
+            if (!isAdded || _binding == null) return@postDelayed
             submitScoreAndExit()
         }, 1800)
     }
@@ -318,8 +331,12 @@ class GomokuFragment : Fragment() {
         if (userId != -1 && score > 0) {
             ApiClient.instance.submitGameScore(GameScoreRequest(userId, "gomoku", score))
                 .enqueue(object : Callback<GameScoreResponse> {
-                    override fun onResponse(call: Call<GameScoreResponse>, response: Response<GameScoreResponse>) {}
-                    override fun onFailure(call: Call<GameScoreResponse>, t: Throwable) {}
+                    override fun onResponse(call: Call<GameScoreResponse>, response: Response<GameScoreResponse>) { if (!isAdded || _binding == null) return }
+                    override fun onFailure(call: Call<GameScoreResponse>, t: Throwable) {
+                        if (!isAdded || _binding == null) return
+                        t.printStackTrace()
+                        context?.let { android.widget.Toast.makeText(it, "Tarmoq xatosi!", android.widget.Toast.LENGTH_SHORT).show() }
+                    }
                 })
         }
 
@@ -351,6 +368,7 @@ class GomokuFragment : Fragment() {
         ApiClient.instance.createRoom(RoomCreateRequest(userId, size, false, "gomoku"))
             .enqueue(object : Callback<RoomCreateResponse> {
                 override fun onResponse(call: Call<RoomCreateResponse>, response: Response<RoomCreateResponse>) {
+                    if (!isAdded || _binding == null) return
                     if (response.isSuccessful && response.body()?.status == "success") {
                         roomCode = response.body()?.room_code ?: ""
                         isOnlineMode = true
@@ -366,6 +384,7 @@ class GomokuFragment : Fragment() {
                 }
 
                 override fun onFailure(call: Call<RoomCreateResponse>, t: Throwable) {
+                    if (!isAdded || _binding == null) return
                     Toast.makeText(context, "Network Error: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
             })
@@ -375,6 +394,7 @@ class GomokuFragment : Fragment() {
         ApiClient.instance.joinRoom(RoomJoinRequest(userId, code))
             .enqueue(object : Callback<RoomJoinResponse> {
                 override fun onResponse(call: Call<RoomJoinResponse>, response: Response<RoomJoinResponse>) {
+                    if (!isAdded || _binding == null) return
                     if (response.isSuccessful && response.body()?.status == "success") {
                         roomCode = code
                         isOnlineMode = true
@@ -393,6 +413,7 @@ class GomokuFragment : Fragment() {
                 }
 
                 override fun onFailure(call: Call<RoomJoinResponse>, t: Throwable) {
+                    if (!isAdded || _binding == null) return
                     Toast.makeText(context, "Network Error: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
             })
@@ -403,12 +424,14 @@ class GomokuFragment : Fragment() {
             roomCode = roomCode,
             onGameStarted = {
                 activity?.runOnUiThread {
+                    if (!isAdded || _binding == null) return@runOnUiThread
                     startLocalGame(logic.boardSize)
                     Toast.makeText(context, "Match started! 🔥", Toast.LENGTH_SHORT).show()
                 }
             },
             onMoveMade = { eventData ->
                 activity?.runOnUiThread {
+                    if (!isAdded || _binding == null) return@runOnUiThread
                     try {
                         val json = JSONObject(eventData)
                         val senderId = json.optInt("player_id", -1)
@@ -459,6 +482,7 @@ class GomokuFragment : Fragment() {
             },
             onOpponentLeft = {
                 activity?.runOnUiThread {
+                    if (!isAdded || _binding == null) return@runOnUiThread
                     handleOpponentForfeited()
                 }
             }

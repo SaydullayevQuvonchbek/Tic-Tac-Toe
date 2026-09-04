@@ -153,15 +153,21 @@ class ColorMatchFragment : Fragment() {
         }
 
         if (userId != -1 && score > 0) {
-            val pd = android.app.ProgressDialog(context).apply {
-                setMessage("Saving Score...")
-                setCancelable(false)
-                show()
+            val safeContext = context
+            val pd = safeContext?.let {
+                try {
+                    android.app.ProgressDialog(it).apply {
+                        setMessage("Saving Score...")
+                        setCancelable(false)
+                        show()
+                    }
+                } catch (_: Exception) { null }
             }
             val req = GameScoreRequest(userId, "color_match", score)
             ApiClient.instance.submitGameScore(req).enqueue(object : Callback<GameScoreResponse> {
                 override fun onResponse(call: Call<GameScoreResponse>, response: Response<GameScoreResponse>) {
-                    pd.dismiss()
+                    if (!isAdded || _binding == null) return
+                    try { pd?.dismiss() } catch (_: Exception) {}
                     if (response.isSuccessful && response.body()?.status == "success") {
                         val resp = response.body()!!
                         sharedPref.edit()
@@ -175,7 +181,9 @@ class ColorMatchFragment : Fragment() {
                 }
 
                 override fun onFailure(call: Call<GameScoreResponse>, t: Throwable) {
-                    pd.dismiss()
+                    if (!isAdded || _binding == null) return
+                    try { pd?.dismiss() } catch (_: Exception) {}
+                    t.printStackTrace()
                     showResultDialog(isNewRecord, score / 2, sharedPref.getInt("xp", 0) + score / 2, false, sharedPref.getInt("level", 1), coinsEarned)
                 }
             })

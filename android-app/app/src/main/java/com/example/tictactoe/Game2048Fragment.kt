@@ -318,15 +318,21 @@ class Game2048Fragment : Fragment() {
         }
 
         if (userId != -1 && score > 0) {
-            val pd = android.app.ProgressDialog(context).apply {
-                setMessage("Saving Score...")
-                setCancelable(false)
-                show()
+            val safeContext = context
+            val pd = safeContext?.let {
+                try {
+                    android.app.ProgressDialog(it).apply {
+                        setMessage("Saving Score...")
+                        setCancelable(false)
+                        show()
+                    }
+                } catch (_: Exception) { null }
             }
             val req = GameScoreRequest(userId, "game_2048", score)
             ApiClient.instance.submitGameScore(req).enqueue(object : Callback<GameScoreResponse> {
                 override fun onResponse(call: Call<GameScoreResponse>, response: Response<GameScoreResponse>) {
-                    pd.dismiss()
+                    if (!isAdded || _binding == null) return
+                    try { pd?.dismiss() } catch (_: Exception) {}
                     if (response.isSuccessful && response.body()?.status == "success") {
                         val resp = response.body()!!
                         sharedPref.edit()
@@ -340,7 +346,8 @@ class Game2048Fragment : Fragment() {
                 }
 
                 override fun onFailure(call: Call<GameScoreResponse>, t: Throwable) {
-                    pd.dismiss()
+                    if (!isAdded || _binding == null) return
+                    try { pd?.dismiss() } catch (_: Exception) {}
                     showResultDialog(maxTile, isNewRecord, 0, 0, false, 0)
                 }
             })

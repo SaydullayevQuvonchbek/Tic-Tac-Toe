@@ -125,11 +125,13 @@ class ResultFragment : Fragment() {
             roomCode = roomCode,
             onGameStarted = {
                 activity?.runOnUiThread {
+                    if (!isAdded || _binding == null) return@runOnUiThread
                     launchRematchGame()
                 }
             },
             onMoveMade = { eventData ->
                 activity?.runOnUiThread {
+                    if (!isAdded || _binding == null) return@runOnUiThread
                     try {
                         var json = JSONObject(eventData)
                         if (json.has("data")) {
@@ -174,6 +176,7 @@ class ResultFragment : Fragment() {
             },
             onOpponentLeft = {
                 activity?.runOnUiThread {
+                    if (!isAdded || _binding == null) return@runOnUiThread
                     Toast.makeText(context, "Raqibingiz xonadan chiqib ketdi", Toast.LENGTH_SHORT).show()
                     binding.tvRematchStatus.visibility = View.VISIBLE
                     binding.tvRematchStatus.text = "🚪 Raqib xonadan chiqdi"
@@ -206,8 +209,12 @@ class ResultFragment : Fragment() {
 
         ApiClient.instance.makeMove(MoveRequest(roomCode, myUserId, row, col, -1))
             .enqueue(object : Callback<MoveResponse> {
-                override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) {}
-                override fun onFailure(call: Call<MoveResponse>, t: Throwable) {}
+                override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) {
+                    if (!isAdded || _binding == null) return
+                }
+                override fun onFailure(call: Call<MoveResponse>, t: Throwable) {
+                    if (!isAdded || _binding == null) return
+                }
             })
     }
 

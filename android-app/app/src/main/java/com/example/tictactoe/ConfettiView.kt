@@ -46,6 +46,13 @@ class ConfettiView @JvmOverloads constructor(
     private val particles = mutableListOf<Particle>()
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private var animator: ValueAnimator? = null
+    var removeRunnable: Runnable? = null
+
+    override fun onDetachedFromWindow() {
+        animator?.cancel()
+        removeRunnable?.let { handler?.removeCallbacks(it) }
+        super.onDetachedFromWindow()
+    }
 
     fun burst(particleCount: Int = 90) {
         post {
@@ -137,11 +144,13 @@ class ConfettiView @JvmOverloads constructor(
             HapticHelper.performVictory(context)
             SoundHelper.playVictorySound(context)
 
-            parent.postDelayed({
+            val removeRunnable = Runnable {
                 try {
                     parent.removeView(confetti)
                 } catch (_: Exception) {}
-            }, 2600)
+            }
+            confetti.removeRunnable = removeRunnable
+            parent.postDelayed(removeRunnable, 2600)
         }
     }
 }

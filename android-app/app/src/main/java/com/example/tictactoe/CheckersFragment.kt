@@ -85,8 +85,12 @@ class CheckersFragment : Fragment() {
                 val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
                 val myUserId = sharedPref.getInt("user_id", -1)
                 ApiClient.instance.makeMove(MoveRequest(roomCode, myUserId, -99, -99, -1)).enqueue(object : Callback<MoveResponse> {
-                    override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) {}
-                    override fun onFailure(call: Call<MoveResponse>, t: Throwable) {}
+                    override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) { if (!isAdded || _binding == null) return }
+                    override fun onFailure(call: Call<MoveResponse>, t: Throwable) {
+                        if (!isAdded || _binding == null) return
+                        t.printStackTrace()
+                        context?.let { android.widget.Toast.makeText(it, "Tarmoq xatosi!", android.widget.Toast.LENGTH_SHORT).show() }
+                    }
                 })
             }
         }
@@ -102,8 +106,12 @@ class CheckersFragment : Fragment() {
                         val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
                         val myUserId = sharedPref.getInt("user_id", -1)
                         ApiClient.instance.makeMove(MoveRequest(roomCode, myUserId, -999, -999, -1)).enqueue(object : Callback<MoveResponse> {
-                            override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) {}
-                            override fun onFailure(call: Call<MoveResponse>, t: Throwable) {}
+                            override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) { if (!isAdded || _binding == null) return }
+                            override fun onFailure(call: Call<MoveResponse>, t: Throwable) {
+                                if (!isAdded || _binding == null) return
+                                t.printStackTrace()
+                                context?.let { android.widget.Toast.makeText(it, "Tarmoq xatosi!", android.widget.Toast.LENGTH_SHORT).show() }
+                            }
                         })
                         PusherManager.unsubscribeFromRoom(roomCode)
                         Toast.makeText(context, getString(R.string.forfeit_you_lost), Toast.LENGTH_SHORT).show()
@@ -228,12 +236,20 @@ class CheckersFragment : Fragment() {
                 val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
                 val userId = sharedPref.getInt("user_id", -1)
                 ApiClient.instance.makeMove(MoveRequest(roomCode, userId, -888, emoteIndex, -1)).enqueue(object : Callback<MoveResponse> {
-                    override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) {}
-                    override fun onFailure(call: Call<MoveResponse>, t: Throwable) {}
+                    override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) { if (!isAdded || _binding == null) return }
+                    override fun onFailure(call: Call<MoveResponse>, t: Throwable) {
+                        if (!isAdded || _binding == null) return
+                        t.printStackTrace()
+                        context?.let { android.widget.Toast.makeText(it, "Tarmoq xatosi!", android.widget.Toast.LENGTH_SHORT).show() }
+                    }
                 })
                 ApiClient.instance.sendEmote(EmoteRequest(roomCode, userId, emote)).enqueue(object : Callback<EmoteResponse> {
-                    override fun onResponse(call: Call<EmoteResponse>, response: Response<EmoteResponse>) {}
-                    override fun onFailure(call: Call<EmoteResponse>, t: Throwable) {}
+                    override fun onResponse(call: Call<EmoteResponse>, response: Response<EmoteResponse>) { if (!isAdded || _binding == null) return }
+                    override fun onFailure(call: Call<EmoteResponse>, t: Throwable) {
+                        if (!isAdded || _binding == null) return
+                        t.printStackTrace()
+                        context?.let { android.widget.Toast.makeText(it, "Tarmoq xatosi!", android.widget.Toast.LENGTH_SHORT).show() }
+                    }
                 })
             }
         }
@@ -289,8 +305,12 @@ class CheckersFragment : Fragment() {
                 val encodedTo = toR * 100 + toC
 
                 ApiClient.instance.makeMove(MoveRequest(roomCode, userId, encodedFrom, encodedTo, -1)).enqueue(object : Callback<MoveResponse> {
-                    override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) {}
-                    override fun onFailure(call: Call<MoveResponse>, t: Throwable) {}
+                    override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) { if (!isAdded || _binding == null) return }
+                    override fun onFailure(call: Call<MoveResponse>, t: Throwable) {
+                        if (!isAdded || _binding == null) return
+                        t.printStackTrace()
+                        context?.let { android.widget.Toast.makeText(it, "Tarmoq xatosi!", android.widget.Toast.LENGTH_SHORT).show() }
+                    }
                 })
 
                 if (logic.isGameOver) {
@@ -410,6 +430,7 @@ class CheckersFragment : Fragment() {
         ApiClient.instance.createRoom(RoomCreateRequest(userId, size, false, "checkers"))
             .enqueue(object : Callback<RoomCreateResponse> {
                 override fun onResponse(call: Call<RoomCreateResponse>, response: Response<RoomCreateResponse>) {
+                    if (!isAdded || _binding == null) return
                     if (response.isSuccessful && response.body()?.status == "success") {
                         roomCode = response.body()?.room_code ?: ""
                         isHost = true
@@ -425,6 +446,7 @@ class CheckersFragment : Fragment() {
                 }
 
                 override fun onFailure(call: Call<RoomCreateResponse>, t: Throwable) {
+                    if (!isAdded || _binding == null) return
                     Toast.makeText(context, "Network Error: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
             })
@@ -434,6 +456,7 @@ class CheckersFragment : Fragment() {
         ApiClient.instance.joinRoom(RoomJoinRequest(userId, code))
             .enqueue(object : Callback<RoomJoinResponse> {
                 override fun onResponse(call: Call<RoomJoinResponse>, response: Response<RoomJoinResponse>) {
+                    if (!isAdded || _binding == null) return
                     if (response.isSuccessful && response.body()?.status == "success") {
                         roomCode = code
                         isHost = false
@@ -451,6 +474,7 @@ class CheckersFragment : Fragment() {
                 }
 
                 override fun onFailure(call: Call<RoomJoinResponse>, t: Throwable) {
+                    if (!isAdded || _binding == null) return
                     Toast.makeText(context, "Network Error: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
             })
@@ -461,11 +485,13 @@ class CheckersFragment : Fragment() {
             roomCode = roomCode,
             onGameStarted = {
                 activity?.runOnUiThread {
+                    if (!isAdded || _binding == null) return@runOnUiThread
                     startLocalGame(currentBoardSize)
                 }
             },
             onMoveMade = { eventData ->
                 activity?.runOnUiThread {
+                    if (!isAdded || _binding == null) return@runOnUiThread
                     try {
                         var json = JSONObject(eventData)
                         if (json.has("data")) {
@@ -487,7 +513,7 @@ class CheckersFragment : Fragment() {
                         if (row == -888) {
                             val emote = EmoteHelper.EMOTES.getOrNull(col) ?: "🔥"
                             EmoteHelper.showFloatingEmote(binding.root as ViewGroup, emote, isOpponent = true)
-                            HapticHelper.performClick(requireContext())
+                            HapticHelper.performClick(context ?: return@runOnUiThread)
                             return@runOnUiThread
                         }
 
@@ -512,8 +538,8 @@ class CheckersFragment : Fragment() {
 
                         val moved = logic.applyNetworkMove(fromR, fromC, toR, toC)
                         if (moved) {
-                            HapticHelper.performClick(requireContext())
-                            SoundHelper.playMoveSound(requireContext())
+                            HapticHelper.performClick(context ?: return@runOnUiThread)
+                            SoundHelper.playMoveSound(context ?: return@runOnUiThread)
                             binding.checkersBoardView.invalidate()
                             updateScoreboard()
 
@@ -534,11 +560,13 @@ class CheckersFragment : Fragment() {
             },
             onOpponentLeft = {
                 activity?.runOnUiThread {
+                    if (!isAdded || _binding == null) return@runOnUiThread
                     handleOpponentForfeited()
                 }
             },
             onEmoteReceived = { eventData ->
                 activity?.runOnUiThread {
+                    if (!isAdded || _binding == null) return@runOnUiThread
                     try {
                         var json = JSONObject(eventData)
                         if (json.has("data") && json.get("data") is String) {
@@ -552,7 +580,7 @@ class CheckersFragment : Fragment() {
                         val emote = json.optString("emote", "🔥")
                         if (emote.isNotEmpty()) {
                             EmoteHelper.showFloatingEmote(binding.root as ViewGroup, emote, isOpponent = true)
-                            HapticHelper.performClick(requireContext())
+                            HapticHelper.performClick(context ?: return@runOnUiThread)
                         }
                     } catch (_: Exception) {}
                 }

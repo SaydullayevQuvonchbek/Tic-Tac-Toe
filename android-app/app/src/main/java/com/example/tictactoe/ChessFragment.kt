@@ -418,6 +418,7 @@ class ChessFragment : Fragment() {
 
         ApiClient.instance.createRoom(RoomCreateRequest(myUserId, 8, false, "chess")).enqueue(object : Callback<RoomCreateResponse> {
             override fun onResponse(call: Call<RoomCreateResponse>, response: Response<RoomCreateResponse>) {
+                if (!isAdded || _binding == null) return
                 val code = response.body()?.room_code
                 if (response.isSuccessful && !code.isNullOrEmpty()) {
                     roomCode = code
@@ -436,6 +437,7 @@ class ChessFragment : Fragment() {
             }
 
             override fun onFailure(call: Call<RoomCreateResponse>, t: Throwable) {
+                if (!isAdded || _binding == null) return
                 Toast.makeText(context, "Tarmoq xatosi: ${t.message}", Toast.LENGTH_SHORT).show()
                 showSetupScreen()
             }
@@ -443,14 +445,21 @@ class ChessFragment : Fragment() {
     }
 
     private fun joinOnlineRoom(code: String) {
-        val pd = android.app.ProgressDialog(context).apply {
-            setMessage("Shaxmat xonasiga ulanmoqda...")
-            show()
+        val safeContext = context
+        val pd = safeContext?.let {
+            try {
+                android.app.ProgressDialog(it).apply {
+                    setMessage("Shaxmat xonasiga ulanmoqda...")
+                    setCancelable(false)
+                    show()
+                }
+            } catch (_: Exception) { null }
         }
 
         ApiClient.instance.joinRoom(RoomJoinRequest(myUserId, code)).enqueue(object : Callback<RoomJoinResponse> {
             override fun onResponse(call: Call<RoomJoinResponse>, response: Response<RoomJoinResponse>) {
-                try { pd.dismiss() } catch (_: Exception) {}
+                if (!isAdded || _binding == null) return
+                try { pd?.dismiss() } catch (_: Exception) {}
                 if (response.isSuccessful && response.body()?.status == "success") {
                     roomCode = code
                     isHost = false
@@ -468,7 +477,8 @@ class ChessFragment : Fragment() {
             }
 
             override fun onFailure(call: Call<RoomJoinResponse>, t: Throwable) {
-                try { pd.dismiss() } catch (_: Exception) {}
+                if (!isAdded || _binding == null) return
+                try { pd?.dismiss() } catch (_: Exception) {}
                 Toast.makeText(context, "Tarmoq xatosi: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
@@ -479,21 +489,25 @@ class ChessFragment : Fragment() {
         PusherManager.subscribeToRoom(roomCode,
             onGameStarted = {
                 activity?.runOnUiThread {
+                    if (!isAdded || _binding == null) return@runOnUiThread
                     startOnlineGame()
                 }
             },
             onMoveMade = { data ->
                 activity?.runOnUiThread {
+                    if (!isAdded || _binding == null) return@runOnUiThread
                     handlePusherMove(data)
                 }
             },
             onOpponentLeft = {
                 activity?.runOnUiThread {
+                    if (!isAdded || _binding == null) return@runOnUiThread
                     handleOpponentLeft()
                 }
             },
             onEmoteReceived = { data ->
                 activity?.runOnUiThread {
+                    if (!isAdded || _binding == null) return@runOnUiThread
                     handlePusherEmote(data)
                 }
             }
@@ -650,8 +664,12 @@ class ChessFragment : Fragment() {
         }
 
         ApiClient.instance.makeMove(MoveRequest(roomCode, myUserId, encodedFrom, encodedTo, promoCode)).enqueue(object : Callback<MoveResponse> {
-            override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) {}
-            override fun onFailure(call: Call<MoveResponse>, t: Throwable) {}
+            override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) { if (!isAdded || _binding == null) return }
+            override fun onFailure(call: Call<MoveResponse>, t: Throwable) {
+                if (!isAdded || _binding == null) return
+                t.printStackTrace()
+                context?.let { android.widget.Toast.makeText(it, "Tarmoq xatosi!", android.widget.Toast.LENGTH_SHORT).show() }
+            }
         })
     }
 
@@ -719,7 +737,10 @@ class ChessFragment : Fragment() {
         if (isOnlineMode && roomCode.isNotEmpty()) {
             ApiClient.instance.sendEmote(EmoteRequest(roomCode, myUserId, emote)).enqueue(object : Callback<EmoteResponse> {
                 override fun onResponse(call: Call<EmoteResponse>, response: Response<EmoteResponse>) {}
-                override fun onFailure(call: Call<EmoteResponse>, t: Throwable) {}
+                override fun onFailure(call: Call<EmoteResponse>, t: Throwable) {
+    t.printStackTrace()
+    context?.let { android.widget.Toast.makeText(it, "Tarmoq xatosi!", android.widget.Toast.LENGTH_SHORT).show() }
+}
             })
         }
     }
@@ -841,8 +862,12 @@ class ChessFragment : Fragment() {
     private fun handleResign() {
         if (isOnlineMode && roomCode.isNotEmpty()) {
             ApiClient.instance.makeMove(MoveRequest(roomCode, myUserId, -999, -999, -1)).enqueue(object : Callback<MoveResponse> {
-                override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) {}
-                override fun onFailure(call: Call<MoveResponse>, t: Throwable) {}
+                override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) { if (!isAdded || _binding == null) return }
+                override fun onFailure(call: Call<MoveResponse>, t: Throwable) {
+                    if (!isAdded || _binding == null) return
+                    t.printStackTrace()
+                    context?.let { android.widget.Toast.makeText(it, "Tarmoq xatosi!", android.widget.Toast.LENGTH_SHORT).show() }
+                }
             })
         }
         logic.isGameOver = true

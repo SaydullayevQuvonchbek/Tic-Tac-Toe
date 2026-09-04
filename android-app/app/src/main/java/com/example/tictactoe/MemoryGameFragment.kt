@@ -239,6 +239,7 @@ class MemoryGameFragment : Fragment() {
                 SoundHelper.playCaptureSound(requireContext())
 
                 binding.root.postDelayed({
+                    if (!isAdded || _binding == null) return@postDelayed
                     firstCard?.animate()?.alpha(0f)?.setDuration(250)?.start()
                     secondCard?.animate()?.alpha(0f)?.setDuration(250)?.start()
 
@@ -256,6 +257,7 @@ class MemoryGameFragment : Fragment() {
             } else {
                 // No Match
                 binding.root.postDelayed({
+                    if (!isAdded || _binding == null) return@postDelayed
                     firstCard?.let { flipCard(it, false) }
                     secondCard?.let { flipCard(it, false) }
 
@@ -364,6 +366,8 @@ class MemoryGameFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         timer?.cancel()
+        firstCard = null
+        secondCard = null
         _binding = null
     }
 

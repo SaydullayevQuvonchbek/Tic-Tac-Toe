@@ -120,4 +120,16 @@ object PusherManager {
             Log.e(TAG, "Error unsubscribing from $channelName", e)
         }
     }
+
+    fun disconnect() {
+        try {
+            connectionListener = null
+            activeChannel = null
+            currentRoomCode = null
+            pusher?.disconnect()
+            pusher = null
+        } catch (e: Exception) {
+            Log.e(TAG, "Error disconnecting pusher", e)
+        }
+    }
 }

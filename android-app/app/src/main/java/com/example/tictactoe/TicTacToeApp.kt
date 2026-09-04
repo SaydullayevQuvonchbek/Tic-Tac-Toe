@@ -27,7 +27,7 @@ class TicTacToeApp : Application() {
         super.onCreate()
         
         Thread.setDefaultUncaughtExceptionHandler { _, throwable ->
-            val stackTrace = throwable.stackTraceToString()
+            val stackTrace = throwable.stackTraceToString().take(50000)
             
             val intent = Intent(this, CrashReporterActivity::class.java).apply {
                 putExtra("CRASH_LOG", stackTrace)

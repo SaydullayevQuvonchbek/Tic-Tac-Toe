@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics><meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#e9ebf0;font-family:'Plus Jakarta Sans',system-ui,sans-serif}
+a{color:#2a78d6}a:hover{color:#1a5aa8}
+.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}
+.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 6px}
+.dv-tid{font:700 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#12172a;color:#fff;border-radius:4px;text-decoration:none}
+.dv-tname{font:800 14px/1.2 'Plus Jakarta Sans',sans-serif;color:#12172a}
+.dv-tsub{font:400 12px/1.5 'Plus Jakarta Sans',sans-serif;color:rgba(0,0,0,.5);margin:0 0 20px;max-width:760px}
+.dv-opts{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}
+.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px}
+.dv-oid{font:700 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#12172a;border-radius:5px;text-decoration:none}
+.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 11.5px/1.3 'Plus Jakarta Sans',sans-serif;color:rgba(0,0,0,.55)}
+.dv-opt:target .dv-oid{background:#22d3ee;color:#062028}
+.dv-next{margin:22px 0 0;font:12px/1.6 'Plus Jakarta Sans',sans-serif;color:rgba(0,0,0,.5)}
+.ph{width:380px;height:812px;border-radius:38px;padding:8px;background:linear-gradient(160deg,#2a2f3d,#0b0d14);box-shadow:0 24px 60px rgba(8,10,20,.38),0 2px 0 rgba(255,255,255,.12) inset;flex:none}
+.phs{width:100%;height:100%;border-radius:31px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+.scr{flex:1;overflow-y:auto;overflow-x:hidden;scrollbar-width:none}
+.scr::-webkit-scrollbar{display:none}
+.hcar{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:2px 18px 6px}
+.hcar::-webkit-scrollbar{display:none}
+.hcar>*{scroll-snap-align:start;flex:none;box-sizing:border-box}
+.hcar>*>*:first-child{box-sizing:border-box}
+@keyframes pulseGlow{0%,100%{opacity:.55;transform:scale(1)}50%{opacity:1;transform:scale(1.06)}}
+@keyframes sheen{0%{transform:translateX(-120%)}60%,100%{transform:translateX(220%)}}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+</style></helmet>
+
+<section class="dv-turn" id="t3">
+<div class="dv-thd"><a class="dv-tid" href="#t3">3</a><span class="dv-tname">DURAK KARTA O'YINI + REAKSIYA TIZIMI</span></div>
+<p class="dv-tsub">DurakFragment/fragment_durak.xml tahlili asosida. Muammo: EmoteHelper 21 ta emojini bitta gorizontal barga tiqadi — ekranni to'sadi. Yechim: o'yin ichida faqat 4 ta tez reaksiya, qolgani alohida pastki panelda kategoriyalarga bo'lingan (<a class="dv-oid" href="#3b">3b</a>).</p>
+<div class="dv-opts">
+
+<div class="dv-opt" id="3a"><div class="dv-olabel"><a class="dv-oid" href="#3a">3a</a>Durak stoli — qayta dizayn</div>
+<div class="ph"><div class="phs" style="background:radial-gradient(120% 90% at 50% 42%,#0F6B4F 0%,#064E3B 46%,#022C22 100%);color:#ECFDF5">
+<div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,.018) 0 2px,transparent 2px 5px);pointer-events:none"></div>
+<div style="position:relative;display:flex;align-items:center;justify-content:space-between;padding:12px 18px 4px;font:600 12px 'Plus Jakarta Sans',sans-serif;color:#6EE7B7"><span>9:41</span><span style="font-size:11px">▮▮▮ ◗ 86%</span></div>
+
+<div style="position:relative;display:flex;align-items:center;gap:9px;padding:8px 14px 0">
+<div style="width:32px;height:32px;border-radius:10px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);display:grid;place-items:center">‹</div>
+<div style="flex:1"><div style="font:700 13px 'Chakra Petch',sans-serif;letter-spacing:.08em">DURAK · ONLAYN</div><div style="font:600 10px 'Chakra Petch',sans-serif;color:#6EE7B7;margin-top:1px">XONA #7KQZ</div></div>
+<div style="display:flex;align-items:center;gap:7px;padding:6px 11px;border-radius:11px;background:rgba(0,0,0,.35);border:1px solid rgba(251,191,36,.35)">
+<span style="font:700 9px 'Chakra Petch',sans-serif;letter-spacing:.12em;color:#FBBF24">ZOD</span>
+<span style="font:700 17px 'Chakra Petch',sans-serif;color:#F87171;line-height:1">♥</span>
+</div>
+</div>
+
+<div style="position:relative;display:flex;align-items:center;justify-content:center;gap:9px;padding:12px 14px 0">
+<div style="width:32px;height:32px;border-radius:11px;background:linear-gradient(150deg,#475569,#0F172A);display:grid;place-items:center;font:700 10px 'Chakra Petch',sans-serif;color:#E2E8F0">JB</div>
+<div style="font:700 13px 'Plus Jakarta Sans',sans-serif">Jahongir</div>
+<div style="padding:3px 9px;border-radius:8px;background:rgba(0,0,0,.32);font:700 10.5px 'Chakra Petch',sans-serif;color:#7DD3FC">6 karta</div>
+</div>
+
+<div style="position:relative;display:flex;justify-content:center;align-items:flex-start;height:62px;margin-top:20px">
+<div style="width:36px;height:52px;border-radius:6px;background:linear-gradient(150deg,#1E3A8A,#0B1F52);border:1.5px solid rgba(255,255,255,.28);transform:rotate(-11deg);box-shadow:0 4px 10px rgba(0,0,0,.4)"></div>
+<div style="width:36px;height:52px;border-radius:6px;margin-left:-12px;background:linear-gradient(150deg,#1E3A8A,#0B1F52);border:1.5px solid rgba(255,255,255,.28);transform:rotate(-6deg);box-shadow:0 4px 10px rgba(0,0,0,.4)"></div>
+<div style="width:36px;height:52px;border-radius:6px;margin-left:-12px;background:linear-gradient(150deg,#1E3A8A,#0B1F52);border:1.5px solid rgba(255,255,255,.28);transform:rotate(-2deg);box-shadow:0 4px 10px rgba(0,0,0,.4)"></div>
+<div style="width:36px;height:52px;border-radius:6px;margin-left:-12px;background:linear-gradient(150deg,#1E3A8A,#0B1F52);border:1.5px solid rgba(255,255,255,.28);transform:rotate(3deg);box-shadow:0 4px 10px rgba(0,0,0,.4)"></div>
+<div style="width:36px;height:52px;border-radius:6px;margin-left:-12px;background:linear-gradient(150deg,#1E3A8A,#0B1F52);border:1.5px solid rgba(255,255,255,.28);transform:rotate(8deg);box-shadow:0 4px 10px rgba(0,0,0,.4)"></div>
+<div style="width:36px;height:52px;border-radius:6px;margin-left:-12px;background:linear-gradient(150deg,#1E3A8A,#0B1F52);border:1.5px solid rgba(255,255,255,.28);transform:rotate(13deg);box-shadow:0 4px 10px rgba(0,0,0,.4)"></div>
+</div>
+
+<div style="position:relative;display:flex;align-items:center;gap:12px;padding:10px 14px 0">
+<div style="position:relative;width:62px;height:88px;flex:none">
+<div style="position:absolute;top:20px;left:-6px;width:74px;height:52px;border-radius:7px;background:#FFFDF7;border:1.5px solid rgba(0,0,0,.25);box-shadow:0 3px 9px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:flex-start;padding-left:7px"><span style="font:700 15px 'Chakra Petch',sans-serif;color:#DC2626">K♥</span></div>
+<div style="position:absolute;top:0;left:6px;width:56px;height:82px;border-radius:8px;background:linear-gradient(150deg,#1E3A8A,#0B1F52);border:1.5px solid rgba(255,255,255,.3);box-shadow:0 6px 14px rgba(0,0,0,.45);display:grid;place-items:center">
+<div style="width:32px;height:52px;border-radius:4px;background:repeating-linear-gradient(45deg,rgba(255,255,255,.14) 0 3px,transparent 3px 6px);border:1px solid rgba(255,255,255,.2)"></div>
+</div>
+<div style="position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);padding:2px 8px;border-radius:7px;background:#0B1F52;border:1px solid rgba(251,191,36,.4);font:700 10px 'Chakra Petch',sans-serif;color:#FBBF24;white-space:nowrap">24</div>
+</div>
+
+<div style="flex:1;display:flex;gap:14px;align-items:center;min-height:110px;padding:0 4px 26px;overflow-x:auto;scrollbar-width:none">
+<div style="position:relative;width:56px;height:82px;flex:none">
+<div style="position:absolute;inset:0;border-radius:8px;background:#FFFDF7;border:1.5px solid rgba(0,0,0,.2);box-shadow:0 4px 10px rgba(0,0,0,.35);padding:5px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between"><span style="font:700 14px 'Chakra Petch',sans-serif;color:#0F172A;line-height:1">7♠</span><span style="font:700 14px 'Chakra Petch',sans-serif;color:#0F172A;line-height:1;text-align:right;transform:rotate(180deg)">7♠</span></div>
+<div style="position:absolute;top:11px;left:13px;width:56px;height:82px;border-radius:8px;background:#FFFDF7;border:1.5px solid rgba(0,0,0,.2);box-shadow:0 6px 14px rgba(0,0,0,.4);transform:rotate(9deg);padding:5px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between"><span style="font:700 14px 'Chakra Petch',sans-serif;color:#DC2626;line-height:1">9♥</span><span style="font:700 14px 'Chakra Petch',sans-serif;color:#DC2626;line-height:1;text-align:right;transform:rotate(180deg)">9♥</span></div>
+</div>
+<div style="position:relative;width:56px;height:82px;flex:none;margin-left:12px">
+<div style="position:absolute;inset:0;border-radius:8px;background:#FFFDF7;border:2px solid #FDE047;box-shadow:0 0 0 3px rgba(253,224,71,.22),0 4px 12px rgba(0,0,0,.4);padding:5px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between"><span style="font:700 14px 'Chakra Petch',sans-serif;color:#0F172A;line-height:1">D♣</span><span style="font:700 14px 'Chakra Petch',sans-serif;color:#0F172A;line-height:1;text-align:right;transform:rotate(180deg)">D♣</span></div>
+<div style="position:absolute;bottom:-17px;left:50%;transform:translateX(-50%);white-space:nowrap;font:700 9px/1.4 'Chakra Petch',sans-serif;letter-spacing:.08em;color:#FDE047">URISH KERAK</div>
+</div>
+</div>
+</div>
+
+<div style="position:relative;display:flex;align-items:center;justify-content:center;gap:8px;margin:12px 14px 0;padding:8px;border-radius:13px;background:rgba(0,0,0,.3);border:1px solid rgba(253,224,71,.25)">
+<span style="width:7px;height:7px;border-radius:50%;background:#FDE047;box-shadow:0 0 8px #FDE047;animation:pulseGlow 1.6s ease-in-out infinite"></span>
+<span style="font:700 12px 'Chakra Petch',sans-serif;letter-spacing:.06em;color:#FDE047">SIZ HIMOYADASIZ — URING</span>
+<span style="font:700 11px 'Chakra Petch',sans-serif;color:#6EE7B7;margin-left:4px">0:18</span>
+</div>
+
+<div style="position:relative;display:flex;gap:8px;padding:10px 14px 0">
+<div style="flex:1;height:46px;border-radius:14px;background:linear-gradient(100deg,#16A34A,#059669);display:flex;align-items:center;justify-content:center;gap:6px;font:700 13px 'Chakra Petch',sans-serif;color:#fff;box-shadow:0 8px 20px rgba(5,150,105,.35)">🛡 URISH</div>
+<div style="flex:1;height:46px;border-radius:14px;background:rgba(220,38,38,.16);border:1px solid rgba(248,113,113,.4);display:flex;align-items:center;justify-content:center;gap:6px;font:700 13px 'Chakra Petch',sans-serif;color:#FCA5A5">📥 OLISH</div>
+<div style="width:46px;height:46px;border-radius:14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);display:grid;place-items:center;font-size:17px">😎</div>
+</div>
+
+<div style="position:relative;flex:1"></div>
+
+<div style="position:relative;display:flex;justify-content:center;align-items:flex-end;height:112px;padding:0 8px 6px">
+<div style="width:60px;height:88px;border-radius:9px;background:#FFFDF7;border:1.5px solid rgba(0,0,0,.2);box-shadow:0 6px 16px rgba(0,0,0,.45);transform:rotate(-13deg) translate(74px,12px);padding:6px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between"><span style="font:700 15px 'Chakra Petch',sans-serif;color:#0F172A;line-height:1">6♠</span></div>
+<div style="width:60px;height:88px;border-radius:9px;background:#FFFDF7;border:1.5px solid rgba(0,0,0,.2);box-shadow:0 6px 16px rgba(0,0,0,.45);transform:rotate(-8deg) translate(41px,3px);padding:6px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between"><span style="font:700 15px 'Chakra Petch',sans-serif;color:#0F172A;line-height:1">10♣</span></div>
+<div style="width:60px;height:88px;border-radius:9px;background:#FFFDF7;border:1.5px solid rgba(0,0,0,.2);box-shadow:0 6px 16px rgba(0,0,0,.45);transform:rotate(-3deg) translate(12px,-2px);padding:6px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between"><span style="font:700 15px 'Chakra Petch',sans-serif;color:#DC2626;line-height:1">V♦</span></div>
+<div style="position:relative;width:60px;height:88px;border-radius:9px;background:#FFFDF7;border:2px solid #6EE7B7;box-shadow:0 0 0 3px rgba(110,231,183,.25),0 10px 22px rgba(0,0,0,.5);transform:rotate(2deg) translate(-16px,-16px);padding:6px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between">
+<span style="font:700 15px 'Chakra Petch',sans-serif;color:#DC2626;line-height:1">T♥</span>
+<span style="position:absolute;bottom:6px;right:6px;padding:1px 4px;border-radius:4px;background:#FBBF24;font:700 7.5px 'Chakra Petch',sans-serif;color:#3B2508">ZOD</span>
+</div>
+<div style="width:60px;height:88px;border-radius:9px;background:#FFFDF7;border:1.5px solid rgba(0,0,0,.2);box-shadow:0 6px 16px rgba(0,0,0,.45);transform:rotate(7deg) translate(-44px,3px);padding:6px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between"><span style="font:700 15px 'Chakra Petch',sans-serif;color:#0F172A;line-height:1">K♠</span></div>
+<div style="width:60px;height:88px;border-radius:9px;background:#FFFDF7;border:1.5px solid rgba(0,0,0,.2);box-shadow:0 6px 16px rgba(0,0,0,.45);transform:rotate(12deg) translate(-76px,12px);padding:6px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between"><span style="font:700 15px 'Chakra Petch',sans-serif;color:#DC2626;line-height:1">8♦</span></div>
+</div>
+<div style="position:relative;padding:0 0 14px;text-align:center;font:600 10px 'Chakra Petch',sans-serif;letter-spacing:.1em;color:rgba(236,253,245,.4)">KARTANI YUQORIGA SURING</div>
+</div></div>
+</div>
+
+<div class="dv-opt" id="3b"><div class="dv-olabel"><a class="dv-oid" href="#3b">3b</a>Reaksiyalar — alohida panel (21 → 4 tez + kategoriya)</div>
+<div class="ph"><div class="phs" style="background:radial-gradient(120% 90% at 50% 42%,#0F6B4F 0%,#064E3B 46%,#022C22 100%);color:#ECFDF5">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 18px 4px;font:600 12px 'Plus Jakarta Sans',sans-serif;color:#6EE7B7"><span>9:41</span><span style="font-size:11px">▮▮▮ ◗ 86%</span></div>
+
+<div style="flex:1;position:relative;opacity:.32;pointer-events:none">
+<div style="display:flex;justify-content:center;height:56px;margin-top:26px">
+<div style="width:36px;height:52px;border-radius:6px;background:linear-gradient(150deg,#1E3A8A,#0B1F52);border:1.5px solid rgba(255,255,255,.28);transform:rotate(-6deg) translateX(22px)"></div>
+<div style="width:36px;height:52px;border-radius:6px;background:linear-gradient(150deg,#1E3A8A,#0B1F52);border:1.5px solid rgba(255,255,255,.28)"></div>
+<div style="width:36px;height:52px;border-radius:6px;background:linear-gradient(150deg,#1E3A8A,#0B1F52);border:1.5px solid rgba(255,255,255,.28);transform:rotate(6deg) translateX(-22px)"></div>
+</div>
+<div style="display:flex;justify-content:center;gap:14px;margin-top:34px">
+<div style="width:56px;height:82px;border-radius:8px;background:#FFFDF7;border:1.5px solid rgba(0,0,0,.2);padding:5px;box-sizing:border-box;font:700 14px 'Chakra Petch',sans-serif;color:#0F172A">7♠</div>
+<div style="width:56px;height:82px;border-radius:8px;background:#FFFDF7;border:1.5px solid rgba(0,0,0,.2);padding:5px;box-sizing:border-box;font:700 14px 'Chakra Petch',sans-serif;color:#DC2626">9♥</div>
+</div>
+</div>
+
+<div style="position:absolute;left:0;right:0;bottom:0;border-radius:26px 26px 0 0;background:#0B1424;border-top:1px solid rgba(255,255,255,.1);box-shadow:0 -18px 44px rgba(0,0,0,.55);padding-bottom:16px">
+<div style="width:38px;height:4px;border-radius:99px;background:rgba(255,255,255,.2);margin:9px auto 0"></div>
+<div style="display:flex;align-items:center;padding:12px 18px 0">
+<div style="flex:1"><div style="font:700 14px 'Chakra Petch',sans-serif;letter-spacing:.06em">REAKSIYALAR</div><div style="font:500 10px 'Plus Jakarta Sans',sans-serif;color:#8492B0;margin-top:2px">Tez panelga 4 tagacha mahkamlang</div></div>
+<div style="display:flex;align-items:center;gap:5px;padding:6px 10px;border-radius:10px;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.24)"><span style="width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FDE68A,#D97706)"></span><span style="font:700 11px 'Chakra Petch',sans-serif;color:#FBBF24">{{ coins }}</span></div>
+</div>
+
+<div style="display:flex;gap:7px;overflow-x:auto;padding:14px 18px 0;scrollbar-width:none">
+<div onClick="{{ reQuick }}" style="padding:7px 13px;border-radius:10px;font:700 11px 'Chakra Petch',sans-serif;white-space:nowrap;cursor:pointer;background:{{ bgReQuick }};color:{{ fgReQuick }};border:1px solid {{ bdReQuick }}">⭐ TEZ PANEL</div>
+<div onClick="{{ reFree }}" style="padding:7px 13px;border-radius:10px;font:700 11px 'Chakra Petch',sans-serif;white-space:nowrap;cursor:pointer;background:{{ bgReFree }};color:{{ fgReFree }};border:1px solid {{ bdReFree }}">BEPUL 8</div>
+<div onClick="{{ rePrem }}" style="padding:7px 13px;border-radius:10px;font:700 11px 'Chakra Petch',sans-serif;white-space:nowrap;cursor:pointer;background:{{ bgRePrem }};color:{{ fgRePrem }};border:1px solid {{ bdRePrem }}">💎 PREMIUM 12</div>
+<div onClick="{{ reOwned }}" style="padding:7px 13px;border-radius:10px;font:700 11px 'Chakra Petch',sans-serif;white-space:nowrap;cursor:pointer;background:{{ bgReOwned }};color:{{ fgReOwned }};border:1px solid {{ bdReOwned }}">SIZDA 11</div>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:9px;padding:14px 18px 0">
+<sc-for list="{{ emoteGrid }}" as="e" hint-placeholder-count="8">
+<div style="position:relative;aspect-ratio:1;border-radius:16px;display:grid;place-items:center;font-size:24px;background:{{ e.bg }};border:1px solid {{ e.bd }}">{{ e.emoji }}
+<div style="position:absolute;bottom:4px;left:50%;transform:translateX(-50%);white-space:nowrap;font:700 8px 'Chakra Petch',sans-serif;color:{{ e.tagFg }}">{{ e.tag }}</div>
+</div>
+</sc-for>
+</div>
+
+<div style="margin:16px 18px 0;padding:11px 13px;border-radius:15px;background:rgba(124,92,255,.08);border:1px solid rgba(167,139,250,.26);display:flex;align-items:center;gap:11px">
+<div style="font-size:20px">🔇</div>
+<div style="flex:1"><div style="font:700 11.5px 'Plus Jakarta Sans',sans-serif">Raqib reaksiyalarini o'chirish</div><div style="font:500 10px 'Plus Jakarta Sans',sans-serif;color:#A5B4FC;margin-top:2px">Bezovta qilsa — bitta tegishda susturish</div></div>
+<div style="width:42px;height:24px;border-radius:99px;background:rgba(255,255,255,.1);padding:3px;box-sizing:border-box;display:flex"><div style="width:18px;height:18px;border-radius:50%;background:#64748B"></div></div>
+</div>
+</div>
+</div></div>
+</div>
+
+<div class="dv-opt" id="3c"><div class="dv-olabel"><a class="dv-oid" href="#3c">3c</a>O'yin ichi tez panel + uchuvchi reaksiya</div>
+<div class="ph"><div class="phs" style="background:radial-gradient(120% 90% at 50% 42%,#0F6B4F 0%,#064E3B 46%,#022C22 100%);color:#ECFDF5">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 18px 4px;font:600 12px 'Plus Jakarta Sans',sans-serif;color:#6EE7B7"><span>9:41</span><span style="font-size:11px">▮▮▮ ◗ 86%</span></div>
+
+<div style="display:flex;align-items:center;justify-content:center;gap:9px;padding:14px 14px 0">
+<div style="width:32px;height:32px;border-radius:11px;background:linear-gradient(150deg,#475569,#0F172A);display:grid;place-items:center;font:700 10px 'Chakra Petch',sans-serif">JB</div>
+<div style="font:700 13px 'Plus Jakarta Sans',sans-serif">Jahongir</div>
+<div style="padding:3px 9px;border-radius:8px;background:rgba(0,0,0,.32);font:700 10.5px 'Chakra Petch',sans-serif;color:#7DD3FC">4 karta</div>
+</div>
+
+<div style="position:relative;display:flex;justify-content:center;height:60px;margin-top:6px">
+<div style="width:36px;height:52px;border-radius:6px;background:linear-gradient(150deg,#1E3A8A,#0B1F52);border:1.5px solid rgba(255,255,255,.28);transform:rotate(-7deg) translateX(38px)"></div>
+<div style="width:36px;height:52px;border-radius:6px;background:linear-gradient(150deg,#1E3A8A,#0B1F52);border:1.5px solid rgba(255,255,255,.28);transform:rotate(-2deg) translateX(12px)"></div>
+<div style="width:36px;height:52px;border-radius:6px;background:linear-gradient(150deg,#1E3A8A,#0B1F52);border:1.5px solid rgba(255,255,255,.28);transform:rotate(3deg) translateX(-14px)"></div>
+<div style="width:36px;height:52px;border-radius:6px;background:linear-gradient(150deg,#1E3A8A,#0B1F52);border:1.5px solid rgba(255,255,255,.28);transform:rotate(8deg) translateX(-40px)"></div>
+<div style="position:absolute;top:6px;left:50%;transform:translateX(58px);display:flex;align-items:center;gap:7px;padding:7px 12px 7px 9px;border-radius:16px 16px 16px 5px;background:#0B1424;border:1px solid rgba(255,255,255,.14);box-shadow:0 8px 20px rgba(0,0,0,.5);animation:floatY 3.4s ease-in-out infinite">
+<span style="font-size:20px;line-height:1">😎</span><span style="font:600 10px 'Plus Jakarta Sans',sans-serif;color:#94A3B8;white-space:nowrap">Jahongir</span>
+</div>
+</div>
+
+<div style="display:flex;align-items:center;gap:12px;padding:14px 14px 0">
+<div style="position:relative;width:62px;height:88px;flex:none">
+<div style="position:absolute;top:20px;left:-6px;width:74px;height:52px;border-radius:7px;background:#FFFDF7;border:1.5px solid rgba(0,0,0,.25);display:flex;align-items:center;padding-left:7px;box-sizing:border-box"><span style="font:700 15px 'Chakra Petch',sans-serif;color:#DC2626">K♥</span></div>
+<div style="position:absolute;top:0;left:6px;width:56px;height:82px;border-radius:8px;background:linear-gradient(150deg,#1E3A8A,#0B1F52);border:1.5px solid rgba(255,255,255,.3);display:grid;place-items:center"><div style="width:32px;height:52px;border-radius:4px;background:repeating-linear-gradient(45deg,rgba(255,255,255,.14) 0 3px,transparent 3px 6px);border:1px solid rgba(255,255,255,.2)"></div></div>
+<div style="position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);padding:2px 8px;border-radius:7px;background:#0B1F52;border:1px solid rgba(251,191,36,.4);font:700 10px 'Chakra Petch',sans-serif;color:#FBBF24">18</div>
+</div>
+<div style="flex:1;display:flex;gap:16px;align-items:center;min-height:104px">
+<div style="position:relative;width:56px;height:82px">
+<div style="position:absolute;inset:0;border-radius:8px;background:#FFFDF7;border:1.5px solid rgba(0,0,0,.2);box-shadow:0 4px 10px rgba(0,0,0,.35);padding:5px;box-sizing:border-box;font:700 14px 'Chakra Petch',sans-serif;color:#0F172A">V♠</div>
+<div style="position:absolute;top:11px;left:13px;width:56px;height:82px;border-radius:8px;background:#FFFDF7;border:1.5px solid rgba(0,0,0,.2);box-shadow:0 6px 14px rgba(0,0,0,.4);transform:rotate(9deg);padding:5px;box-sizing:border-box;font:700 14px 'Chakra Petch',sans-serif;color:#DC2626">T♥</div>
+</div>
+</div>
+</div>
+
+<div style="display:flex;align-items:center;justify-content:center;gap:8px;margin:16px 14px 0;padding:8px;border-radius:13px;background:rgba(0,0,0,.3);border:1px solid rgba(110,231,183,.25)">
+<span style="width:7px;height:7px;border-radius:50%;background:#6EE7B7;box-shadow:0 0 8px #6EE7B7;animation:pulseGlow 1.6s ease-in-out infinite"></span>
+<span style="font:700 12px 'Chakra Petch',sans-serif;letter-spacing:.06em;color:#6EE7B7">HAMMASI URILDI — BITA DEYING</span>
+</div>
+
+<div style="flex:1"></div>
+
+<div style="display:flex;align-items:center;gap:7px;padding:0 14px 8px">
+<div style="flex:1;display:flex;gap:7px">
+<div style="flex:1;aspect-ratio:1;max-width:46px;border-radius:14px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);display:grid;place-items:center;font-size:20px">🔥</div>
+<div style="flex:1;aspect-ratio:1;max-width:46px;border-radius:14px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);display:grid;place-items:center;font-size:20px">😂</div>
+<div style="flex:1;aspect-ratio:1;max-width:46px;border-radius:14px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);display:grid;place-items:center;font-size:20px">👏</div>
+<div style="flex:1;aspect-ratio:1;max-width:46px;border-radius:14px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);display:grid;place-items:center;font-size:20px">💀</div>
+<div style="flex:1;aspect-ratio:1;max-width:46px;border-radius:14px;background:rgba(124,92,255,.14);border:1px solid rgba(167,139,250,.32);display:grid;place-items:center;font:700 14px 'Chakra Petch',sans-serif;color:#C4B5FD">⋯</div>
+</div>
+<div style="flex:1;height:46px;border-radius:14px;background:linear-gradient(100deg,#D97706,#B45309);display:flex;align-items:center;justify-content:center;gap:6px;font:700 13px 'Chakra Petch',sans-serif;color:#fff;box-shadow:0 8px 20px rgba(217,119,6,.32)">✋ BITA</div>
+</div>
+
+<div style="display:flex;justify-content:center;align-items:flex-end;height:104px;padding:0 8px 14px">
+<div style="width:58px;height:84px;border-radius:9px;background:#FFFDF7;border:1.5px solid rgba(0,0,0,.2);box-shadow:0 6px 16px rgba(0,0,0,.45);transform:rotate(-9deg) translate(38px,6px);padding:6px;box-sizing:border-box;font:700 15px 'Chakra Petch',sans-serif;color:#0F172A">6♣</div>
+<div style="width:58px;height:84px;border-radius:9px;background:#FFFDF7;border:1.5px solid rgba(0,0,0,.2);box-shadow:0 6px 16px rgba(0,0,0,.45);transform:rotate(-3deg) translate(12px,-2px);padding:6px;box-sizing:border-box;font:700 15px 'Chakra Petch',sans-serif;color:#DC2626">9♦</div>
+<div style="width:58px;height:84px;border-radius:9px;background:#FFFDF7;border:1.5px solid rgba(0,0,0,.2);box-shadow:0 6px 16px rgba(0,0,0,.45);transform:rotate(3deg) translate(-14px,-2px);padding:6px;box-sizing:border-box;font:700 15px 'Chakra Petch',sans-serif;color:#0F172A">D♠</div>
+<div style="width:58px;height:84px;border-radius:9px;background:#FFFDF7;border:1.5px solid rgba(0,0,0,.2);box-shadow:0 6px 16px rgba(0,0,0,.45);transform:rotate(9deg) translate(-40px,6px);padding:6px;box-sizing:border-box;font:700 15px 'Chakra Petch',sans-serif;color:#DC2626">8♥</div>
+</div>
+</div></div>
+</div>
+
+<div class="dv-opt" id="3d"><div class="dv-olabel"><a class="dv-oid" href="#3d">3d</a>Durak sozlash + xona kutish</div>
+<div class="ph"><div class="phs" style="background:#070A12;color:#F2F5FF">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 18px 4px;font:600 12px 'Plus Jakarta Sans',sans-serif;color:#8492B0"><span>9:41</span><span style="font-size:11px">▮▮▮ ◗ 86%</span></div>
+<div class="scr">
+<div style="position:relative;padding:14px 18px 0;overflow:hidden">
+<div style="position:absolute;top:-70px;right:-40px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(16,185,129,.3),transparent 68%)"></div>
+<div style="position:relative;display:flex;align-items:center;gap:10px">
+<div style="width:32px;height:32px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);display:grid;place-items:center">‹</div>
+<div style="flex:1"><div style="font:700 18px 'Chakra Petch',sans-serif;letter-spacing:.04em">DURAK</div><div style="font:500 10.5px 'Plus Jakarta Sans',sans-serif;color:#8492B0;margin-top:1px">Podkidnoy · 36 karta</div></div>
+</div>
+<div style="position:relative;display:flex;justify-content:center;gap:0;margin-top:16px;height:88px">
+<div style="width:60px;height:86px;border-radius:9px;background:#FFFDF7;border:1.5px solid rgba(0,0,0,.2);box-shadow:0 8px 20px rgba(0,0,0,.5);transform:rotate(-14deg) translateX(48px);padding:6px;box-sizing:border-box;font:700 16px 'Chakra Petch',sans-serif;color:#0F172A">T♠</div>
+<div style="width:60px;height:86px;border-radius:9px;background:#FFFDF7;border:1.5px solid rgba(0,0,0,.2);box-shadow:0 8px 20px rgba(0,0,0,.5);transform:rotate(-5deg) translateX(18px);padding:6px;box-sizing:border-box;font:700 16px 'Chakra Petch',sans-serif;color:#DC2626">K♥</div>
+<div style="width:60px;height:86px;border-radius:9px;background:#FFFDF7;border:2px solid #FBBF24;box-shadow:0 10px 24px rgba(0,0,0,.55);transform:rotate(5deg) translateX(-12px);padding:6px;box-sizing:border-box;font:700 16px 'Chakra Petch',sans-serif;color:#DC2626">T♥</div>
+<div style="width:60px;height:86px;border-radius:9px;background:#FFFDF7;border:1.5px solid rgba(0,0,0,.2);box-shadow:0 8px 20px rgba(0,0,0,.5);transform:rotate(14deg) translateX(-42px);padding:6px;box-sizing:border-box;font:700 16px 'Chakra Petch',sans-serif;color:#0F172A">V♣</div>
+</div>
+</div>
+
+<div style="padding:20px 18px 0;font:700 11px 'Chakra Petch',sans-serif;letter-spacing:.12em;color:#64748B">O'YIN REJIMI</div>
+<div style="display:flex;flex-direction:column;gap:8px;padding:10px 18px 0">
+<div style="display:flex;align-items:center;gap:12px;padding:13px;border-radius:16px;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.4)">
+<div style="width:38px;height:38px;border-radius:12px;background:rgba(16,185,129,.15);display:grid;place-items:center;font-size:17px">⚡</div>
+<div style="flex:1"><div style="font:700 12.5px 'Plus Jakarta Sans',sans-serif">Avto qidiruv</div><div style="font:500 10.5px 'Plus Jakarta Sans',sans-serif;color:#8492B0;margin-top:2px">1-tap · o'rtacha 8 soniya</div></div>
+<div style="width:20px;height:20px;border-radius:50%;border:2px solid #34D399;display:grid;place-items:center"><div style="width:9px;height:9px;border-radius:50%;background:#34D399"></div></div>
+</div>
+<div style="display:flex;align-items:center;gap:12px;padding:13px;border-radius:16px;background:#0C1220;border:1px solid rgba(255,255,255,.06)">
+<div style="width:38px;height:38px;border-radius:12px;background:rgba(167,139,250,.14);display:grid;place-items:center;font-size:17px">🤖</div>
+<div style="flex:1"><div style="font:700 12.5px 'Plus Jakarta Sans',sans-serif">Bot bilan (Offline)</div><div style="font:500 10.5px 'Plus Jakarta Sans',sans-serif;color:#8492B0;margin-top:2px">DurakAI · internetsiz</div></div>
+<div style="width:20px;height:20px;border-radius:50%;border:2px solid #334155"></div>
+</div>
+<div style="display:flex;align-items:center;gap:12px;padding:13px;border-radius:16px;background:#0C1220;border:1px solid rgba(255,255,255,.06)">
+<div style="width:38px;height:38px;border-radius:12px;background:rgba(251,191,36,.14);display:grid;place-items:center;font-size:17px">👑</div>
+<div style="flex:1"><div style="font:700 12.5px 'Plus Jakarta Sans',sans-serif">Xona ochish</div><div style="font:500 10.5px 'Plus Jakarta Sans',sans-serif;color:#8492B0;margin-top:2px">Do'stni kod bilan taklif qilish</div></div>
+<div style="width:20px;height:20px;border-radius:50%;border:2px solid #334155"></div>
+</div>
+<div style="display:flex;align-items:center;gap:12px;padding:13px;border-radius:16px;background:#0C1220;border:1px solid rgba(255,255,255,.06)">
+<div style="width:38px;height:38px;border-radius:12px;background:rgba(56,189,248,.14);display:grid;place-items:center;font-size:17px">🚪</div>
+<div style="flex:1"><div style="font:700 12.5px 'Plus Jakarta Sans',sans-serif">Kod orqali kirish</div><div style="font:500 10.5px 'Plus Jakarta Sans',sans-serif;color:#8492B0;margin-top:2px">4-6 belgili xona kodi</div></div>
+<div style="width:20px;height:20px;border-radius:50%;border:2px solid #334155"></div>
+</div>
+</div>
+
+<div style="margin:18px 18px 0;padding:14px;border-radius:18px;background:linear-gradient(135deg,#06301F,#0B1524);border:1px solid rgba(16,185,129,.24)">
+<div style="font:700 11px 'Chakra Petch',sans-serif;letter-spacing:.12em;color:#6EE7B7">QOIDALAR</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:11px">
+<div style="padding:9px 11px;border-radius:12px;background:rgba(0,0,0,.3)"><div style="font:700 15px 'Chakra Petch',sans-serif;color:#F2F5FF">36</div><div style="font:500 9.5px 'Plus Jakarta Sans',sans-serif;color:#8492B0;margin-top:1px">karta (6–Tuz)</div></div>
+<div style="padding:9px 11px;border-radius:12px;background:rgba(0,0,0,.3)"><div style="font:700 15px 'Chakra Petch',sans-serif;color:#F2F5FF">6</div><div style="font:500 9.5px 'Plus Jakarta Sans',sans-serif;color:#8492B0;margin-top:1px">boshlang'ich qo'l</div></div>
+<div style="padding:9px 11px;border-radius:12px;background:rgba(0,0,0,.3)"><div style="font:700 15px 'Chakra Petch',sans-serif;color:#FBBF24">1 ZOD</div><div style="font:500 9.5px 'Plus Jakarta Sans',sans-serif;color:#8492B0;margin-top:1px">kozir masti</div></div>
+<div style="padding:9px 11px;border-radius:12px;background:rgba(0,0,0,.3)"><div style="font:700 15px 'Chakra Petch',sans-serif;color:#34D399">🏆</div><div style="font:500 9.5px 'Plus Jakarta Sans',sans-serif;color:#8492B0;margin-top:1px">kartani tugatgan yutadi</div></div>
+</div>
+</div>
+
+<div style="margin:16px 18px 0;padding:14px;border-radius:18px;background:#0C1220;border:1px dashed rgba(255,255,255,.14);text-align:center">
+<div style="font:700 10px 'Chakra Petch',sans-serif;letter-spacing:.14em;color:#64748B">XONA YARATILDI</div>
+<div style="display:flex;justify-content:center;gap:7px;margin-top:11px">
+<div style="width:38px;height:48px;border-radius:11px;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.35);display:grid;place-items:center;font:700 22px 'Chakra Petch',sans-serif;color:#34D399">7</div>
+<div style="width:38px;height:48px;border-radius:11px;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.35);display:grid;place-items:center;font:700 22px 'Chakra Petch',sans-serif;color:#34D399">K</div>
+<div style="width:38px;height:48px;border-radius:11px;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.35);display:grid;place-items:center;font:700 22px 'Chakra Petch',sans-serif;color:#34D399">Q</div>
+<div style="width:38px;height:48px;border-radius:11px;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.35);display:grid;place-items:center;font:700 22px 'Chakra Petch',sans-serif;color:#34D399">Z</div>
+</div>
+<div style="display:flex;align-items:center;justify-content:center;gap:7px;margin-top:12px"><span style="width:6px;height:6px;border-radius:50%;background:#34D399;animation:pulseGlow 1.4s ease-in-out infinite"></span><span style="font:500 10.5px 'Plus Jakarta Sans',sans-serif;color:#8492B0">Do'st kutilmoqda…</span></div>
+<div style="display:flex;gap:8px;margin-top:12px">
+<div style="flex:1;height:40px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);display:grid;place-items:center;font:700 11px 'Chakra Petch',sans-serif;color:#CBD5E1">📋 NUSXA</div>
+<div style="flex:1;height:40px;border-radius:12px;background:rgba(16,185,129,.14);border:1px solid rgba(16,185,129,.32);display:grid;place-items:center;font:700 11px 'Chakra Petch',sans-serif;color:#34D399">🔗 ULASHISH</div>
+</div>
+</div>
+
+<div style="padding:18px">
+<div style="height:52px;border-radius:16px;background:linear-gradient(100deg,#10B981,#059669);display:grid;place-items:center;font:700 14px 'Chakra Petch',sans-serif;letter-spacing:.08em;color:#022C22;box-shadow:0 10px 26px rgba(16,185,129,.3)">▶ O'YINNI BOSHLASH</div>
+</div>
+</div>
+</div></div>
+</div>
+
+</div>
+<p class="dv-next">Keyingi: “<a class="dv-oid" href="#3a">3a</a> ni Android XML'ga o'tkaz” · “Shashka va Gomoku o'yin ichi” · “Durak natija ekrani”</p>
+</section>
+
+<section class="dv-turn" id="t2">
+<div class="dv-thd"><a class="dv-tid" href="#t2">2</a><span class="dv-tname">PRO REDIZAYN — “Premium Arena”</span></div>
+<p class="dv-tsub">To'q chempionat foni, neon urg'u, har o'yinga o'z mini-doska preview'i (emoji o'rniga), Play Store uslubidagi kategoriya tab'lari + gorizontal karusel, va 1-tap Quick Match birinchi ekranda. <a class="dv-oid" href="#2a">2a</a> — tirik prototip: pastdagi navigatsiya va tab'lar bosiladi.</p>
+<div class="dv-opts">
+
+<div class="dv-opt" id="2a"><div class="dv-olabel"><a class="dv-oid" href="#2a">2a</a>Tirik prototip — Home · Do'kon · Ranks · Profil (dark)</div>
+<div class="ph"><div class="phs" style="background:#070A12;color:#F2F5FF;font-family:'Plus Jakarta Sans',sans-serif">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px 4px;font:600 12px 'Plus Jakarta Sans',sans-serif;color:#8492B0;flex:none"><span>9:41</span><div style="display:flex;gap:5px;align-items:center"><span style="font-size:10px">▮▮▮</span><span style="font-size:10px">◗</span><span style="font-size:11px">86%</span></div></div>
+
+<div class="scr">
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+<div>
+<div style="position:relative;padding:10px 18px 0;overflow:hidden">
+<div style="position:absolute;top:-90px;right:-60px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(124,92,255,.35),transparent 68%);filter:blur(6px)"></div>
+<div style="position:relative;display:flex;align-items:center;gap:12px">
+<div style="width:46px;height:46px;border-radius:15px;background:linear-gradient(150deg,#7C5CFF,#22D3EE);display:grid;place-items:center;font:700 16px 'Chakra Petch',sans-serif;color:#08101c;box-shadow:0 6px 18px rgba(124,92,255,.4)">AZ</div>
+<div style="flex:1;min-width:0">
+<div style="display:flex;align-items:center;gap:7px"><span style="font:800 16px 'Plus Jakarta Sans',sans-serif;letter-spacing:-.2px">{{ playerName }}</span><span style="font:700 9px 'Chakra Petch',sans-serif;letter-spacing:.08em;padding:3px 6px;border-radius:5px;background:rgba(205,127,50,.16);color:#E9A05C;border:1px solid rgba(205,127,50,.3)">BRONZE III</span></div>
+<div style="display:flex;align-items:center;gap:8px;margin-top:5px">
+<div style="flex:1;height:5px;border-radius:99px;background:rgba(255,255,255,.09);overflow:hidden"><div style="width:34%;height:100%;border-radius:99px;background:linear-gradient(90deg,#22D3EE,#7C5CFF)"></div></div>
+<span style="font:600 10px 'Chakra Petch',sans-serif;color:#8492B0">LVL 1 · 170/500 XP</span></div>
+</div>
+</div>
+<div style="position:relative;display:flex;gap:7px;margin-top:12px">
+<div style="display:flex;align-items:center;gap:6px;padding:7px 11px;border-radius:11px;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.22)"><span style="width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FDE68A,#D97706);display:inline-block"></span><span style="font:700 13px 'Chakra Petch',sans-serif;color:#FBBF24">{{ coins }}</span></div>
+<div style="display:flex;align-items:center;gap:6px;padding:7px 11px;border-radius:11px;background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.22)"><span style="font-size:12px">🔥</span><span style="font:700 13px 'Chakra Petch',sans-serif;color:#FB7185">7</span></div>
+<div style="flex:1"></div>
+<div style="width:34px;height:34px;border-radius:11px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);display:grid;place-items:center;font-size:14px">🔊</div>
+<div style="width:34px;height:34px;border-radius:11px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);display:grid;place-items:center;font-size:14px">⚙</div>
+</div>
+</div>
+
+<div style="padding:16px 18px 0">
+<div style="position:relative;border-radius:22px;padding:18px;overflow:hidden;background:linear-gradient(135deg,#141B33 0%,#1B1140 55%,#0B1524 100%);border:1px solid rgba(124,92,255,.28);box-shadow:0 18px 40px rgba(10,6,30,.55)">
+<div style="position:absolute;inset:0;background:repeating-linear-gradient(115deg,rgba(255,255,255,.035) 0 1px,transparent 1px 9px)"></div>
+<div style="position:absolute;top:0;left:0;width:60px;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.14),transparent);animation:sheen 4.2s ease-in-out infinite"></div>
+<div style="position:relative;display:flex;align-items:flex-start;gap:12px">
+<div style="flex:1">
+<div style="display:flex;align-items:center;gap:6px"><span style="width:6px;height:6px;border-radius:50%;background:#4ADE80;box-shadow:0 0 8px #4ADE80;animation:pulseGlow 1.8s ease-in-out infinite"></span><span style="font:600 10px 'Chakra Petch',sans-serif;letter-spacing:.14em;color:#7DD3FC">12 480 ONLAYN</span></div>
+<div style="font:700 26px/1.05 'Chakra Petch',sans-serif;letter-spacing:-.4px;margin-top:8px">QUICK<br>MATCH</div>
+<div style="font:500 11.5px/1.45 'Plus Jakarta Sans',sans-serif;color:#95A3C4;margin-top:7px;max-width:180px">Bir tegishda raqib topamiz — o'rtacha <span style="color:#22D3EE;font-weight:700">8 soniya</span></div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(3,14px);grid-template-rows:repeat(3,14px);gap:4px;padding:9px;border-radius:14px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);animation:floatY 5s ease-in-out infinite">
+<div style="border-radius:3px;background:rgba(255,255,255,.07)"></div><div style="border-radius:3px;background:rgba(34,211,238,.9)"></div><div style="border-radius:3px;background:rgba(255,255,255,.07)"></div>
+<div style="border-radius:3px;background:rgba(255,255,255,.07)"></div><div style="border-radius:3px;background:rgba(244,63,94,.9)"></div><div style="border-radius:3px;background:rgba(255,255,255,.07)"></div>
+<div style="border-radius:3px;background:rgba(34,211,238,.9)"></div><div style="border-radius:3px;background:rgba(255,255,255,.07)"></div><div style="border-radius:3px;background:rgba(244,63,94,.9)"></div>
+</div>
+</div>
+<div style="position:relative;display:flex;gap:9px;margin-top:16px">
+<div style="flex:1;height:46px;border-radius:14px;background:linear-gradient(100deg,#22D3EE,#4F86FF);display:grid;place-items:center;font:700 14px 'Chakra Petch',sans-serif;letter-spacing:.06em;color:#04121C;box-shadow:0 10px 24px rgba(34,211,238,.32)">▶ O'YNASH</div>
+<div style="width:46px;height:46px;border-radius:14px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);display:grid;place-items:center;font-size:16px">👥</div>
+<div style="width:46px;height:46px;border-radius:14px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);display:grid;place-items:center;font:700 12px 'Chakra Petch',sans-serif;color:#A5B4FC">#ID</div>
+</div>
+</div>
+</div>
+
+<div style="display:flex;gap:9px;padding:14px 18px 0">
+<div style="flex:1;border-radius:16px;padding:11px;background:linear-gradient(150deg,#3B2A08,#181205);border:1px solid rgba(251,191,36,.24)">
+<div style="font-size:19px">🎁</div><div style="font:700 11.5px 'Plus Jakarta Sans',sans-serif;margin-top:6px">Daily Bonus</div><div style="font:600 10px 'Chakra Petch',sans-serif;color:#FBBF24;margin-top:2px">+100 OLISH</div>
+</div>
+<div style="flex:1;border-radius:16px;padding:11px;background:linear-gradient(150deg,#2A1250,#140A26);border:1px solid rgba(167,139,250,.26)">
+<div style="font-size:19px">🎡</div><div style="font:700 11.5px 'Plus Jakarta Sans',sans-serif;margin-top:6px">Lucky Wheel</div><div style="font:600 10px 'Chakra Petch',sans-serif;color:#C4B5FD;margin-top:2px">BEPUL SPIN</div>
+</div>
+<div style="flex:1;border-radius:16px;padding:11px;background:linear-gradient(150deg,#0B3340,#06171E);border:1px solid rgba(34,211,238,.24)">
+<div style="font-size:19px">🏅</div><div style="font:700 11.5px 'Plus Jakarta Sans',sans-serif;margin-top:6px">Season Pass</div><div style="font:600 10px 'Chakra Petch',sans-serif;color:#67E8F9;margin-top:2px">14 KUN</div>
+</div>
+</div>
+
+<sc-if value="{{ showQuests }}" hint-placeholder-val="{{ true }}">
+<div style="padding:14px 18px 0">
+<div style="border-radius:20px;padding:14px;background:#0E1424;border:1px solid rgba(255,255,255,.07)">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<span style="font:700 12px 'Chakra Petch',sans-serif;letter-spacing:.1em;color:#F2F5FF">KUNLIK QUEST</span>
+<span style="font:600 10.5px 'Chakra Petch',sans-serif;color:#22D3EE;padding:3px 7px;border-radius:6px;background:rgba(34,211,238,.1)">⏳ 06:12:44</span>
+</div>
+<div style="display:flex;flex-direction:column;gap:11px;margin-top:12px">
+<div style="display:flex;align-items:center;gap:10px">
+<div style="flex:1"><div style="font:600 11.5px 'Plus Jakarta Sans',sans-serif;color:#D7DEF0">Gomoku / Shashka <span style="color:#64748B">1/2</span></div><div style="height:5px;border-radius:99px;background:rgba(255,255,255,.08);margin-top:6px;overflow:hidden"><div style="width:50%;height:100%;background:#10B981;border-radius:99px"></div></div></div>
+<div style="padding:6px 10px;border-radius:9px;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.28);font:700 10.5px 'Chakra Petch',sans-serif;color:#34D399">+60</div>
+</div>
+<div style="display:flex;align-items:center;gap:10px">
+<div style="flex:1"><div style="font:600 11.5px 'Plus Jakarta Sans',sans-serif;color:#D7DEF0">Water Sort <span style="color:#64748B">2/2</span></div><div style="height:5px;border-radius:99px;background:rgba(255,255,255,.08);margin-top:6px;overflow:hidden"><div style="width:100%;height:100%;background:#06B6D4;border-radius:99px"></div></div></div>
+<div style="padding:6px 10px;border-radius:9px;background:#059669;font:700 10.5px 'Chakra Petch',sans-serif;color:#fff;box-shadow:0 4px 14px rgba(5,150,105,.4)">OLISH</div>
+</div>
+<div style="display:flex;align-items:center;gap:10px">
+<div style="flex:1"><div style="font:600 11.5px 'Plus Jakarta Sans',sans-serif;color:#D7DEF0">Onlayn match <span style="color:#64748B">0/1</span></div><div style="height:5px;border-radius:99px;background:rgba(255,255,255,.08);margin-top:6px;overflow:hidden"><div style="width:4%;height:100%;background:#F59E0B;border-radius:99px"></div></div></div>
+<div style="padding:6px 10px;border-radius:9px;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.28);font:700 10.5px 'Chakra Petch',sans-serif;color:#FBBF24">+100</div>
+</div>
+</div>
+</div>
+</div>
+</sc-if>
+
+<div style="display:flex;gap:7px;overflow-x:auto;padding:18px 18px 12px;scrollbar-width:none">
+<div onClick="{{ catAll }}" style="padding:8px 14px;border-radius:11px;font:700 11.5px 'Chakra Petch',sans-serif;letter-spacing:.05em;white-space:nowrap;cursor:pointer;background:{{ bgAll }};color:{{ fgAll }};border:1px solid {{ bdAll }}">HAMMASI 13</div>
+<div onClick="{{ catBattle }}" style="padding:8px 14px;border-radius:11px;font:700 11.5px 'Chakra Petch',sans-serif;letter-spacing:.05em;white-space:nowrap;cursor:pointer;background:{{ bgBattle }};color:{{ fgBattle }};border:1px solid {{ bdBattle }}">⚔ 1V1 ARENA</div>
+<div onClick="{{ catBrain }}" style="padding:8px 14px;border-radius:11px;font:700 11.5px 'Chakra Petch',sans-serif;letter-spacing:.05em;white-space:nowrap;cursor:pointer;background:{{ bgBrain }};color:{{ fgBrain }};border:1px solid {{ bdBrain }}">🧠 PUZZLE</div>
+<div onClick="{{ catSpeed }}" style="padding:8px 14px;border-radius:11px;font:700 11.5px 'Chakra Petch',sans-serif;letter-spacing:.05em;white-space:nowrap;cursor:pointer;background:{{ bgSpeed }};color:{{ fgSpeed }};border:1px solid {{ bdSpeed }}">⚡ SPEED</div>
+</div>
+
+<div style="display:flex;align-items:baseline;justify-content:space-between;padding:0 18px 10px">
+<span style="font:700 13px 'Chakra Petch',sans-serif;letter-spacing:.08em">TAVSIYA ETILADI</span>
+<span style="font:600 10.5px 'Plus Jakarta Sans',sans-serif;color:#22D3EE">Barchasi ›</span>
+</div>
+
+<div class="hcar">
+<div style="width:172px;border-radius:20px;overflow:hidden;background:#0E1424;border:1px solid rgba(255,255,255,.07)">
+<div style="height:112px;position:relative;background:repeating-conic-gradient(#EEEED2 0% 25%,#769656 0% 50%) 50%/28px 28px">
+<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,10,18,0) 40%,rgba(7,10,18,.88))"></div>
+<div style="position:absolute;left:12px;bottom:8px;display:flex;gap:1px;font-size:26px;line-height:1;text-shadow:0 3px 8px rgba(0,0,0,.6)"><span style="color:#FBBF24">♛</span><span style="color:#F8FAFC">♞</span><span style="color:#0B1120">♟</span></div>
+<div style="position:absolute;top:9px;right:9px;padding:3px 7px;border-radius:6px;background:rgba(251,191,36,.92);font:700 9px 'Chakra Petch',sans-serif;color:#3B2508">PRO</div>
+</div>
+<div style="padding:11px 12px 13px"><div style="font:700 13px 'Plus Jakarta Sans',sans-serif">Shaxmat</div><div style="font:500 10.5px 'Plus Jakarta Sans',sans-serif;color:#8492B0;margin-top:3px">Onlayn · AI Bot · Elo</div><div style="display:flex;align-items:center;gap:5px;margin-top:9px"><span style="font:700 10px 'Chakra Petch',sans-serif;color:#22D3EE">🏆 12 G'ALABA</span></div></div>
+</div>
+
+<div style="width:172px;border-radius:20px;overflow:hidden;background:#0E1424;border:1px solid rgba(255,255,255,.07)">
+<div style="height:112px;position:relative;background:repeating-conic-gradient(#F0D9B5 0% 25%,#B91C1C 0% 50%) 50%/28px 28px">
+<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,10,18,0) 40%,rgba(7,10,18,.88))"></div>
+<div style="position:absolute;left:14px;bottom:12px;display:flex;gap:6px">
+<span style="width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 34% 28%,#FEE2E2,#DC2626);box-shadow:0 3px 8px rgba(0,0,0,.5),0 0 0 2px rgba(0,0,0,.25) inset"></span>
+<span style="width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 34% 28%,#475569,#0B1120);box-shadow:0 3px 8px rgba(0,0,0,.5),0 0 0 2px rgba(255,255,255,.12) inset"></span>
+</div>
+</div>
+<div style="padding:11px 12px 13px"><div style="font:700 13px 'Plus Jakarta Sans',sans-serif">Shashka</div><div style="font:500 10.5px 'Plus Jakarta Sans',sans-serif;color:#8492B0;margin-top:3px">Checkers · 1v1</div><div style="display:flex;align-items:center;gap:5px;margin-top:9px"><span style="font:700 10px 'Chakra Petch',sans-serif;color:#22D3EE">🏆 8 G'ALABA</span></div></div>
+</div>
+
+<div style="width:172px;border-radius:20px;overflow:hidden;background:#0E1424;border:1px solid rgba(255,255,255,.07)">
+<div style="height:112px;position:relative;background:#1D4ED8;display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:8px 12px;align-content:center">
+<div style="aspect-ratio:1;border-radius:50%;background:#0B2A80"></div><div style="aspect-ratio:1;border-radius:50%;background:#0B2A80"></div><div style="aspect-ratio:1;border-radius:50%;background:#0B2A80"></div><div style="aspect-ratio:1;border-radius:50%;background:#0B2A80"></div><div style="aspect-ratio:1;border-radius:50%;background:#0B2A80"></div>
+<div style="aspect-ratio:1;border-radius:50%;background:#0B2A80"></div><div style="aspect-ratio:1;border-radius:50%;background:#FBBF24"></div><div style="aspect-ratio:1;border-radius:50%;background:#0B2A80"></div><div style="aspect-ratio:1;border-radius:50%;background:#0B2A80"></div><div style="aspect-ratio:1;border-radius:50%;background:#0B2A80"></div>
+<div style="aspect-ratio:1;border-radius:50%;background:#EF4444"></div><div style="aspect-ratio:1;border-radius:50%;background:#FBBF24"></div><div style="aspect-ratio:1;border-radius:50%;background:#0B2A80"></div><div style="aspect-ratio:1;border-radius:50%;background:#0B2A80"></div><div style="aspect-ratio:1;border-radius:50%;background:#0B2A80"></div>
+<div style="aspect-ratio:1;border-radius:50%;background:#EF4444"></div><div style="aspect-ratio:1;border-radius:50%;background:#EF4444"></div><div style="aspect-ratio:1;border-radius:50%;background:#FBBF24"></div><div style="aspect-ratio:1;border-radius:50%;background:#0B2A80"></div><div style="aspect-ratio:1;border-radius:50%;background:#0B2A80"></div>
+<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,10,18,0) 55%,rgba(7,10,18,.7))"></div>
+</div>
+<div style="padding:11px 12px 13px"><div style="font:700 13px 'Plus Jakarta Sans',sans-serif">Connect 4</div><div style="font:500 10.5px 'Plus Jakarta Sans',sans-serif;color:#8492B0;margin-top:3px">Onlayn · Xona kodi</div><div style="display:flex;align-items:center;gap:5px;margin-top:9px"><span style="font:700 10px 'Chakra Petch',sans-serif;color:#22D3EE">🏆 5 G'ALABA</span></div></div>
+</div>
+
+<div style="width:172px;border-radius:20px;overflow:hidden;background:#0E1424;border:1px solid rgba(255,255,255,.07)">
+<div style="height:112px;position:relative;background:linear-gradient(180deg,#0D9488,#062E2A);display:flex;align-items:flex-end;justify-content:center;gap:9px;padding:0 0 12px">
+<div style="width:22px;height:64px;border-radius:3px 3px 11px 11px;background:rgba(255,255,255,.14);border:2px solid rgba(255,255,255,.35);display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden"><div style="height:33%;background:#F43F5E"></div><div style="height:33%;background:#FBBF24"></div></div>
+<div style="width:22px;height:64px;border-radius:3px 3px 11px 11px;background:rgba(255,255,255,.14);border:2px solid rgba(255,255,255,.35);display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden"><div style="height:66%;background:#38BDF8"></div></div>
+<div style="width:22px;height:64px;border-radius:3px 3px 11px 11px;background:rgba(255,255,255,.14);border:2px solid rgba(255,255,255,.35);display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden"><div style="height:25%;background:#A3E635"></div><div style="height:25%;background:#F43F5E"></div></div>
+</div>
+<div style="padding:11px 12px 13px"><div style="font:700 13px 'Plus Jakarta Sans',sans-serif">Water Sort</div><div style="font:500 10.5px 'Plus Jakarta Sans',sans-serif;color:#8492B0;margin-top:3px">30 daraja kampaniya</div><div style="display:flex;align-items:center;gap:5px;margin-top:9px"><span style="font:700 10px 'Chakra Petch',sans-serif;color:#A3E635">⭐ 12/30</span></div></div>
+</div>
+
+<div style="width:172px;border-radius:20px;overflow:hidden;background:#0E1424;border:1px solid rgba(255,255,255,.07)">
+<div style="height:112px;position:relative;background:#0284C7;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:12px;align-content:center;font-family:'Chakra Petch',sans-serif">
+<div style="aspect-ratio:1;border-radius:7px;background:#0369A1"></div><div style="aspect-ratio:1;border-radius:7px;background:#FDE68A;display:grid;place-items:center;font:700 13px 'Chakra Petch',sans-serif;color:#78350F">32</div><div style="aspect-ratio:1;border-radius:7px;background:#0369A1"></div>
+<div style="aspect-ratio:1;border-radius:7px;background:#FB923C;display:grid;place-items:center;font:700 13px 'Chakra Petch',sans-serif;color:#fff">128</div><div style="aspect-ratio:1;border-radius:7px;background:#0369A1"></div><div style="aspect-ratio:1;border-radius:7px;background:#F43F5E;display:grid;place-items:center;font:700 11px 'Chakra Petch',sans-serif;color:#fff">512</div>
+<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,10,18,0) 55%,rgba(7,10,18,.72))"></div>
+</div>
+<div style="padding:11px 12px 13px"><div style="font:700 13px 'Plus Jakarta Sans',sans-serif">2048 Classic</div><div style="font:500 10.5px 'Plus Jakarta Sans',sans-serif;color:#8492B0;margin-top:3px">Cheksiz rejim</div><div style="display:flex;align-items:center;gap:5px;margin-top:9px"><span style="font:700 10px 'Chakra Petch',sans-serif;color:#A3E635">⭐ BEST 9 216</span></div></div>
+</div>
+</div>
+
+<div style="display:flex;align-items:baseline;justify-content:space-between;padding:18px 18px 10px">
+<span style="font:700 13px 'Chakra Petch',sans-serif;letter-spacing:.08em">BARCHA O'YINLAR</span>
+<span style="font:600 10.5px 'Plus Jakarta Sans',sans-serif;color:#8492B0">{{ listCount }} ta</span>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;padding:0 18px 22px">
+<sc-for list="{{ listGames }}" as="g" hint-placeholder-count="6">
+<div style="display:flex;align-items:center;gap:12px;padding:10px;border-radius:16px;background:#0C1220;border:1px solid rgba(255,255,255,.06)">
+<div style="width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:20px;background:{{ g.tint }};border:1px solid rgba(255,255,255,.1)">{{ g.glyph }}</div>
+<div style="flex:1;min-width:0"><div style="font:700 12.5px 'Plus Jakarta Sans',sans-serif">{{ g.name }}</div><div style="font:500 10.5px 'Plus Jakarta Sans',sans-serif;color:#8492B0;margin-top:2px">{{ g.meta }}</div></div>
+<div style="font:700 10px 'Chakra Petch',sans-serif;color:#64748B;padding:5px 8px;border-radius:8px;background:rgba(255,255,255,.05)">{{ g.stat }}</div>
+<div style="width:30px;height:30px;border-radius:10px;background:rgba(34,211,238,.12);border:1px solid rgba(34,211,238,.25);display:grid;place-items:center;font:700 11px 'Chakra Petch',sans-serif;color:#22D3EE">▶</div>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isStore }}" hint-placeholder-val="{{ false }}">
+<div>
+<div style="display:flex;align-items:center;gap:10px;padding:12px 18px 6px">
+<div style="width:34px;height:34px;border-radius:11px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);display:grid;place-items:center;font-size:14px">‹</div>
+<div style="flex:1"><div style="font:700 17px 'Chakra Petch',sans-serif;letter-spacing:.04em">MARKAZIY DO'KON</div><div style="font:500 10.5px 'Plus Jakarta Sans',sans-serif;color:#8492B0;margin-top:1px">Doskalar · Toshlar · Emojilar · Mavzular</div></div>
+<div style="display:flex;align-items:center;gap:5px;padding:7px 10px;border-radius:11px;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.24)"><span style="width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FDE68A,#D97706)"></span><span style="font:700 12px 'Chakra Petch',sans-serif;color:#FBBF24">{{ coins }}</span></div>
+</div>
+
+<div style="display:flex;gap:7px;overflow-x:auto;padding:14px 18px 0;scrollbar-width:none">
+<div onClick="{{ scChess }}" style="padding:8px 13px;border-radius:11px;font:700 11.5px 'Chakra Petch',sans-serif;white-space:nowrap;cursor:pointer;background:{{ bgScChess }};color:{{ fgScChess }};border:1px solid {{ bdScChess }}">♛ SHAXMAT</div>
+<div onClick="{{ scCheckers }}" style="padding:8px 13px;border-radius:11px;font:700 11.5px 'Chakra Petch',sans-serif;white-space:nowrap;cursor:pointer;background:{{ bgScCheckers }};color:{{ fgScCheckers }};border:1px solid {{ bdScCheckers }}">⬤ SHASHKA</div>
+<div onClick="{{ scEmotes }}" style="padding:8px 13px;border-radius:11px;font:700 11.5px 'Chakra Petch',sans-serif;white-space:nowrap;cursor:pointer;background:{{ bgScEmotes }};color:{{ fgScEmotes }};border:1px solid {{ bdScEmotes }}">😎 EMOJILAR</div>
+<div onClick="{{ scThemes }}" style="padding:8px 13px;border-radius:11px;font:700 11.5px 'Chakra Petch',sans-serif;white-space:nowrap;cursor:pointer;background:{{ bgScThemes }};color:{{ fgScThemes }};border:1px solid {{ bdScThemes }}">🎨 MAVZULAR</div>
+</div>
+
+<div style="margin:14px 18px 0;padding:3px;border-radius:14px;background:#0B1120;border:1px solid rgba(255,255,255,.06);display:flex;gap:3px">
+<div onClick="{{ sub0 }}" style="flex:1;height:36px;border-radius:11px;display:grid;place-items:center;cursor:pointer;font:700 11.5px 'Chakra Petch',sans-serif;background:{{ bgSub0 }};color:{{ fgSub0 }}">DOSKA RANGLARI</div>
+<div onClick="{{ sub1 }}" style="flex:1;height:36px;border-radius:11px;display:grid;place-items:center;cursor:pointer;font:700 11.5px 'Chakra Petch',sans-serif;background:{{ bgSub1 }};color:{{ fgSub1 }}">TOSHLAR STILI</div>
+</div>
+
+<div style="padding:14px 18px 22px;display:flex;flex-direction:column;gap:10px">
+<sc-for list="{{ storeItems }}" as="it" hint-placeholder-count="5">
+<div style="display:flex;align-items:center;gap:12px;padding:11px;border-radius:18px;background:#0E1424;border:1px solid {{ it.border }}">
+<div style="width:62px;height:62px;border-radius:14px;flex:none;background:{{ it.preview }};box-shadow:0 4px 12px rgba(0,0,0,.4) inset"></div>
+<div style="flex:1;min-width:0">
+<div style="font:700 12.5px 'Plus Jakarta Sans',sans-serif">{{ it.name }}</div>
+<div style="font:500 10.5px 'Plus Jakarta Sans',sans-serif;color:#8492B0;margin-top:3px">{{ it.desc }}</div>
+<div style="display:flex;align-items:center;gap:5px;margin-top:7px"><span style="width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FDE68A,#D97706)"></span><span style="font:700 11px 'Chakra Petch',sans-serif;color:#FBBF24">{{ it.cost }}</span></div>
+</div>
+<div style="padding:8px 12px;border-radius:11px;font:700 10.5px 'Chakra Petch',sans-serif;letter-spacing:.05em;background:{{ it.btnBg }};color:{{ it.btnFg }};border:1px solid {{ it.btnBd }}">{{ it.btn }}</div>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isRanks }}" hint-placeholder-val="{{ false }}">
+<div>
+<div style="padding:14px 18px 0"><div style="font:700 18px 'Chakra Petch',sans-serif;letter-spacing:.04em">GLOBAL RANKING</div><div style="font:500 10.5px 'Plus Jakarta Sans',sans-serif;color:#8492B0;margin-top:2px">Season 4 · 6 kun 12 soat qoldi</div></div>
+
+<div style="display:flex;gap:6px;margin:12px 18px 0;padding:3px;border-radius:13px;background:#0B1120;border:1px solid rgba(255,255,255,.06)">
+<div style="flex:1;height:32px;border-radius:10px;display:grid;place-items:center;font:700 11px 'Chakra Petch',sans-serif;background:#1B2438;color:#F2F5FF">GLOBAL</div>
+<div style="flex:1;height:32px;border-radius:10px;display:grid;place-items:center;font:700 11px 'Chakra Petch',sans-serif;color:#64748B">DO'STLAR</div>
+<div style="flex:1;height:32px;border-radius:10px;display:grid;place-items:center;font:700 11px 'Chakra Petch',sans-serif;color:#64748B">LIGA</div>
+</div>
+
+<div style="display:flex;align-items:flex-end;justify-content:center;gap:10px;padding:22px 18px 6px">
+<div style="flex:1;text-align:center">
+<div style="width:48px;height:48px;margin:0 auto;border-radius:16px;background:linear-gradient(150deg,#94A3B8,#475569);display:grid;place-items:center;font:700 15px 'Chakra Petch',sans-serif;color:#0B1120">SD</div>
+<div style="font:700 11.5px 'Plus Jakarta Sans',sans-serif;margin-top:7px">Sardor</div>
+<div style="font:700 10px 'Chakra Petch',sans-serif;color:#8492B0;margin-top:2px">4 210 XP</div>
+<div style="margin-top:8px;height:56px;border-radius:14px 14px 0 0;background:linear-gradient(180deg,#1E293B,#0B1120);border:1px solid rgba(255,255,255,.08);border-bottom:none;display:grid;place-items:center;font:700 18px 'Chakra Petch',sans-serif;color:#CBD5E1">2</div>
+</div>
+<div style="flex:1;text-align:center">
+<div style="position:relative;width:58px;height:58px;margin:0 auto;border-radius:19px;background:linear-gradient(150deg,#FDE68A,#D97706);display:grid;place-items:center;font:700 17px 'Chakra Petch',sans-serif;color:#3B2508;box-shadow:0 8px 22px rgba(217,119,6,.45)">JB<div style="position:absolute;top:-13px;left:50%;transform:translateX(-50%);font-size:16px">👑</div></div>
+<div style="font:700 12.5px 'Plus Jakarta Sans',sans-serif;margin-top:8px">Jahongir</div>
+<div style="font:700 10px 'Chakra Petch',sans-serif;color:#FBBF24;margin-top:2px">6 840 XP</div>
+<div style="margin-top:8px;height:80px;border-radius:14px 14px 0 0;background:linear-gradient(180deg,#3B2A08,#0B1120);border:1px solid rgba(251,191,36,.3);border-bottom:none;display:grid;place-items:center;font:700 24px 'Chakra Petch',sans-serif;color:#FBBF24">1</div>
+</div>
+<div style="flex:1;text-align:center">
+<div style="width:48px;height:48px;margin:0 auto;border-radius:16px;background:linear-gradient(150deg,#E9A05C,#8A4B18);display:grid;place-items:center;font:700 15px 'Chakra Petch',sans-serif;color:#2A1405">NM</div>
+<div style="font:700 11.5px 'Plus Jakarta Sans',sans-serif;margin-top:7px">Nodira</div>
+<div style="font:700 10px 'Chakra Petch',sans-serif;color:#8492B0;margin-top:2px">3 990 XP</div>
+<div style="margin-top:8px;height:44px;border-radius:14px 14px 0 0;background:linear-gradient(180deg,#2A1A0C,#0B1120);border:1px solid rgba(255,255,255,.08);border-bottom:none;display:grid;place-items:center;font:700 16px 'Chakra Petch',sans-serif;color:#E9A05C">3</div>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:7px;padding:14px 18px 8px">
+<sc-for list="{{ ranks }}" as="r" hint-placeholder-count="7">
+<div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:15px;background:#0C1220;border:1px solid rgba(255,255,255,.06)">
+<div style="width:26px;font:700 12px 'Chakra Petch',sans-serif;color:#64748B">{{ r.pos }}</div>
+<div style="width:34px;height:34px;border-radius:11px;background:{{ r.tint }};display:grid;place-items:center;font:700 11px 'Chakra Petch',sans-serif;color:#0B1120">{{ r.ini }}</div>
+<div style="flex:1;min-width:0"><div style="font:700 12px 'Plus Jakarta Sans',sans-serif">{{ r.name }}</div><div style="font:500 10px 'Plus Jakarta Sans',sans-serif;color:#8492B0;margin-top:1px">{{ r.meta }}</div></div>
+<div style="font:700 11px 'Chakra Petch',sans-serif;color:#7DD3FC">{{ r.lvl }}</div>
+</div>
+</sc-for>
+</div>
+
+<div style="margin:6px 18px 22px;padding:13px;border-radius:18px;background:linear-gradient(135deg,#141B33,#0B1524);border:1px solid rgba(124,92,255,.3)">
+<div style="display:flex;align-items:center;justify-content:space-between"><span style="font:700 10px 'Chakra Petch',sans-serif;letter-spacing:.12em;color:#A5B4FC">SIZNING O'RNINGIZ</span><span style="font:700 10px 'Chakra Petch',sans-serif;color:#E9A05C">🥉 BRONZE LEAGUE</span></div>
+<div style="display:flex;align-items:center;gap:12px;margin-top:11px">
+<div style="width:42px;height:42px;border-radius:14px;background:linear-gradient(150deg,#7C5CFF,#22D3EE);display:grid;place-items:center;font:700 13px 'Chakra Petch',sans-serif;color:#08101c">11</div>
+<div style="flex:1"><div style="font:700 13px 'Plus Jakarta Sans',sans-serif">{{ playerName }} <span style="font:700 9px 'Chakra Petch',sans-serif;padding:2px 5px;border-radius:4px;background:#7C5CFF;color:#fff;vertical-align:middle">SIZ</span></div><div style="font:500 10.5px 'Plus Jakarta Sans',sans-serif;color:#95A3C4;margin-top:2px">170 XP · 25 g'alaba</div></div>
+<div style="text-align:right"><div style="font:700 10px 'Chakra Petch',sans-serif;color:#22D3EE">+3 ↑</div><div style="font:500 9.5px 'Plus Jakarta Sans',sans-serif;color:#64748B;margin-top:2px">bu hafta</div></div>
+</div>
+<div style="margin-top:11px;height:5px;border-radius:99px;background:rgba(255,255,255,.09);overflow:hidden"><div style="width:62%;height:100%;background:linear-gradient(90deg,#E9A05C,#FBBF24)"></div></div>
+<div style="font:500 10px 'Plus Jakarta Sans',sans-serif;color:#8492B0;margin-top:6px">Silver ligaga 830 XP qoldi</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isProfile }}" hint-placeholder-val="{{ false }}">
+<div>
+<div style="position:relative;padding:20px 18px 0;text-align:center;overflow:hidden">
+<div style="position:absolute;top:-70px;left:50%;transform:translateX(-50%);width:280px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(34,211,238,.22),transparent 70%)"></div>
+<div style="position:relative;width:76px;height:76px;margin:0 auto;border-radius:26px;background:linear-gradient(150deg,#7C5CFF,#22D3EE);display:grid;place-items:center;font:700 26px 'Chakra Petch',sans-serif;color:#08101c;box-shadow:0 12px 30px rgba(124,92,255,.4)">AZ</div>
+<div style="font:800 20px 'Plus Jakarta Sans',sans-serif;margin-top:12px">{{ playerName }}</div>
+<div style="font:600 11px 'Chakra Petch',sans-serif;color:#7DD3FC;letter-spacing:.08em;margin-top:4px">LEVEL 1 · BRONZE III · 170 XP</div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:18px 18px 0">
+<div style="padding:13px;border-radius:16px;background:#0E1424;border:1px solid rgba(255,255,255,.07)"><div style="font:700 22px 'Chakra Petch',sans-serif;color:#22D3EE">25</div><div style="font:500 10.5px 'Plus Jakarta Sans',sans-serif;color:#8492B0;margin-top:2px">G'alaba</div></div>
+<div style="padding:13px;border-radius:16px;background:#0E1424;border:1px solid rgba(255,255,255,.07)"><div style="font:700 22px 'Chakra Petch',sans-serif;color:#A3E635">62%</div><div style="font:500 10.5px 'Plus Jakarta Sans',sans-serif;color:#8492B0;margin-top:2px">Win rate</div></div>
+<div style="padding:13px;border-radius:16px;background:#0E1424;border:1px solid rgba(255,255,255,.07)"><div style="font:700 22px 'Chakra Petch',sans-serif;color:#FB7185">🔥 7</div><div style="font:500 10.5px 'Plus Jakarta Sans',sans-serif;color:#8492B0;margin-top:2px">Streak</div></div>
+<div style="padding:13px;border-radius:16px;background:#0E1424;border:1px solid rgba(255,255,255,.07)"><div style="font:700 22px 'Chakra Petch',sans-serif;color:#FBBF24">{{ coins }}</div><div style="font:500 10.5px 'Plus Jakarta Sans',sans-serif;color:#8492B0;margin-top:2px">Tanga</div></div>
+</div>
+
+<div style="margin:14px 18px 0;padding:14px;border-radius:18px;background:linear-gradient(120deg,#2A1250,#0B1524);border:1px solid rgba(167,139,250,.3);display:flex;align-items:center;gap:12px">
+<div style="font-size:24px">💎</div>
+<div style="flex:1"><div style="font:700 13px 'Plus Jakarta Sans',sans-serif">Arena PRO</div><div style="font:500 10.5px 'Plus Jakarta Sans',sans-serif;color:#C4B5FD;margin-top:2px">Reklamasiz · 2× XP · barcha mavzular</div></div>
+<div style="padding:8px 12px;border-radius:11px;background:linear-gradient(100deg,#A78BFA,#7C5CFF);font:700 10.5px 'Chakra Petch',sans-serif;color:#0B0620">SINAB KO'RISH</div>
+</div>
+
+<div style="margin:14px 18px 22px;border-radius:18px;background:#0E1424;border:1px solid rgba(255,255,255,.07);overflow:hidden">
+<div style="padding:13px 14px 6px;font:700 11px 'Chakra Petch',sans-serif;letter-spacing:.12em;color:#64748B">SOZLAMALAR</div>
+<div style="display:flex;align-items:center;gap:12px;padding:13px 14px;border-top:1px solid rgba(255,255,255,.05)"><span style="font-size:15px">🌐</span><span style="flex:1;font:600 12.5px 'Plus Jakarta Sans',sans-serif">Ilova tili</span><span style="font:700 11px 'Chakra Petch',sans-serif;color:#7DD3FC">O'ZBEK ›</span></div>
+<div style="display:flex;align-items:center;gap:12px;padding:13px 14px;border-top:1px solid rgba(255,255,255,.05)"><span style="font-size:15px">🌙</span><span style="flex:1;font:600 12.5px 'Plus Jakarta Sans',sans-serif">Tungi rejim</span><div style="width:42px;height:24px;border-radius:99px;background:#22D3EE;padding:3px;display:flex;justify-content:flex-end"><div style="width:18px;height:18px;border-radius:50%;background:#04121C"></div></div></div>
+<div style="display:flex;align-items:center;gap:12px;padding:13px 14px;border-top:1px solid rgba(255,255,255,.05)"><span style="font-size:15px">🔊</span><span style="flex:1;font:600 12.5px 'Plus Jakarta Sans',sans-serif">Ovoz effektlari</span><div style="width:42px;height:24px;border-radius:99px;background:#22D3EE;padding:3px;display:flex;justify-content:flex-end"><div style="width:18px;height:18px;border-radius:50%;background:#04121C"></div></div></div>
+<div style="display:flex;align-items:center;gap:12px;padding:13px 14px;border-top:1px solid rgba(255,255,255,.05)"><span style="font-size:15px">📳</span><span style="flex:1;font:600 12.5px 'Plus Jakarta Sans',sans-serif">Tebranish</span><div style="width:42px;height:24px;border-radius:99px;background:rgba(255,255,255,.1);padding:3px;display:flex"><div style="width:18px;height:18px;border-radius:50%;background:#64748B"></div></div></div>
+<div style="display:flex;align-items:center;gap:12px;padding:13px 14px;border-top:1px solid rgba(255,255,255,.05)"><span style="font-size:15px">👤</span><span style="flex:1;font:600 12.5px 'Plus Jakarta Sans',sans-serif">Profilni tahrirlash</span><span style="color:#64748B">›</span></div>
+</div>
+</div>
+</sc-if>
+</div>
+
+<div style="flex:none;display:flex;padding:8px 10px 16px;background:rgba(9,13,22,.96);border-top:1px solid rgba(255,255,255,.07);backdrop-filter:blur(12px)">
+<div onClick="{{ tabHome }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:7px 0;cursor:pointer;color:{{ navHome }}"><span style="font-size:17px">🎮</span><span style="font:700 9.5px 'Chakra Petch',sans-serif;letter-spacing:.06em">ARENA</span></div>
+<div onClick="{{ tabStore }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:7px 0;cursor:pointer;color:{{ navStore }}"><span style="font-size:17px">🛍</span><span style="font:700 9.5px 'Chakra Petch',sans-serif;letter-spacing:.06em">DO'KON</span></div>
+<div onClick="{{ tabRanks }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:7px 0;cursor:pointer;color:{{ navRanks }}"><span style="font-size:17px">🏆</span><span style="font:700 9.5px 'Chakra Petch',sans-serif;letter-spacing:.06em">RANKS</span></div>
+<div onClick="{{ tabProfile }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:7px 0;cursor:pointer;color:{{ navProfile }}"><span style="font-size:17px">👤</span><span style="font:700 9.5px 'Chakra Petch',sans-serif;letter-spacing:.06em">PROFIL</span></div>
+</div>
+</div></div>
+</div>
+
+<div class="dv-opt" id="2b"><div class="dv-olabel"><a class="dv-oid" href="#2b">2b</a>Shaxmat — o'yin ichi</div>
+<div class="ph"><div class="phs" style="background:#070A12;color:#F2F5FF">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px 4px;font:600 12px 'Plus Jakarta Sans',sans-serif;color:#8492B0"><span>9:41</span><span style="font-size:11px">▮▮▮ ◗ 86%</span></div>
+<div class="scr">
+<div style="display:flex;align-items:center;gap:10px;padding:10px 16px">
+<div style="width:32px;height:32px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);display:grid;place-items:center">‹</div>
+<div style="flex:1;text-align:center"><div style="font:700 12px 'Chakra Petch',sans-serif;letter-spacing:.1em;color:#8492B0">RANKED · BLITZ 5+0</div></div>
+<div style="width:32px;height:32px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);display:grid;place-items:center">⋯</div>
+</div>
+
+<div style="display:flex;align-items:center;gap:11px;padding:6px 16px 12px">
+<div style="width:40px;height:40px;border-radius:13px;background:linear-gradient(150deg,#475569,#0F172A);display:grid;place-items:center;font:700 12px 'Chakra Petch',sans-serif">JB</div>
+<div style="flex:1"><div style="font:700 13px 'Plus Jakarta Sans',sans-serif">Jahongir <span style="font:600 10px 'Chakra Petch',sans-serif;color:#8492B0">1 842</span></div><div style="display:flex;gap:2px;margin-top:4px;font-size:13px;color:#FFFFFF;text-shadow:0 0 1.5px #0F172A">♙♙♗</div></div>
+<div style="padding:8px 13px;border-radius:11px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);font:700 15px 'Chakra Petch',sans-serif;color:#CBD5E1">3:41</div>
+</div>
+
+<div style="margin:0 16px;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.1);box-shadow:0 14px 34px rgba(0,0,0,.5)">
+<div style="position:relative;background:repeating-conic-gradient(#EEEED2 0% 25%,#769656 0% 50%) 50%/86px 86px;aspect-ratio:1;display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);font-size:31px;line-height:1;text-align:center;color:#1E293B">
+<div>♜</div><div>♞</div><div>♝</div><div>♛</div><div>♚</div><div>♝</div><div></div><div>♜</div>
+<div>♟</div><div>♟</div><div>♟</div><div></div><div></div><div>♟</div><div>♟</div><div>♟</div>
+<div></div><div></div><div>♞</div><div></div><div></div><div></div><div></div><div></div>
+<div></div><div></div><div></div><div>♟</div><div></div><div></div><div></div><div></div>
+<div></div><div></div><div style="background:rgba(184,212,52,.55)"></div><div></div><div style="background:rgba(247,236,89,.5);color:#FFFFFF;text-shadow:0 0 1.5px #0F172A,0 1px 2px rgba(0,0,0,.45)">♙</div><div></div><div></div><div></div>
+<div></div><div></div><div></div><div></div><div></div><div style="color:#FFFFFF;text-shadow:0 0 1.5px #0F172A,0 1px 2px rgba(0,0,0,.45)">♘</div><div></div><div></div>
+<div style="color:#FFFFFF;text-shadow:0 0 1.5px #0F172A,0 1px 2px rgba(0,0,0,.45)">♙</div><div style="color:#FFFFFF;text-shadow:0 0 1.5px #0F172A,0 1px 2px rgba(0,0,0,.45)">♙</div><div style="color:#FFFFFF;text-shadow:0 0 1.5px #0F172A,0 1px 2px rgba(0,0,0,.45)">♙</div><div style="color:#FFFFFF;text-shadow:0 0 1.5px #0F172A,0 1px 2px rgba(0,0,0,.45)">♙</div><div></div><div style="color:#FFFFFF;text-shadow:0 0 1.5px #0F172A,0 1px 2px rgba(0,0,0,.45)">♙</div><div style="color:#FFFFFF;text-shadow:0 0 1.5px #0F172A,0 1px 2px rgba(0,0,0,.45)">♙</div><div style="color:#FFFFFF;text-shadow:0 0 1.5px #0F172A,0 1px 2px rgba(0,0,0,.45)">♙</div>
+<div style="color:#FFFFFF;text-shadow:0 0 1.5px #0F172A,0 1px 2px rgba(0,0,0,.45)">♖</div><div style="color:#FFFFFF;text-shadow:0 0 1.5px #0F172A,0 1px 2px rgba(0,0,0,.45)">♘</div><div style="color:#FFFFFF;text-shadow:0 0 1.5px #0F172A,0 1px 2px rgba(0,0,0,.45)">♗</div><div style="color:#FFFFFF;text-shadow:0 0 1.5px #0F172A,0 1px 2px rgba(0,0,0,.45)">♕</div><div style="color:#FFFFFF;text-shadow:0 0 1.5px #0F172A,0 1px 2px rgba(0,0,0,.45)">♔</div><div style="color:#FFFFFF;text-shadow:0 0 1.5px #0F172A,0 1px 2px rgba(0,0,0,.45)">♗</div><div></div><div style="color:#FFFFFF;text-shadow:0 0 1.5px #0F172A,0 1px 2px rgba(0,0,0,.45)">♖</div>
+</div>
+</div>
+
+<div style="display:flex;align-items:center;gap:11px;padding:12px 16px 0">
+<div style="width:40px;height:40px;border-radius:13px;background:linear-gradient(150deg,#7C5CFF,#22D3EE);display:grid;place-items:center;font:700 12px 'Chakra Petch',sans-serif;color:#08101c">AZ</div>
+<div style="flex:1"><div style="font:700 13px 'Plus Jakarta Sans',sans-serif">Siz <span style="font:600 10px 'Chakra Petch',sans-serif;color:#22D3EE">1 705</span></div><div style="display:flex;gap:2px;margin-top:4px;font-size:13px;color:#1E293B;text-shadow:0 0 1.5px rgba(255,255,255,.5)">♟♟</div></div>
+<div style="padding:8px 13px;border-radius:11px;background:linear-gradient(100deg,#22D3EE,#4F86FF);font:700 15px 'Chakra Petch',sans-serif;color:#04121C;box-shadow:0 6px 18px rgba(34,211,238,.3)">4:12</div>
+</div>
+
+<div style="margin:14px 16px 0;padding:11px 13px;border-radius:15px;background:#0C1220;border:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:12px;overflow-x:auto;scrollbar-width:none;font:600 11.5px 'Chakra Petch',sans-serif;color:#8492B0;white-space:nowrap">
+<span style="color:#475569">14.</span><span style="color:#F2F5FF">Nf3</span><span style="color:#F2F5FF">d5</span><span style="color:#475569">15.</span><span style="color:#F2F5FF">e4</span><span style="padding:3px 7px;border-radius:6px;background:rgba(34,211,238,.14);color:#22D3EE">exd5</span>
+</div>
+
+<div style="display:flex;gap:8px;padding:14px 16px 20px">
+<div style="flex:1;height:46px;border-radius:14px;background:#0E1424;border:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="font-size:15px">💡</span><span style="font:700 8.5px 'Chakra Petch',sans-serif;color:#8492B0">MASLAHAT</span></div>
+<div style="flex:1;height:46px;border-radius:14px;background:#0E1424;border:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="font-size:15px">↩</span><span style="font:700 8.5px 'Chakra Petch',sans-serif;color:#8492B0">QAYTARISH</span></div>
+<div style="flex:1;height:46px;border-radius:14px;background:#0E1424;border:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="font-size:15px">😎</span><span style="font:700 8.5px 'Chakra Petch',sans-serif;color:#8492B0">EMOJI</span></div>
+<div style="flex:1;height:46px;border-radius:14px;background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.28);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="font-size:15px">🏳</span><span style="font:700 8.5px 'Chakra Petch',sans-serif;color:#FB7185">TAN OLISH</span></div>
+</div>
+</div>
+</div></div>
+</div>
+
+<div class="dv-opt" id="2c"><div class="dv-olabel"><a class="dv-oid" href="#2c">2c</a>Tez o'yin sozlash (Welcome/Setup)</div>
+<div class="ph"><div class="phs" style="background:#070A12;color:#F2F5FF">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px 4px;font:600 12px 'Plus Jakarta Sans',sans-serif;color:#8492B0"><span>9:41</span><span style="font-size:11px">▮▮▮ ◗ 86%</span></div>
+<div class="scr">
+<div style="display:flex;align-items:center;gap:10px;padding:10px 18px 0">
+<div style="width:32px;height:32px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);display:grid;place-items:center">‹</div>
+<div style="flex:1"><div style="font:700 17px 'Chakra Petch',sans-serif;letter-spacing:.04em">TIC TAC TOE PRO</div><div style="font:500 10.5px 'Plus Jakarta Sans',sans-serif;color:#8492B0">Rejim va doskani tanlang</div></div>
+</div>
+
+<div style="padding:16px 18px 0;font:700 11px 'Chakra Petch',sans-serif;letter-spacing:.12em;color:#64748B">O'YIN REJIMI</div>
+<div style="display:flex;flex-direction:column;gap:8px;padding:10px 18px 0">
+<div onClick="{{ mQuick }}" style="display:flex;align-items:center;gap:12px;padding:13px;border-radius:16px;cursor:pointer;background:{{ bgMQuick }};border:1px solid {{ bdMQuick }}">
+<div style="width:38px;height:38px;border-radius:12px;background:rgba(34,211,238,.14);display:grid;place-items:center;font-size:17px">⚡</div>
+<div style="flex:1"><div style="font:700 12.5px 'Plus Jakarta Sans',sans-serif">1-Tap Quick Match</div><div style="font:500 10.5px 'Plus Jakarta Sans',sans-serif;color:#8492B0;margin-top:2px">Raqib avtomatik topiladi</div></div>
+<div style="width:20px;height:20px;border-radius:50%;border:2px solid {{ dotMQuick }};display:grid;place-items:center"><div style="width:9px;height:9px;border-radius:50%;background:{{ dotMQuickIn }}"></div></div>
+</div>
+<div onClick="{{ mAi }}" style="display:flex;align-items:center;gap:12px;padding:13px;border-radius:16px;cursor:pointer;background:{{ bgMAi }};border:1px solid {{ bdMAi }}">
+<div style="width:38px;height:38px;border-radius:12px;background:rgba(167,139,250,.14);display:grid;place-items:center;font-size:17px">🤖</div>
+<div style="flex:1"><div style="font:700 12.5px 'Plus Jakarta Sans',sans-serif">Smart AI Bot</div><div style="font:500 10.5px 'Plus Jakarta Sans',sans-serif;color:#8492B0;margin-top:2px">Minimax · 3 daraja</div></div>
+<div style="width:20px;height:20px;border-radius:50%;border:2px solid {{ dotMAi }};display:grid;place-items:center"><div style="width:9px;height:9px;border-radius:50%;background:{{ dotMAiIn }}"></div></div>
+</div>
+<div onClick="{{ mLocal }}" style="display:flex;align-items:center;gap:12px;padding:13px;border-radius:16px;cursor:pointer;background:{{ bgMLocal }};border:1px solid {{ bdMLocal }}">
+<div style="width:38px;height:38px;border-radius:12px;background:rgba(163,230,53,.14);display:grid;place-items:center;font-size:17px">👥</div>
+<div style="flex:1"><div style="font:700 12.5px 'Plus Jakarta Sans',sans-serif">Pass &amp; Play</div><div style="font:500 10.5px 'Plus Jakarta Sans',sans-serif;color:#8492B0;margin-top:2px">Bitta telefonda 1v1</div></div>
+<div style="width:20px;height:20px;border-radius:50%;border:2px solid {{ dotMLocal }};display:grid;place-items:center"><div style="width:9px;height:9px;border-radius:50%;background:{{ dotMLocalIn }}"></div></div>
+</div>
+<div onClick="{{ mRoom }}" style="display:flex;align-items:center;gap:12px;padding:13px;border-radius:16px;cursor:pointer;background:{{ bgMRoom }};border:1px solid {{ bdMRoom }}">
+<div style="width:38px;height:38px;border-radius:12px;background:rgba(251,191,36,.14);display:grid;place-items:center;font-size:17px">🔑</div>
+<div style="flex:1"><div style="font:700 12.5px 'Plus Jakarta Sans',sans-serif">Xona kodi</div><div style="font:500 10.5px 'Plus Jakarta Sans',sans-serif;color:#8492B0;margin-top:2px">Do'stni taklif qilish</div></div>
+<div style="width:20px;height:20px;border-radius:50%;border:2px solid {{ dotMRoom }};display:grid;place-items:center"><div style="width:9px;height:9px;border-radius:50%;background:{{ dotMRoomIn }}"></div></div>
+</div>
+</div>
+
+<div style="padding:18px 18px 0;font:700 11px 'Chakra Petch',sans-serif;letter-spacing:.12em;color:#64748B">DOSKA O'LCHAMI</div>
+<div style="display:flex;gap:9px;padding:10px 18px 0">
+<div onClick="{{ g3 }}" style="flex:1;padding:12px 0;border-radius:15px;text-align:center;cursor:pointer;background:{{ bgG3 }};border:1px solid {{ bdG3 }}"><div style="font:700 16px 'Chakra Petch',sans-serif;color:{{ fgG3 }}">3×3</div><div style="font:500 9.5px 'Plus Jakarta Sans',sans-serif;color:#8492B0;margin-top:2px">Klassik</div></div>
+<div onClick="{{ g4 }}" style="flex:1;padding:12px 0;border-radius:15px;text-align:center;cursor:pointer;background:{{ bgG4 }};border:1px solid {{ bdG4 }}"><div style="font:700 16px 'Chakra Petch',sans-serif;color:{{ fgG4 }}">4×4</div><div style="font:500 9.5px 'Plus Jakarta Sans',sans-serif;color:#8492B0;margin-top:2px">4 qatorda</div></div>
+<div onClick="{{ g5 }}" style="flex:1;padding:12px 0;border-radius:15px;text-align:center;cursor:pointer;background:{{ bgG5 }};border:1px solid {{ bdG5 }}"><div style="font:700 16px 'Chakra Petch',sans-serif;color:{{ fgG5 }}">5×5</div><div style="font:500 9.5px 'Plus Jakarta Sans',sans-serif;color:#8492B0;margin-top:2px">Pro</div></div>
+</div>
+
+<div style="margin:18px 18px 0;padding:14px;border-radius:18px;background:#0C1220;border:1px solid rgba(255,255,255,.06)">
+<div style="font:700 11px 'Chakra Petch',sans-serif;letter-spacing:.12em;color:#64748B">TIKISH (BET)</div>
+<div style="display:flex;align-items:center;gap:10px;margin-top:11px">
+<div style="flex:1;display:flex;gap:7px">
+<div style="padding:7px 12px;border-radius:10px;background:rgba(251,191,36,.14);border:1px solid rgba(251,191,36,.3);font:700 11px 'Chakra Petch',sans-serif;color:#FBBF24">50</div>
+<div style="padding:7px 12px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);font:700 11px 'Chakra Petch',sans-serif;color:#8492B0">100</div>
+<div style="padding:7px 12px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);font:700 11px 'Chakra Petch',sans-serif;color:#8492B0">250</div>
+</div>
+<div style="font:600 10px 'Plus Jakarta Sans',sans-serif;color:#64748B;text-align:right">G'olib<br><span style="font:700 12px 'Chakra Petch',sans-serif;color:#A3E635">+100</span></div>
+</div>
+</div>
+
+<div style="padding:18px;display:flex;gap:9px">
+<div style="flex:1;height:52px;border-radius:16px;background:linear-gradient(100deg,#22D3EE,#4F86FF);display:grid;place-items:center;font:700 14px 'Chakra Petch',sans-serif;letter-spacing:.08em;color:#04121C;box-shadow:0 10px 26px rgba(34,211,238,.3)">▶ BOSHLASH</div>
+</div>
+</div>
+</div></div>
+</div>
+
+<div class="dv-opt" id="2d"><div class="dv-olabel"><a class="dv-oid" href="#2d">2d</a>Natija ekrani — g'alaba</div>
+<div class="ph"><div class="phs" style="background:radial-gradient(120% 80% at 50% 0%,#12224A 0%,#070A12 60%);color:#F2F5FF">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px 4px;font:600 12px 'Plus Jakarta Sans',sans-serif;color:#8492B0"><span>9:41</span><span style="font-size:11px">▮▮▮ ◗ 86%</span></div>
+<div class="scr">
+<div style="position:relative;text-align:center;padding:26px 18px 0;overflow:hidden">
+<div style="position:absolute;top:8px;left:10%;width:7px;height:14px;border-radius:2px;background:#22D3EE;transform:rotate(24deg);opacity:.85"></div>
+<div style="position:absolute;top:40px;right:16%;width:6px;height:13px;border-radius:2px;background:#FBBF24;transform:rotate(-32deg);opacity:.8"></div>
+<div style="position:absolute;top:96px;left:20%;width:6px;height:12px;border-radius:2px;background:#F43F5E;transform:rotate(14deg);opacity:.7"></div>
+<div style="position:absolute;top:70px;right:28%;width:6px;height:12px;border-radius:2px;background:#A3E635;transform:rotate(-12deg);opacity:.75"></div>
+<div style="position:relative;width:96px;height:96px;margin:0 auto;border-radius:32px;background:linear-gradient(150deg,#FDE68A,#D97706);display:grid;place-items:center;font-size:44px;box-shadow:0 16px 40px rgba(217,119,6,.45);animation:floatY 4s ease-in-out infinite">🏆</div>
+<div style="font:700 30px/1 'Chakra Petch',sans-serif;letter-spacing:.02em;margin-top:18px">G'ALABA!</div>
+<div style="font:500 12px 'Plus Jakarta Sans',sans-serif;color:#95A3C4;margin-top:7px">Jahongir ustidan 24 yurishda</div>
+</div>
+
+<div style="display:flex;align-items:center;gap:10px;padding:22px 18px 0">
+<div style="flex:1;text-align:center;padding:14px 8px;border-radius:16px;background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.26)"><div style="font:700 20px 'Chakra Petch',sans-serif;color:#22D3EE">+120</div><div style="font:600 9.5px 'Chakra Petch',sans-serif;color:#8492B0;letter-spacing:.1em;margin-top:3px">XP</div></div>
+<div style="flex:1;text-align:center;padding:14px 8px;border-radius:16px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.26)"><div style="font:700 20px 'Chakra Petch',sans-serif;color:#FBBF24">+100</div><div style="font:600 9.5px 'Chakra Petch',sans-serif;color:#8492B0;letter-spacing:.1em;margin-top:3px">TANGA</div></div>
+<div style="flex:1;text-align:center;padding:14px 8px;border-radius:16px;background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.26)"><div style="font:700 20px 'Chakra Petch',sans-serif;color:#FB7185">🔥 8</div><div style="font:600 9.5px 'Chakra Petch',sans-serif;color:#8492B0;letter-spacing:.1em;margin-top:3px">STREAK</div></div>
+</div>
+
+<div style="margin:16px 18px 0;padding:14px;border-radius:18px;background:#0E1424;border:1px solid rgba(255,255,255,.07)">
+<div style="display:flex;align-items:center;justify-content:space-between"><span style="font:700 11px 'Chakra Petch',sans-serif;letter-spacing:.1em;color:#64748B">LEVEL 1 → 2</span><span style="font:700 11px 'Chakra Petch',sans-serif;color:#22D3EE">290/500 XP</span></div>
+<div style="height:8px;border-radius:99px;background:rgba(255,255,255,.08);margin-top:10px;overflow:hidden;position:relative"><div style="width:58%;height:100%;border-radius:99px;background:linear-gradient(90deg,#22D3EE,#7C5CFF)"></div></div>
+<div style="display:flex;align-items:center;gap:9px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.06)">
+<div style="width:34px;height:34px;border-radius:11px;background:rgba(163,230,53,.14);display:grid;place-items:center;font-size:15px">✅</div>
+<div style="flex:1"><div style="font:700 11.5px 'Plus Jakarta Sans',sans-serif">Quest bajarildi — Onlayn match</div><div style="font:500 10px 'Plus Jakarta Sans',sans-serif;color:#8492B0;margin-top:2px">Mukofot avtomatik qo'shildi</div></div>
+<div style="font:700 11px 'Chakra Petch',sans-serif;color:#A3E635">+100</div>
+</div>
+</div>
+
+<div style="margin:16px 18px 0;padding:13px;border-radius:18px;background:linear-gradient(120deg,#2A1250,#0B1524);border:1px solid rgba(167,139,250,.28);display:flex;align-items:center;gap:11px">
+<div style="width:44px;height:44px;border-radius:13px;background:repeating-conic-gradient(#22D3EE 0% 25%,#7C3AED 0% 50%) 50%/22px 22px"></div>
+<div style="flex:1"><div style="font:700 12px 'Plus Jakarta Sans',sans-serif">Cyberpunk Neon doska</div><div style="font:500 10px 'Plus Jakarta Sans',sans-serif;color:#C4B5FD;margin-top:2px">Do'konda 300 tanga · sizda 1 250</div></div>
+<div style="padding:7px 11px;border-radius:10px;background:#A78BFA;font:700 10px 'Chakra Petch',sans-serif;color:#1A0B33">KO'RISH</div>
+</div>
+
+<div style="display:flex;gap:9px;padding:18px">
+<div style="flex:1;height:50px;border-radius:15px;background:linear-gradient(100deg,#22D3EE,#4F86FF);display:grid;place-items:center;font:700 13px 'Chakra Petch',sans-serif;letter-spacing:.06em;color:#04121C;box-shadow:0 10px 24px rgba(34,211,238,.28)">↻ QAYTA O'YIN</div>
+<div style="width:50px;height:50px;border-radius:15px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);display:grid;place-items:center;font-size:17px">🏠</div>
+<div style="width:50px;height:50px;border-radius:15px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);display:grid;place-items:center;font-size:17px">↗</div>
+</div>
+</div>
+</div></div>
+</div>
+
+<div class="dv-opt" id="2e"><div class="dv-olabel"><a class="dv-oid" href="#2e">2e</a>Home — light rejim</div>
+<div class="ph"><div class="phs" style="background:#F4F6FB;color:#0F172A">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px 4px;font:600 12px 'Plus Jakarta Sans',sans-serif;color:#64748B"><span>9:41</span><span style="font-size:11px">▮▮▮ ◗ 86%</span></div>
+<div class="scr">
+<div style="display:flex;align-items:center;gap:12px;padding:10px 18px 0">
+<div style="width:46px;height:46px;border-radius:15px;background:linear-gradient(150deg,#4F46E5,#06B6D4);display:grid;place-items:center;font:700 16px 'Chakra Petch',sans-serif;color:#fff">AZ</div>
+<div style="flex:1"><div style="display:flex;align-items:center;gap:7px"><span style="font:800 16px 'Plus Jakarta Sans',sans-serif">{{ playerName }}</span><span style="font:700 9px 'Chakra Petch',sans-serif;letter-spacing:.08em;padding:3px 6px;border-radius:5px;background:#FEF3C7;color:#92400E">BRONZE III</span></div>
+<div style="display:flex;align-items:center;gap:8px;margin-top:5px"><div style="flex:1;height:5px;border-radius:99px;background:rgba(15,23,42,.09);overflow:hidden"><div style="width:34%;height:100%;border-radius:99px;background:linear-gradient(90deg,#06B6D4,#4F46E5)"></div></div><span style="font:600 10px 'Chakra Petch',sans-serif;color:#64748B">170/500 XP</span></div>
+</div>
+</div>
+<div style="display:flex;gap:7px;padding:12px 18px 0">
+<div style="display:flex;align-items:center;gap:6px;padding:7px 11px;border-radius:11px;background:#FEF3C7;border:1px solid #FDE68A"><span style="width:15px;height:15px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FDE68A,#D97706)"></span><span style="font:700 13px 'Chakra Petch',sans-serif;color:#B45309">{{ coins }}</span></div>
+<div style="display:flex;align-items:center;gap:6px;padding:7px 11px;border-radius:11px;background:#FFE4E6;border:1px solid #FECDD3"><span style="font-size:12px">🔥</span><span style="font:700 13px 'Chakra Petch',sans-serif;color:#BE123C">7</span></div>
+<div style="flex:1"></div>
+<div style="width:34px;height:34px;border-radius:11px;background:#fff;border:1px solid rgba(15,23,42,.08);display:grid;place-items:center;font-size:14px">🔊</div>
+<div style="width:34px;height:34px;border-radius:11px;background:#fff;border:1px solid rgba(15,23,42,.08);display:grid;place-items:center;font-size:14px">⚙</div>
+</div>
+
+<div style="padding:16px 18px 0">
+<div style="position:relative;border-radius:22px;padding:18px;overflow:hidden;background:linear-gradient(135deg,#4F46E5,#0EA5E9);box-shadow:0 16px 34px rgba(79,70,229,.28)">
+<div style="position:absolute;inset:0;background:repeating-linear-gradient(115deg,rgba(255,255,255,.07) 0 1px,transparent 1px 9px)"></div>
+<div style="position:relative;display:flex;align-items:flex-start;gap:12px;color:#fff">
+<div style="flex:1">
+<div style="display:flex;align-items:center;gap:6px"><span style="width:6px;height:6px;border-radius:50%;background:#BBF7D0;box-shadow:0 0 8px #86EFAC"></span><span style="font:600 10px 'Chakra Petch',sans-serif;letter-spacing:.14em;color:#E0F2FE">12 480 ONLAYN</span></div>
+<div style="font:700 26px/1.05 'Chakra Petch',sans-serif;margin-top:8px">QUICK<br>MATCH</div>
+<div style="font:500 11.5px/1.45 'Plus Jakarta Sans',sans-serif;color:#DBEAFE;margin-top:7px;max-width:180px">Bir tegishda raqib topamiz — o'rtacha <b>8 soniya</b></div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(3,14px);grid-template-rows:repeat(3,14px);gap:4px;padding:9px;border-radius:14px;background:rgba(255,255,255,.16)">
+<div style="border-radius:3px;background:rgba(255,255,255,.25)"></div><div style="border-radius:3px;background:#fff"></div><div style="border-radius:3px;background:rgba(255,255,255,.25)"></div>
+<div style="border-radius:3px;background:rgba(255,255,255,.25)"></div><div style="border-radius:3px;background:#FBBF24"></div><div style="border-radius:3px;background:rgba(255,255,255,.25)"></div>
+<div style="border-radius:3px;background:#fff"></div><div style="border-radius:3px;background:rgba(255,255,255,.25)"></div><div style="border-radius:3px;background:#FBBF24"></div>
+</div>
+</div>
+<div style="position:relative;display:flex;gap:9px;margin-top:16px">
+<div style="flex:1;height:46px;border-radius:14px;background:#fff;display:grid;place-items:center;font:700 14px 'Chakra Petch',sans-serif;letter-spacing:.06em;color:#3730A3">▶ O'YNASH</div>
+<div style="width:46px;height:46px;border-radius:14px;background:rgba(255,255,255,.2);display:grid;place-items:center;font-size:16px">👥</div>
+<div style="width:46px;height:46px;border-radius:14px;background:rgba(255,255,255,.2);display:grid;place-items:center;font:700 12px 'Chakra Petch',sans-serif;color:#fff">#ID</div>
+</div>
+</div>
+</div>
+
+<div style="display:flex;gap:9px;padding:14px 18px 0">
+<div style="flex:1;border-radius:16px;padding:11px;background:#fff;border:1px solid rgba(15,23,42,.07);box-shadow:0 2px 8px rgba(15,23,42,.04)"><div style="font-size:19px">🎁</div><div style="font:700 11.5px 'Plus Jakarta Sans',sans-serif;margin-top:6px">Daily Bonus</div><div style="font:600 10px 'Chakra Petch',sans-serif;color:#B45309;margin-top:2px">+100 OLISH</div></div>
+<div style="flex:1;border-radius:16px;padding:11px;background:#fff;border:1px solid rgba(15,23,42,.07);box-shadow:0 2px 8px rgba(15,23,42,.04)"><div style="font-size:19px">🎡</div><div style="font:700 11.5px 'Plus Jakarta Sans',sans-serif;margin-top:6px">Lucky Wheel</div><div style="font:600 10px 'Chakra Petch',sans-serif;color:#6D28D9;margin-top:2px">BEPUL SPIN</div></div>
+<div style="flex:1;border-radius:16px;padding:11px;background:#fff;border:1px solid rgba(15,23,42,.07);box-shadow:0 2px 8px rgba(15,23,42,.04)"><div style="font-size:19px">🏅</div><div style="font:700 11.5px 'Plus Jakarta Sans',sans-serif;margin-top:6px">Season Pass</div><div style="font:600 10px 'Chakra Petch',sans-serif;color:#0E7490;margin-top:2px">14 KUN</div></div>
+</div>
+
+<div style="display:flex;gap:7px;overflow-x:auto;padding:18px 18px 12px;scrollbar-width:none">
+<div style="padding:8px 14px;border-radius:11px;font:700 11.5px 'Chakra Petch',sans-serif;white-space:nowrap;background:#0F172A;color:#fff">HAMMASI 13</div>
+<div style="padding:8px 14px;border-radius:11px;font:700 11.5px 'Chakra Petch',sans-serif;white-space:nowrap;background:#fff;color:#475569;border:1px solid rgba(15,23,42,.08)">⚔ 1V1 ARENA</div>
+<div style="padding:8px 14px;border-radius:11px;font:700 11.5px 'Chakra Petch',sans-serif;white-space:nowrap;background:#fff;color:#475569;border:1px solid rgba(15,23,42,.08)">🧠 PUZZLE</div>
+<div style="padding:8px 14px;border-radius:11px;font:700 11.5px 'Chakra Petch',sans-serif;white-space:nowrap;background:#fff;color:#475569;border:1px solid rgba(15,23,42,.08)">⚡ SPEED</div>
+</div>
+
+<div style="display:flex;align-items:baseline;justify-content:space-between;padding:0 18px 10px"><span style="font:700 13px 'Chakra Petch',sans-serif;letter-spacing:.08em">TAVSIYA ETILADI</span><span style="font:600 10.5px 'Plus Jakarta Sans',sans-serif;color:#4F46E5">Barchasi ›</span></div>
+<div class="hcar">
+<div style="width:172px;border-radius:20px;overflow:hidden;background:#fff;border:1px solid rgba(15,23,42,.07);box-shadow:0 3px 10px rgba(15,23,42,.05)">
+<div style="height:112px;position:relative;background:repeating-conic-gradient(#EEEED2 0% 25%,#769656 0% 50%) 50%/28px 28px"><div style="position:absolute;left:12px;bottom:8px;display:flex;gap:1px;font-size:26px;line-height:1"><span style="color:#FBBF24">♛</span><span style="color:#fff">♞</span><span style="color:#0B1120">♟</span></div><div style="position:absolute;top:9px;right:9px;padding:3px 7px;border-radius:6px;background:#FBBF24;font:700 9px 'Chakra Petch',sans-serif;color:#3B2508">PRO</div></div>
+<div style="padding:11px 12px 13px"><div style="font:700 13px 'Plus Jakarta Sans',sans-serif">Shaxmat</div><div style="font:500 10.5px 'Plus Jakarta Sans',sans-serif;color:#64748B;margin-top:3px">Onlayn · AI Bot · Elo</div><div style="font:700 10px 'Chakra Petch',sans-serif;color:#0E7490;margin-top:9px">🏆 12 G'ALABA</div></div>
+</div>
+<div style="width:172px;border-radius:20px;overflow:hidden;background:#fff;border:1px solid rgba(15,23,42,.07);box-shadow:0 3px 10px rgba(15,23,42,.05)">
+<div style="height:112px;position:relative;background:repeating-conic-gradient(#F0D9B5 0% 25%,#B91C1C 0% 50%) 50%/28px 28px"><div style="position:absolute;left:14px;bottom:12px;display:flex;gap:6px"><span style="width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 34% 28%,#FEE2E2,#DC2626);box-shadow:0 3px 8px rgba(0,0,0,.4)"></span><span style="width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 34% 28%,#475569,#0B1120);box-shadow:0 3px 8px rgba(0,0,0,.4)"></span></div></div>
+<div style="padding:11px 12px 13px"><div style="font:700 13px 'Plus Jakarta Sans',sans-serif">Shashka</div><div style="font:500 10.5px 'Plus Jakarta Sans',sans-serif;color:#64748B;margin-top:3px">Checkers · 1v1</div><div style="font:700 10px 'Chakra Petch',sans-serif;color:#0E7490;margin-top:9px">🏆 8 G'ALABA</div></div>
+</div>
+<div style="width:172px;border-radius:20px;overflow:hidden;background:#fff;border:1px solid rgba(15,23,42,.07);box-shadow:0 3px 10px rgba(15,23,42,.05)">
+<div style="height:112px;background:#1D4ED8;display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:8px 12px;align-content:center">
+<div style="aspect-ratio:1;border-radius:50%;background:#0B2A80"></div><div style="aspect-ratio:1;border-radius:50%;background:#0B2A80"></div><div style="aspect-ratio:1;border-radius:50%;background:#0B2A80"></div><div style="aspect-ratio:1;border-radius:50%;background:#0B2A80"></div><div style="aspect-ratio:1;border-radius:50%;background:#0B2A80"></div>
+<div style="aspect-ratio:1;border-radius:50%;background:#0B2A80"></div><div style="aspect-ratio:1;border-radius:50%;background:#FBBF24"></div><div style="aspect-ratio:1;border-radius:50%;background:#0B2A80"></div><div style="aspect-ratio:1;border-radius:50%;background:#0B2A80"></div><div style="aspect-ratio:1;border-radius:50%;background:#0B2A80"></div>
+<div style="aspect-ratio:1;border-radius:50%;background:#EF4444"></div><div style="aspect-ratio:1;border-radius:50%;background:#FBBF24"></div><div style="aspect-ratio:1;border-radius:50%;background:#0B2A80"></div><div style="aspect-ratio:1;border-radius:50%;background:#0B2A80"></div><div style="aspect-ratio:1;border-radius:50%;background:#0B2A80"></div>
+</div>
+<div style="padding:11px 12px 13px"><div style="font:700 13px 'Plus Jakarta Sans',sans-serif">Connect 4</div><div style="font:500 10.5px 'Plus Jakarta Sans',sans-serif;color:#64748B;margin-top:3px">Onlayn · Xona kodi</div><div style="font:700 10px 'Chakra Petch',sans-serif;color:#0E7490;margin-top:9px">🏆 5 G'ALABA</div></div>
+</div>
+</div>
+
+<div style="padding:18px 18px 10px;font:700 13px 'Chakra Petch',sans-serif;letter-spacing:.08em">BARCHA O'YINLAR</div>
+<div style="display:flex;flex-direction:column;gap:8px;padding:0 18px 22px">
+<sc-for list="{{ lightList }}" as="g" hint-placeholder-count="4">
+<div style="display:flex;align-items:center;gap:12px;padding:10px;border-radius:16px;background:#fff;border:1px solid rgba(15,23,42,.07)">
+<div style="width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:20px;background:{{ g.tintLight }}">{{ g.glyph }}</div>
+<div style="flex:1;min-width:0"><div style="font:700 12.5px 'Plus Jakarta Sans',sans-serif">{{ g.name }}</div><div style="font:500 10.5px 'Plus Jakarta Sans',sans-serif;color:#64748B;margin-top:2px">{{ g.meta }}</div></div>
+<div style="font:700 10px 'Chakra Petch',sans-serif;color:#475569;padding:5px 8px;border-radius:8px;background:#F1F5F9">{{ g.stat }}</div>
+</div>
+</sc-for>
+</div>
+</div>
+<div style="flex:none;display:flex;padding:8px 10px 16px;background:#fff;border-top:1px solid rgba(15,23,42,.07)">
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:7px 0;color:#4F46E5"><span style="font-size:17px">🎮</span><span style="font:700 9.5px 'Chakra Petch',sans-serif">ARENA</span></div>
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:7px 0;color:#94A3B8"><span style="font-size:17px">🛍</span><span style="font:700 9.5px 'Chakra Petch',sans-serif">DO'KON</span></div>
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:7px 0;color:#94A3B8"><span style="font-size:17px">🏆</span><span style="font:700 9.5px 'Chakra Petch',sans-serif">RANKS</span></div>
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:7px 0;color:#94A3B8"><span style="font-size:17px">👤</span><span style="font:700 9.5px 'Chakra Petch',sans-serif">PROFIL</span></div>
+</div>
+</div></div>
+</div>
+
+</div>
+<p class="dv-next">Keyingi qadamlar: “<a class="dv-oid" href="#2a">2a</a> dagi karuselni kattaroq qil” · “<a class="dv-oid" href="#2b">2b</a> uchun Shashka va Durak ekranlarini ham qil” · “Water Sort va 2048 o'yin ichi dizayni” · “<a class="dv-oid" href="#2a">2a</a> ni Android XML layout'ga aylantir”</p>
+</section>
+
+<section class="dv-turn" id="t1">
+<div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">HOZIRGI HOLAT — kodingizdan aniq tiklangan</span></div>
+<p class="dv-tsub">fragment_dashboard.xml, fragment_store.xml, fragment_leaderboard.xml, fragment_profile.xml va colors.xml dagi aniq qiymatlar (#312E81 profil kartasi, 120dp o'yin kartalari, #F8FAFC fon, sans-serif-black sarlavhalar) asosida. Solishtirish uchun.</p>
+<div class="dv-opts">
+
+<div class="dv-opt" id="1a"><div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>Dashboard (hozir)</div>
+<div class="ph"><div class="phs" style="background:#F8FAFC;color:#0F172A;font-family:Roboto,'Plus Jakarta Sans',sans-serif">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px 0;font:500 11px sans-serif;color:#0F172A"><span>9:41</span><span>▮▮▮ ◗ 86%</span></div>
+<div class="scr" style="padding:20px">
+<div style="border-radius:18px;background:#312E81;padding:16px;box-shadow:0 4px 12px rgba(0,0,0,.18)">
+<div style="display:flex;gap:16px">
+<div style="width:60px;height:60px;border-radius:8px;background:rgba(165,180,252,.18);display:grid;place-items:center;font-size:30px;color:#A5B4FC">👤</div>
+<div style="flex:1">
+<div style="display:flex;align-items:flex-start"><div style="flex:1"><div style="font:900 20px sans-serif;color:#fff">Guest Player</div><div style="font-size:14px;color:#A5B4FC;margin-top:4px">Level 1 | 0 XP</div></div>
+<div style="display:flex;gap:4px;align-items:center"><span style="font-size:18px">🔊</span><span style="font-size:18px">📳</span><span style="font-size:16px;color:#A5B4FC">✎</span></div></div>
+<div style="display:flex;gap:10px;margin-top:8px;font:700 13px sans-serif"><span style="color:#F59E0B">🔥 0</span><span style="color:#FCD34D">🪙 0</span><span style="color:#38BDF8;font-size:12px">🥉 Bronze</span></div>
+</div>
+</div>
+</div>
+<div style="display:flex;gap:12px;margin-top:14px">
+<div style="flex:1;height:90px;border-radius:16px;background:#F59E0B;display:flex;align-items:center;gap:8px;padding:12px;box-sizing:border-box"><span style="font-size:26px">🎁</span><div><div style="font:700 14px sans-serif;color:#fff">Daily Bonus</div><div style="font-size:11px;color:#FEF3C7;margin-top:2px">+100 🪙 Claim</div></div></div>
+<div style="flex:1;height:90px;border-radius:16px;background:#7C3AED;display:flex;align-items:center;gap:8px;padding:12px;box-sizing:border-box"><span style="font-size:26px">🎡</span><div><div style="font:700 14px sans-serif;color:#fff">Lucky Wheel</div><div style="font-size:11px;color:#EDE9FE;margin-top:2px">Free Daily Spin</div></div></div>
+</div>
+<div style="height:86px;margin-top:12px;border-radius:16px;background:#0F172A;display:flex;align-items:center;gap:14px;padding:0 16px">
+<span style="font-size:28px">🛍️🎨</span>
+<div style="flex:1"><div style="font:900 15px sans-serif;color:#fff">MARKAZIY DO'KON (STORE)</div><div style="font-size:11px;color:#38BDF8;margin-top:2px">Shaxmat &amp; Shashka doskalari, toshlar va Emojilar</div></div>
+<div style="padding:6px 12px;border-radius:99px;background:#2563EB;font:900 11px sans-serif;color:#fff">KIRISH ➔</div>
+</div>
+<div style="margin-top:14px;border-radius:16px;background:#fff;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.08)">
+<div style="display:flex;align-items:center"><span style="flex:1;font:900 14px sans-serif">🎯 Kunlik Vazifalar</span><span style="font:700 12px sans-serif;color:#38BDF8">⏳ 00:00:00</span></div>
+<div style="display:flex;align-items:center;gap:10px;margin-top:10px"><div style="flex:1"><div style="font:700 12px sans-serif">🎯 Gomoku/Shashka (0/2)</div><div style="height:6px;background:#E2E8F0;margin-top:4px;border-radius:3px"><div style="width:2%;height:100%;background:#10B981;border-radius:3px"></div></div></div><div style="height:34px;padding:0 12px;border-radius:8px;background:#059669;color:#fff;font:500 11px sans-serif;display:grid;place-items:center">+60 🪙</div></div>
+<div style="display:flex;align-items:center;gap:10px;margin-top:8px"><div style="flex:1"><div style="font:700 12px sans-serif">💧 Water Sort (0/2)</div><div style="height:6px;background:#E2E8F0;margin-top:4px;border-radius:3px"><div style="width:2%;height:100%;background:#06B6D4;border-radius:3px"></div></div></div><div style="height:34px;padding:0 12px;border-radius:8px;background:#059669;color:#fff;font:500 11px sans-serif;display:grid;place-items:center">+50 🪙</div></div>
+<div style="display:flex;align-items:center;gap:10px;margin-top:8px"><div style="flex:1"><div style="font:700 12px sans-serif">🌐 Online Match (0/1)</div><div style="height:6px;background:#E2E8F0;margin-top:4px;border-radius:3px"><div style="width:2%;height:100%;background:#F59E0B;border-radius:3px"></div></div></div><div style="height:34px;padding:0 12px;border-radius:8px;background:#059669;color:#fff;font:500 11px sans-serif;display:grid;place-items:center">+100 🪙</div></div>
+</div>
+
+<div style="margin-top:24px"><div style="font:900 16px sans-serif;letter-spacing:.03em">⚔️ 1v1 BATTLE ARENA</div><div style="font-size:12px;color:#64748B;margin-top:2px;margin-bottom:10px">Online &amp; Local Multiplayer Board Games</div></div>
+<div style="display:flex;gap:10px;margin-bottom:10px">
+<div style="flex:1;height:120px;border-radius:16px;background:#B91C1C;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;box-sizing:border-box"><span style="font-size:26px">👑</span><div style="font:900 14px sans-serif;color:#fff;margin-top:4px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%">👑 Shashka (Checkers)</div><div style="font-size:11px;color:#FEE2E2;margin-top:2px">🏆 Wins: 0</div></div>
+<div style="flex:1;height:120px;border-radius:16px;background:#009688;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;box-sizing:border-box"><span style="font-size:24px">❌⭕</span><div style="font:900 14px sans-serif;color:#fff;margin-top:4px">Tic Tac Toe PRO</div><div style="font-size:11px;color:#E0F2F1;margin-top:2px">🏆 Wins: 0</div></div>
+</div>
+<div style="display:flex;gap:10px;margin-bottom:10px">
+<div style="flex:1;height:120px;border-radius:16px;background:#1D4ED8;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;box-sizing:border-box"><span style="font-size:24px">🔴🟡</span><div style="font:900 14px sans-serif;color:#fff;margin-top:4px">🔴 Connect 4 🟡</div><div style="font-size:11px;color:#DBEAFE;margin-top:2px">🏆 Wins: 0</div></div>
+<div style="flex:1;height:120px;border-radius:16px;background:#475569;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;box-sizing:border-box"><span style="font-size:24px">⚪⚫</span><div style="font:900 14px sans-serif;color:#fff;margin-top:4px">⚪⚫ Gomoku</div><div style="font-size:11px;color:#E2E8F0;margin-top:2px">🏆 Wins: 0</div></div>
+</div>
+<div style="display:flex;gap:10px;margin-bottom:20px">
+<div style="flex:1;height:120px;border-radius:16px;background:#E11D48;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;box-sizing:border-box"><span style="font-size:26px">🟥</span><div style="font:900 14px sans-serif;color:#fff;margin-top:4px">🟥 Dots &amp; Boxes</div><div style="font-size:11px;color:#FFE4E6;margin-top:2px">🏆 Wins: 0</div></div>
+<div style="flex:1;height:120px;border-radius:16px;background:#059669;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;box-sizing:border-box"><span style="font-size:26px">🃏</span><div style="font:900 14px sans-serif;color:#fff;margin-top:4px">🃏 Durak (Karta)</div><div style="font-size:11px;color:#D1FAE5;margin-top:2px">🏆 Wins: 0</div></div>
+</div>
+<div style="height:90px;border-radius:16px;background:#0F172A;display:flex;align-items:center;gap:14px;padding:0 16px;margin-bottom:20px">
+<span style="font-size:30px">👑♟️</span>
+<div style="flex:1"><div style="font:900 15px sans-serif;color:#fff">👑 Shaxmat (Chess PRO)</div><div style="font-size:11px;color:#38BDF8;margin-top:2px">🏆 Wins: 0 • Do'st bilan Onlayn &amp; AI Bot</div></div>
+<span style="color:#38BDF8;font-size:16px">▶</span>
+</div>
+
+<div><div style="font:900 16px sans-serif;letter-spacing:.03em">🧠 BRAIN &amp; PUZZLES</div><div style="font-size:12px;color:#64748B;margin-top:2px;margin-bottom:10px">30-Level Campaigns &amp; Logic Strategy</div></div>
+<div style="display:flex;gap:10px;margin-bottom:10px">
+<div style="flex:1;height:120px;border-radius:16px;background:#0D9488;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;box-sizing:border-box"><span style="font-size:24px">🧪💧</span><div style="font:900 14px sans-serif;color:#fff;margin-top:4px">🧪 Water Sort 💧</div><div style="font-size:11px;color:#CCFBF1;margin-top:2px">⭐ 30 Levels</div></div>
+<div style="flex:1;height:120px;border-radius:16px;background:#E91E63;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;box-sizing:border-box"><span style="font-size:26px">🧠</span><div style="font:900 14px sans-serif;color:#fff;margin-top:4px">🧠 Memory Game</div><div style="font-size:11px;color:#FCE4EC;margin-top:2px">⭐ 30 Levels</div></div>
+</div>
+<div style="display:flex;gap:10px;margin-bottom:20px">
+<div style="flex:1;height:120px;border-radius:16px;background:#0284C7;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;box-sizing:border-box"><span style="font-size:26px">🔢</span><div style="font:900 14px sans-serif;color:#fff;margin-top:4px">🔢 2048 Classic</div><div style="font-size:11px;color:#E0F2FE;margin-top:2px">⭐ Best: 0</div></div>
+<div style="flex:1;height:120px;border-radius:16px;background:#7C3AED;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;box-sizing:border-box"><span style="font-size:26px">🎯</span><div style="font:900 14px sans-serif;color:#fff;margin-top:4px">🎯 Drop 2048</div><div style="font-size:11px;color:#EDE9FE;margin-top:2px">⭐ Shoot &amp; Merge</div></div>
+</div>
+<div><div style="font:900 16px sans-serif;letter-spacing:.03em">⚡ SPEED &amp; FOCUS</div><div style="font-size:12px;color:#64748B;margin-top:2px;margin-bottom:10px">Quick Reflexes &amp; High Score Challenges</div></div>
+<div style="display:flex;gap:10px;margin-bottom:20px">
+<div style="flex:1;height:120px;border-radius:16px;background:#EA580C;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;box-sizing:border-box"><span style="font-size:24px">✖️➗</span><div style="font:900 14px sans-serif;color:#fff;margin-top:4px">✖️ Math Master</div><div style="font-size:11px;color:#FFEDD5;margin-top:2px">⭐ Best: 0 pts</div></div>
+<div style="flex:1;height:120px;border-radius:16px;background:#9333EA;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;box-sizing:border-box"><span style="font-size:26px">🎨</span><div style="font:900 14px sans-serif;color:#fff;margin-top:4px">🎨 Color Match</div><div style="font-size:11px;color:#F3E8FF;margin-top:2px">⭐ High Score: 0</div></div>
+</div>
+</div>
+<div style="flex:none;display:flex;background:#fff;box-shadow:0 -2px 8px rgba(0,0,0,.08);padding:8px 0 14px">
+<div style="flex:1;text-align:center;color:#6366F1"><div style="font-size:18px">📅</div><div style="font-size:11px;margin-top:2px">Home</div></div>
+<div style="flex:1;text-align:center;color:#64748B"><div style="font-size:18px">🛍</div><div style="font-size:11px;margin-top:2px">Do'kon</div></div>
+<div style="flex:1;text-align:center;color:#64748B"><div style="font-size:18px">📊</div><div style="font-size:11px;margin-top:2px">Ranks</div></div>
+<div style="flex:1;text-align:center;color:#64748B"><div style="font-size:18px">👤</div><div style="font-size:11px;margin-top:2px">Profile</div></div>
+</div>
+</div></div>
+</div>
+
+<div class="dv-opt" id="1b"><div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>Do'kon (hozir)</div>
+<div class="ph"><div class="phs" style="background:#0F172A;color:#F8FAFC;font-family:Roboto,'Plus Jakarta Sans',sans-serif">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px 0;font:500 11px sans-serif;color:#94A3B8"><span>9:41</span><span>▮▮▮ ◗ 86%</span></div>
+<div class="scr">
+<div style="display:flex;align-items:center;gap:8px;padding:16px">
+<span style="font-size:18px;color:#fff">↩</span>
+<span style="flex:1;font:900 18px sans-serif;color:#fff">🛍️ MARKAZIY DO'KON</span>
+<span style="padding:6px 14px;border-radius:99px;background:#1E293B;font:900 15px sans-serif;color:#FBBF24">🪙 0</span>
+</div>
+<div style="display:flex;gap:6px;padding:0 12px;overflow-x:auto;scrollbar-width:none">
+<div style="height:42px;padding:0 14px;border-radius:12px;background:#2563EB;display:grid;place-items:center;font:900 13px sans-serif;color:#fff;white-space:nowrap">👑 Shaxmat</div>
+<div style="height:42px;padding:0 14px;border-radius:12px;background:#1E293B;display:grid;place-items:center;font:900 13px sans-serif;color:#94A3B8;white-space:nowrap">♟️ Shashka</div>
+<div style="height:42px;padding:0 14px;border-radius:12px;background:#1E293B;display:grid;place-items:center;font:900 13px sans-serif;color:#94A3B8;white-space:nowrap">😎 Emojilar</div>
+<div style="height:42px;padding:0 14px;border-radius:12px;background:#1E293B;display:grid;place-items:center;font:900 13px sans-serif;color:#94A3B8;white-space:nowrap">🎨 O'yin Mavzulari</div>
+</div>
+<div style="display:flex;height:44px;margin:10px 16px 0;border-radius:99px;background:#0F172A;padding:3px;box-sizing:border-box;border:1px solid #1E293B">
+<div style="flex:1;border-radius:10px;background:#334155;display:grid;place-items:center;font:900 12px sans-serif;color:#fff">🏁 Doska Ranglari</div>
+<div style="flex:1;display:grid;place-items:center;font:900 12px sans-serif;color:#94A3B8">♟️ Toshlar Stillari</div>
+</div>
+<div style="padding:16px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;background:#1E293B"><div style="width:60px;height:60px;border-radius:8px;background:repeating-conic-gradient(#EEEED2 0% 25%,#769656 0% 50%) 50%/30px 30px"></div><div style="flex:1"><div style="font:700 14px sans-serif">🌿 Classic Tournament</div><div style="font-size:12px;color:#94A3B8;margin-top:4px">Bepul</div></div><div style="padding:8px 14px;border-radius:8px;background:#334155;font:700 11px sans-serif;color:#94A3B8">O'RNATILGAN</div></div>
+<div style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;background:#1E293B"><div style="width:60px;height:60px;border-radius:8px;background:repeating-conic-gradient(#F0D9B5 0% 25%,#B58863 0% 50%) 50%/30px 30px"></div><div style="flex:1"><div style="font:700 14px sans-serif">🪵 Walnut Wood</div><div style="font-size:12px;color:#FBBF24;margin-top:4px">🪙 150</div></div><div style="padding:8px 14px;border-radius:8px;background:#2563EB;font:700 11px sans-serif;color:#fff">SOTIB OLISH</div></div>
+<div style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;background:#1E293B"><div style="width:60px;height:60px;border-radius:8px;background:repeating-conic-gradient(#DEE3E6 0% 25%,#8CA2AD 0% 50%) 50%/30px 30px"></div><div style="flex:1"><div style="font:700 14px sans-serif">🌌 Midnight Navy</div><div style="font-size:12px;color:#FBBF24;margin-top:4px">🪙 200</div></div><div style="padding:8px 14px;border-radius:8px;background:#2563EB;font:700 11px sans-serif;color:#fff">SOTIB OLISH</div></div>
+<div style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;background:#1E293B"><div style="width:60px;height:60px;border-radius:8px;background:repeating-conic-gradient(#FDF6E2 0% 25%,#B7950B 0% 50%) 50%/30px 30px"></div><div style="flex:1"><div style="font:700 14px sans-serif">👑 Royal Gold</div><div style="font-size:12px;color:#FBBF24;margin-top:4px">🪙 250</div></div><div style="padding:8px 14px;border-radius:8px;background:#2563EB;font:700 11px sans-serif;color:#fff">SOTIB OLISH</div></div>
+<div style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;background:#1E293B"><div style="width:60px;height:60px;border-radius:8px;background:repeating-conic-gradient(#22D3EE 0% 25%,#7C3AED 0% 50%) 50%/30px 30px"></div><div style="flex:1"><div style="font:700 14px sans-serif">⚡ Cyberpunk Neon</div><div style="font-size:12px;color:#FBBF24;margin-top:4px">🪙 300</div></div><div style="padding:8px 14px;border-radius:8px;background:#2563EB;font:700 11px sans-serif;color:#fff">SOTIB OLISH</div></div>
+<div style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;background:#1E293B"><div style="width:60px;height:60px;border-radius:8px;background:repeating-conic-gradient(#F8FAFC 0% 25%,#334155 0% 50%) 50%/30px 30px"></div><div style="flex:1"><div style="font:700 14px sans-serif">🏛️ Luxury Marble</div><div style="font-size:12px;color:#FBBF24;margin-top:4px">🪙 350</div></div><div style="padding:8px 14px;border-radius:8px;background:#2563EB;font:700 11px sans-serif;color:#fff">SOTIB OLISH</div></div>
+</div>
+</div>
+</div></div>
+</div>
+
+<div class="dv-opt" id="1c"><div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>Leaderboard (hozir)</div>
+<div class="ph"><div class="phs" style="background:#F8FAFC;color:#0F172A;font-family:Roboto,'Plus Jakarta Sans',sans-serif">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px 0;font:500 11px sans-serif"><span>9:41</span><span>▮▮▮ ◗ 86%</span></div>
+<div style="text-align:center;padding:20px 16px 8px"><div style="font:900 22px sans-serif">🏆 TOP 10 LEADERBOARD</div><div style="font-size:13px;color:#64748B;margin-top:4px">Compete with players worldwide &amp; climb the ranks!</div></div>
+<div class="scr" style="padding:0 4px">
+<sc-for list="{{ oldRanks }}" as="r" hint-placeholder-count="6">
+<div style="display:flex;align-items:center;margin:8px 16px;padding:16px;border-radius:16px;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.08)">
+<div style="width:40px;height:40px;border-radius:50%;background:#6366F1;display:grid;place-items:center;font:700 20px sans-serif;color:#fff">{{ r.pos }}</div>
+<div style="flex:1;margin-left:16px"><div style="font:700 17px sans-serif">{{ r.name }}</div><div style="font-size:13px;color:#64748B;margin-top:2px">{{ r.meta }}</div></div>
+<div style="font:700 18px sans-serif;color:#38BDF8">{{ r.lvl }}</div>
+</div>
+</sc-for>
+</div>
+<div style="margin:0 16px 16px;border-radius:18px;background:#fff;padding:14px;box-shadow:0 4px 12px rgba(0,0,0,.1)">
+<div style="display:flex;align-items:center;margin-bottom:8px"><span style="flex:1;font:900 12px sans-serif;color:#6366F1;letter-spacing:.05em">👤 YOUR GLOBAL RANKING</span><span style="font:700 12px sans-serif;color:#CD7F32">🥉 Bronze League</span></div>
+<div style="display:flex;align-items:center">
+<div style="width:44px;height:44px;border-radius:50%;background:#6366F1;display:grid;place-items:center;font:700 16px sans-serif;color:#fff">#11</div>
+<div style="flex:1;margin-left:14px"><div style="font:700 16px sans-serif">You (Player)</div><div style="font-size:13px;color:#64748B;margin-top:2px">0 XP • 0 Wins</div></div>
+</div>
+</div>
+<div style="flex:none;display:flex;background:#fff;box-shadow:0 -2px 8px rgba(0,0,0,.08);padding:8px 0 14px">
+<div style="flex:1;text-align:center;color:#64748B"><div style="font-size:18px">📅</div><div style="font-size:11px;margin-top:2px">Home</div></div>
+<div style="flex:1;text-align:center;color:#64748B"><div style="font-size:18px">🛍</div><div style="font-size:11px;margin-top:2px">Do'kon</div></div>
+<div style="flex:1;text-align:center;color:#6366F1"><div style="font-size:18px">📊</div><div style="font-size:11px;margin-top:2px">Ranks</div></div>
+<div style="flex:1;text-align:center;color:#64748B"><div style="font-size:18px">👤</div><div style="font-size:11px;margin-top:2px">Profile</div></div>
+</div>
+</div></div>
+</div>
+
+<div class="dv-opt" id="1d"><div class="dv-olabel"><a class="dv-oid" href="#1d">1d</a>Profil &amp; Sozlamalar (hozir)</div>
+<div class="ph"><div class="phs" style="background:#F8FAFC;color:#0F172A;font-family:Roboto,'Plus Jakarta Sans',sans-serif">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px 0;font:500 11px sans-serif"><span>9:41</span><span>▮▮▮ ◗ 86%</span></div>
+<div class="scr" style="padding:20px">
+<div style="text-align:center;font:900 24px sans-serif;margin:8px 0 16px">👤 Profil</div>
+<div style="border-radius:20px;background:#fff;padding:20px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.08)">
+<div style="width:80px;height:80px;margin:0 auto;border-radius:50%;background:#6366F1;display:grid;place-items:center;font-size:38px;color:#fff">🎮</div>
+<div style="font:900 22px sans-serif;margin-top:8px">Username</div>
+<div style="font:700 15px sans-serif;color:#0052CC;margin-top:4px">Level 1 | 0 XP</div>
+<div style="display:flex;align-items:center;margin-top:16px"><div style="flex:1;font:700 15px sans-serif;color:#F59E0B">🔥 Streak: 0</div><div style="width:1px;height:24px;background:#E2E8F0"></div><div style="flex:1;font:700 15px sans-serif;color:#EAB308">🪙 Coins: 0</div></div>
+</div>
+<div style="border-radius:20px;background:#fff;padding:20px;margin-top:16px;box-shadow:0 2px 8px rgba(0,0,0,.08)">
+<div style="font:900 18px sans-serif;margin-bottom:16px">⚙️ Sozlamalar</div>
+<div style="display:flex;align-items:center;height:52px"><span style="flex:1;font:700 15px sans-serif">🌐 App Language</span><span style="font:700 15px sans-serif;color:#0052CC">🇬🇧 English</span></div>
+<div style="height:1px;background:#E2E8F0"></div>
+<div style="display:flex;align-items:center;height:52px"><span style="flex:1;font:700 15px sans-serif">🌙 Dark Mode</span><div style="width:40px;height:20px;border-radius:99px;background:#CBD5E1;padding:2px;box-sizing:border-box;display:flex"><div style="width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3)"></div></div></div>
+<div style="height:1px;background:#E2E8F0"></div>
+<div style="display:flex;align-items:center;height:52px"><span style="flex:1;font:700 15px sans-serif">🔊 Ovoz</span><div style="width:40px;height:20px;border-radius:99px;background:#C7D2FE;padding:2px;box-sizing:border-box;display:flex;justify-content:flex-end"><div style="width:16px;height:16px;border-radius:50%;background:#6366F1"></div></div></div>
+<div style="height:1px;background:#E2E8F0"></div>
+<div style="display:flex;align-items:center;height:52px"><span style="flex:1;font:700 15px sans-serif">📳 Tebranish</span><div style="width:40px;height:20px;border-radius:99px;background:#C7D2FE;padding:2px;box-sizing:border-box;display:flex;justify-content:flex-end"><div style="width:16px;height:16px;border-radius:50%;background:#6366F1"></div></div></div>
+</div>
+</div>
+<div style="flex:none;display:flex;background:#fff;box-shadow:0 -2px 8px rgba(0,0,0,.08);padding:8px 0 14px">
+<div style="flex:1;text-align:center;color:#64748B"><div style="font-size:18px">📅</div><div style="font-size:11px;margin-top:2px">Home</div></div>
+<div style="flex:1;text-align:center;color:#64748B"><div style="font-size:18px">🛍</div><div style="font-size:11px;margin-top:2px">Do'kon</div></div>
+<div style="flex:1;text-align:center;color:#64748B"><div style="font-size:18px">📊</div><div style="font-size:11px;margin-top:2px">Ranks</div></div>
+<div style="flex:1;text-align:center;color:#6366F1"><div style="font-size:18px">👤</div><div style="font-size:11px;margin-top:2px">Profile</div></div>
+</div>
+</div></div>
+</div>
+
+</div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;playerName&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Azizbek&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;coins&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;1 250&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;showQuests&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Dashboard&quot;}}">
+class Component extends DCLogic {
+  state = { tab: 'home', cat: 'all', sc: 'chess', sub: 0, mode: 'quick', grid: 3, re: 'quick' };
+
+  emoteData() {
+    const free = ['😂','🔥','🤫','😡','👏','😱','😎','💀'];
+    const prem = [['👑',50],['💎',75],['🚀',100],['🦄',120],['🐉',150],['🗿',100],['🥶',60],['🤡',50],['🦁',80],['🏆',100],['💣',75],['🧙',120]];
+    const owned = ['👑','💎','🗿'];
+    const pinned = ['🔥','😂','👏','💀'];
+    const mk = (emoji, tag, tagFg, bg, bd) => ({ emoji, tag, tagFg, bg, bd });
+    const freeCell = e => mk(e, pinned.includes(e) ? '⭐' : '', '#22D3EE', 'rgba(255,255,255,.05)', pinned.includes(e) ? 'rgba(34,211,238,.4)' : 'rgba(255,255,255,.08)');
+    const premCell = ([e, c]) => owned.includes(e)
+      ? mk(e, 'SIZDA', '#34D399', 'rgba(16,185,129,.08)', 'rgba(16,185,129,.3)')
+      : mk(e, String(c), '#FBBF24', 'rgba(251,191,36,.05)', 'rgba(251,191,36,.22)');
+    return {
+      quick: pinned.map(freeCell).concat(free.filter(e => !pinned.includes(e)).slice(0, 4).map(freeCell)),
+      free: free.map(freeCell),
+      prem: prem.map(premCell),
+      owned: free.map(freeCell).concat(prem.filter(p => owned.includes(p[0])).map(premCell))
+    };
+  }
+
+  pill(active) {
+    return active
+      ? { bg: 'rgba(34,211,238,.14)', fg: '#22D3EE', bd: 'rgba(34,211,238,.35)' }
+      : { bg: 'rgba(255,255,255,.04)', fg: '#8492B0', bd: 'rgba(255,255,255,.07)' };
+  }
+
+  allGames() {
+    return [
+      { name: "Tic Tac Toe PRO", meta: "3×3 · 4×4 · 5×5 · Onlayn", glyph: "✕", tint: "rgba(0,150,136,.18)", tintLight: "#CCFBF1", stat: "🏆 6", cat: "battle" },
+      { name: "Gomoku", meta: "5 tosh qatorda · AI", glyph: "⚫", tint: "rgba(71,85,105,.28)", tintLight: "#E2E8F0", stat: "🏆 3", cat: "battle" },
+      { name: "Dots & Boxes", meta: "Chiziq torting · 1v1", glyph: "▦", tint: "rgba(225,29,72,.18)", tintLight: "#FFE4E6", stat: "🏆 2", cat: "battle" },
+      { name: "Durak (Karta)", meta: "Klassik karta o'yini", glyph: "🃏", tint: "rgba(5,150,105,.18)", tintLight: "#D1FAE5", stat: "🏆 9", cat: "battle" },
+      { name: "Memory Game", meta: "30 daraja kampaniya", glyph: "🧠", tint: "rgba(233,30,99,.18)", tintLight: "#FCE7F3", stat: "⭐ 18/30", cat: "brain" },
+      { name: "Drop 2048", meta: "Otib qo'shish", glyph: "◉", tint: "rgba(124,58,237,.18)", tintLight: "#EDE9FE", stat: "⭐ 4 096", cat: "brain" },
+      { name: "Math Master", meta: "60 soniya · tezkor hisob", glyph: "÷", tint: "rgba(234,88,12,.18)", tintLight: "#FFEDD5", stat: "⭐ 240", cat: "speed" },
+      { name: "Color Match", meta: "Reflekslar sinovi", glyph: "◧", tint: "rgba(147,51,234,.18)", tintLight: "#F3E8FF", stat: "⭐ 88", cat: "speed" }
+    ];
+  }
+
+  boards() {
+    return [
+      { name: "🌿 Classic Tournament", desc: "Turnir standarti", cost: "Bepul", preview: "repeating-conic-gradient(#EEEED2 0% 25%,#769656 0% 50%) 50%/31px 31px", equipped: true },
+      { name: "🪵 Walnut Wood", desc: "Issiq yog'och tekstura", cost: "150", preview: "repeating-conic-gradient(#F0D9B5 0% 25%,#B58863 0% 50%) 50%/31px 31px" },
+      { name: "🌌 Midnight Navy", desc: "Sovuq kechki ohang", cost: "200", preview: "repeating-conic-gradient(#DEE3E6 0% 25%,#8CA2AD 0% 50%) 50%/31px 31px" },
+      { name: "👑 Royal Gold", desc: "Chempionlar uchun", cost: "250", preview: "repeating-conic-gradient(#FDF6E2 0% 25%,#B7950B 0% 50%) 50%/31px 31px" },
+      { name: "⚡ Cyberpunk Neon", desc: "Neon urg'u · animatsiya", cost: "300", preview: "repeating-conic-gradient(#22D3EE 0% 25%,#7C3AED 0% 50%) 50%/31px 31px" },
+      { name: "🏛️ Luxury Marble", desc: "Marmar · premium", cost: "350", preview: "repeating-conic-gradient(#F8FAFC 0% 25%,#334155 0% 50%) 50%/31px 31px" }
+    ];
+  }
+
+  pieces() {
+    return [
+      { name: "♟️ Classic Staunton", desc: "Oq / qora klassik", cost: "Bepul", preview: "linear-gradient(135deg,#FFFFFF 0 50%,#1E293B 50% 100%)", equipped: true },
+      { name: "👑 Gold & Obsidian", desc: "Tilla va obsidian", cost: "200", preview: "linear-gradient(135deg,#FBBF24 0 50%,#0F172A 50% 100%)" },
+      { name: "💎 Crystal Ice & Sapphire", desc: "Muz va safir", cost: "250", preview: "linear-gradient(135deg,#38BDF8 0 50%,#6366F1 50% 100%)" },
+      { name: "⚡ Neon Pink & Emerald", desc: "Neon pushti / zumrad", cost: "300", preview: "linear-gradient(135deg,#F43F5E 0 50%,#10B981 50% 100%)" },
+      { name: "🪵 Carved Wooden", desc: "O'yma yog'och", cost: "200", preview: "linear-gradient(135deg,#FEF3C7 0 50%,#78350F 50% 100%)" }
+    ];
+  }
+
+  emotes() {
+    return [
+      { name: "😎 Starter Pack", desc: "6 ta asosiy emoji", cost: "Bepul", preview: "radial-gradient(circle at 30% 30%,#FDE68A,#D97706)", equipped: true },
+      { name: "🔥 Trash Talk Pack", desc: "8 ta jangovar emoji", cost: "180", preview: "radial-gradient(circle at 30% 30%,#FCA5A5,#B91C1C)" },
+      { name: "🎭 Drama Pack", desc: "8 ta animatsion emoji", cost: "220", preview: "radial-gradient(circle at 30% 30%,#C4B5FD,#6D28D9)" },
+      { name: "🏆 Champion Pack", desc: "Faqat Gold liga uchun", cost: "400", preview: "radial-gradient(circle at 30% 30%,#FDE68A,#B45309)" }
+    ];
+  }
+
+  themes() {
+    return [
+      { name: "🌌 Midnight Arena", desc: "Standart to'q mavzu", cost: "Bepul", preview: "linear-gradient(140deg,#141B33,#070A12)", equipped: true },
+      { name: "⚡ Neon Circuit", desc: "Kiber neon interfeys", cost: "260", preview: "linear-gradient(140deg,#22D3EE,#7C3AED)" },
+      { name: "🌅 Daylight Pro", desc: "Yorug' rejim varianti", cost: "260", preview: "linear-gradient(140deg,#F4F6FB,#4F46E5)" },
+      { name: "🌿 Emerald Club", desc: "Zumrad klub uslubi", cost: "300", preview: "linear-gradient(140deg,#34D399,#064E3B)" }
+    ];
+  }
+
+  renderVals() {
+    const s = this.state;
+    const A = this.pill(true), I = this.pill(false);
+    const tab = k => () => this.setState({ tab: k });
+    const nav = k => (s.tab === k ? '#22D3EE' : '#4A5773');
+
+    const cats = { all: s.cat === 'all', battle: s.cat === 'battle', brain: s.cat === 'brain', speed: s.cat === 'speed' };
+    const c = k => (cats[k] ? A : I);
+    const setCat = k => () => this.setState({ cat: k });
+
+    const games = this.allGames();
+    const listGames = s.cat === 'all' ? games : games.filter(g => g.cat === s.cat);
+
+    const scSets = { chess: this.sub0Set('chess'), checkers: this.sub0Set('checkers'), emotes: this.emotes(), themes: this.themes() };
+    let items;
+    if (s.sc === 'chess' || s.sc === 'checkers') items = s.sub === 0 ? this.boards() : this.pieces();
+    else items = s.sc === 'emotes' ? this.emotes() : this.themes();
+
+    const storeItems = items.map(it => ({
+      name: it.name, desc: it.desc, cost: it.cost, preview: it.preview,
+      border: it.equipped ? 'rgba(34,211,238,.35)' : 'rgba(255,255,255,.07)',
+      btn: it.equipped ? 'O\u2019RNATILGAN' : 'SOTIB OLISH',
+      btnBg: it.equipped ? 'rgba(34,211,238,.12)' : 'linear-gradient(100deg,#22D3EE,#4F86FF)',
+      btnFg: it.equipped ? '#22D3EE' : '#04121C',
+      btnBd: it.equipped ? 'rgba(34,211,238,.3)' : 'transparent'
+    }));
+
+    const rp = k => (s.re === k ? A : I);
+    const sp = k => (s.sc === k ? A : I);
+    const setSc = k => () => this.setState({ sc: k, sub: 0 });
+
+    const md = k => {
+      const on = s.mode === k;
+      return { bg: on ? 'rgba(34,211,238,.09)' : '#0C1220', bd: on ? 'rgba(34,211,238,.4)' : 'rgba(255,255,255,.06)', dot: on ? '#22D3EE' : '#334155', dotIn: on ? '#22D3EE' : 'transparent' };
+    };
+    const setMode = k => () => this.setState({ mode: k });
+    const gr = n => {
+      const on = s.grid === n;
+      return { bg: on ? 'rgba(34,211,238,.09)' : '#0C1220', bd: on ? 'rgba(34,211,238,.4)' : 'rgba(255,255,255,.06)', fg: on ? '#22D3EE' : '#E2E8F0' };
+    };
+    const setGrid = n => () => this.setState({ grid: n });
+
+    const ranks = [
+      { pos: '4', ini: 'AK', name: 'Aziz K.', meta: '3 120 XP · 41 g\u2019alaba', lvl: 'LVL 9', tint: 'linear-gradient(150deg,#67E8F9,#0E7490)' },
+      { pos: '5', ini: 'MT', name: 'Malika T.', meta: '2 870 XP · 36 g\u2019alaba', lvl: 'LVL 8', tint: 'linear-gradient(150deg,#FDA4AF,#9F1239)' },
+      { pos: '6', ini: 'RB', name: 'Rustam B.', meta: '2 640 XP · 33 g\u2019alaba', lvl: 'LVL 8', tint: 'linear-gradient(150deg,#A7F3D0,#047857)' },
+      { pos: '7', ini: 'DS', name: 'Dilshod S.', meta: '2 290 XP · 28 g\u2019alaba', lvl: 'LVL 7', tint: 'linear-gradient(150deg,#C4B5FD,#5B21B6)' },
+      { pos: '8', ini: 'GN', name: 'Gulnora N.', meta: '1 980 XP · 24 g\u2019alaba', lvl: 'LVL 6', tint: 'linear-gradient(150deg,#FDE68A,#B45309)' },
+      { pos: '9', ini: 'BX', name: 'Bekzod X.', meta: '1 640 XP · 21 g\u2019alaba', lvl: 'LVL 6', tint: 'linear-gradient(150deg,#93C5FD,#1D4ED8)' },
+      { pos: '10', ini: 'ZQ', name: 'Zarina Q.', meta: '1 410 XP · 19 g\u2019alaba', lvl: 'LVL 5', tint: 'linear-gradient(150deg,#F9A8D4,#9D174D)' }
+    ];
+
+    const oldRanks = [
+      { pos: '1', name: 'Jahongir', meta: '6840 XP • 52 Wins', lvl: 'Lvl 12' },
+      { pos: '2', name: 'Sardor', meta: '4210 XP • 44 Wins', lvl: 'Lvl 10' },
+      { pos: '3', name: 'Nodira', meta: '3990 XP • 40 Wins', lvl: 'Lvl 9' },
+      { pos: '4', name: 'Aziz K.', meta: '3120 XP • 41 Wins', lvl: 'Lvl 9' },
+      { pos: '5', name: 'Malika T.', meta: '2870 XP • 36 Wins', lvl: 'Lvl 8' },
+      { pos: '6', name: 'Rustam B.', meta: '2640 XP • 33 Wins', lvl: 'Lvl 8' }
+    ];
+
+    return {
+      playerName: this.props.playerName ?? 'Azizbek',
+      coins: this.props.coins ?? '1 250',
+      showQuests: this.props.showQuests ?? true,
+      isHome: s.tab === 'home', isStore: s.tab === 'store', isRanks: s.tab === 'ranks', isProfile: s.tab === 'profile',
+      tabHome: tab('home'), tabStore: tab('store'), tabRanks: tab('ranks'), tabProfile: tab('profile'),
+      navHome: nav('home'), navStore: nav('store'), navRanks: nav('ranks'), navProfile: nav('profile'),
+      catAll: setCat('all'), catBattle: setCat('battle'), catBrain: setCat('brain'), catSpeed: setCat('speed'),
+      bgAll: c('all').bg, fgAll: c('all').fg, bdAll: c('all').bd,
+      bgBattle: c('battle').bg, fgBattle: c('battle').fg, bdBattle: c('battle').bd,
+      bgBrain: c('brain').bg, fgBrain: c('brain').fg, bdBrain: c('brain').bd,
+      bgSpeed: c('speed').bg, fgSpeed: c('speed').fg, bdSpeed: c('speed').bd,
+      listGames, listCount: listGames.length, lightList: games.slice(0, 4),
+      storeItems,
+      scChess: setSc('chess'), scCheckers: setSc('checkers'), scEmotes: setSc('emotes'), scThemes: setSc('themes'),
+      bgScChess: sp('chess').bg, fgScChess: sp('chess').fg, bdScChess: sp('chess').bd,
+      bgScCheckers: sp('checkers').bg, fgScCheckers: sp('checkers').fg, bdScCheckers: sp('checkers').bd,
+      bgScEmotes: sp('emotes').bg, fgScEmotes: sp('emotes').fg, bdScEmotes: sp('emotes').bd,
+      bgScThemes: sp('themes').bg, fgScThemes: sp('themes').fg, bdScThemes: sp('themes').bd,
+      sub0: () => this.setState({ sub: 0 }), sub1: () => this.setState({ sub: 1 }),
+      bgSub0: s.sub === 0 ? '#1B2438' : 'transparent', fgSub0: s.sub === 0 ? '#F2F5FF' : '#64748B',
+      bgSub1: s.sub === 1 ? '#1B2438' : 'transparent', fgSub1: s.sub === 1 ? '#F2F5FF' : '#64748B',
+      mQuick: setMode('quick'), mAi: setMode('ai'), mLocal: setMode('local'), mRoom: setMode('room'),
+      bgMQuick: md('quick').bg, bdMQuick: md('quick').bd, dotMQuick: md('quick').dot, dotMQuickIn: md('quick').dotIn,
+      bgMAi: md('ai').bg, bdMAi: md('ai').bd, dotMAi: md('ai').dot, dotMAiIn: md('ai').dotIn,
+      bgMLocal: md('local').bg, bdMLocal: md('local').bd, dotMLocal: md('local').dot, dotMLocalIn: md('local').dotIn,
+      bgMRoom: md('room').bg, bdMRoom: md('room').bd, dotMRoom: md('room').dot, dotMRoomIn: md('room').dotIn,
+      g3: setGrid(3), g4: setGrid(4), g5: setGrid(5),
+      bgG3: gr(3).bg, bdG3: gr(3).bd, fgG3: gr(3).fg,
+      bgG4: gr(4).bg, bdG4: gr(4).bd, fgG4: gr(4).fg,
+      bgG5: gr(5).bg, bdG5: gr(5).bd, fgG5: gr(5).fg,
+      ranks, oldRanks,
+      emoteGrid: this.emoteData()[s.re === 'prem' ? 'prem' : s.re],
+      reQuick: () => this.setState({ re: 'quick' }), reFree: () => this.setState({ re: 'free' }),
+      rePrem: () => this.setState({ re: 'prem' }), reOwned: () => this.setState({ re: 'owned' }),
+      bgReQuick: rp('quick').bg, fgReQuick: rp('quick').fg, bdReQuick: rp('quick').bd,
+      bgReFree: rp('free').bg, fgReFree: rp('free').fg, bdReFree: rp('free').bd,
+      bgRePrem: rp('prem').bg, fgRePrem: rp('prem').fg, bdRePrem: rp('prem').bd,
+      bgReOwned: rp('owned').bg, fgReOwned: rp('owned').fg, bdReOwned: rp('owned').bd
+    };
+  }
+
+  sub0Set() { return []; }
+}
+</script>
+</body>
+</html>

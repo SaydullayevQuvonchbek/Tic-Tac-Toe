@@ -417,8 +417,14 @@ class StoreFragment : Fragment() {
 
         if (userId != -1) {
             ApiClient.instance.buyItem(StoreBuyRequest(userId, key, cost)).enqueue(object : Callback<StoreBuyResponse> {
-                override fun onResponse(call: Call<StoreBuyResponse>, response: Response<StoreBuyResponse>) {}
-                override fun onFailure(call: Call<StoreBuyResponse>, t: Throwable) {}
+                override fun onResponse(call: Call<StoreBuyResponse>, response: Response<StoreBuyResponse>) {
+                    if (!isAdded || _binding == null) return
+                }
+                override fun onFailure(call: Call<StoreBuyResponse>, t: Throwable) {
+                    if (!isAdded || _binding == null) return
+                    t.printStackTrace()
+                    context?.let { android.widget.Toast.makeText(it, "Tarmoq xatosi!", android.widget.Toast.LENGTH_SHORT).show() }
+                }
             })
         }
 
@@ -532,7 +538,7 @@ class StoreFragment : Fragment() {
                     text = "O'RNATISH"
                     setTextColor(col(R.color.on_accent))
                     setBackgroundColor(col(R.color.accent_cyan))
-                    setOnClickListener {
+                    setThrottleClickListener {
                         HapticHelper.performClick(requireContext())
                         onEquip()
                         Toast.makeText(context, "$title o'rnatildi!", Toast.LENGTH_SHORT).show()
@@ -542,7 +548,7 @@ class StoreFragment : Fragment() {
                     text = "SOTIB OLISH"
                     setTextColor(col(R.color.on_accent))
                     setBackgroundColor(col(R.color.accent_gold))
-                    setOnClickListener {
+                    setThrottleClickListener {
                         onBuy()
                     }
                 }

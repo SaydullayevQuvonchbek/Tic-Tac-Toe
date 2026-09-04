@@ -49,9 +49,13 @@ object MatchmakingHelper {
         btnCancel.setOnClickListener {
             isCancelled = true
             handler.removeCallbacksAndMessages(null)
-            dialog.dismiss()
+            val act = context as? android.app.Activity
+            if (act != null && (act.isFinishing || act.isDestroyed)) return@setOnClickListener
+            try { dialog.dismiss() } catch (e: Exception) {}
         }
 
+        val activity = context as? android.app.Activity
+        if (activity != null && (activity.isFinishing || activity.isDestroyed)) return
         dialog.show()
         HapticHelper.performClick(context)
         SoundHelper.playMoveSound(context)
@@ -81,7 +85,10 @@ object MatchmakingHelper {
 
                         handler.postDelayed({
                             if (!isCancelled) {
-                                dialog.dismiss()
+                                val act = context as? android.app.Activity
+                                if (act == null || (!act.isFinishing && !act.isDestroyed)) {
+                                    try { dialog.dismiss() } catch (e: Exception) {}
+                                }
                                 onMatched(roomCode, isHost, oppName, false)
                             }
                         }, 1200)
@@ -127,7 +134,10 @@ object MatchmakingHelper {
 
                     handler.postDelayed({
                         if (!isCancelled) {
-                            dialog.dismiss()
+                            val act = context as? android.app.Activity
+                            if (act == null || (!act.isFinishing && !act.isDestroyed)) {
+                                try { dialog.dismiss() } catch (e: Exception) {}
+                            }
                             onMatched(roomCode, true, oppName, true)
                         }
                     }, 1400)
@@ -145,7 +155,10 @@ object MatchmakingHelper {
 
                     handler.postDelayed({
                         if (!isCancelled) {
-                            dialog.dismiss()
+                            val act = context as? android.app.Activity
+                            if (act == null || (!act.isFinishing && !act.isDestroyed)) {
+                                try { dialog.dismiss() } catch (e: Exception) {}
+                            }
                             onMatched(roomCode, true, oppName, true)
                         }
                     }, 1400)

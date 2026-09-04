@@ -144,6 +144,7 @@ class WelcomeFragment : Fragment() {
         ApiClient.instance.createRoom(RoomCreateRequest(userId, size, isInfinity, "tictactoe"))
             .enqueue(object : Callback<RoomCreateResponse> {
                 override fun onResponse(call: Call<RoomCreateResponse>, response: Response<RoomCreateResponse>) {
+                    if (!isAdded || _binding == null) return
                     if (response.isSuccessful && response.body()?.status == "success") {
                         roomCode = response.body()?.room_code ?: ""
                         showWaitingScreen(roomCode)
@@ -152,6 +153,7 @@ class WelcomeFragment : Fragment() {
                             roomCode = roomCode,
                             onGameStarted = {
                                 activity?.runOnUiThread {
+                                    if (!isAdded || _binding == null) return@runOnUiThread
                                     val bundle = Bundle().apply {
                                         putBoolean("isOnlineMode", true)
                                         putInt("playerId", userId)
@@ -171,6 +173,7 @@ class WelcomeFragment : Fragment() {
                 }
 
                 override fun onFailure(call: Call<RoomCreateResponse>, t: Throwable) {
+                    if (!isAdded || _binding == null) return
                     Toast.makeText(context, "Network Error: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
             })
@@ -183,6 +186,7 @@ class WelcomeFragment : Fragment() {
         ApiClient.instance.joinRoom(RoomJoinRequest(userId, code))
             .enqueue(object : Callback<RoomJoinResponse> {
                 override fun onResponse(call: Call<RoomJoinResponse>, response: Response<RoomJoinResponse>) {
+                    if (!isAdded || _binding == null) return
                     if (response.isSuccessful && response.body()?.status == "success") {
                         val size = response.body()?.board_size ?: 3
                         val isInfinity = response.body()?.infinity_mode ?: false
@@ -204,6 +208,7 @@ class WelcomeFragment : Fragment() {
                 }
 
                 override fun onFailure(call: Call<RoomJoinResponse>, t: Throwable) {
+                    if (!isAdded || _binding == null) return
                     Toast.makeText(context, "Network Error: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
             })

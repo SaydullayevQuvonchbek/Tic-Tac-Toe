@@ -52,15 +52,20 @@ object SoundHelper {
      */
     fun playVictorySound(context: Context) {
         if (!isSoundEnabled(context)) return
-        Thread {
-            try {
-                toneGen?.startTone(ToneGenerator.TONE_DTMF_1, 100)
-                Thread.sleep(120)
-                toneGen?.startTone(ToneGenerator.TONE_DTMF_5, 120)
-                Thread.sleep(140)
-                toneGen?.startTone(ToneGenerator.TONE_DTMF_9, 220)
-            } catch (_: Exception) {}
-        }.start()
+        val handler = android.os.Handler(android.os.Looper.getMainLooper())
+        try {
+            toneGen?.startTone(ToneGenerator.TONE_DTMF_1, 100)
+            handler.postDelayed({
+                try {
+                    toneGen?.startTone(ToneGenerator.TONE_DTMF_5, 120)
+                } catch (_: Exception) {}
+            }, 120)
+            handler.postDelayed({
+                try {
+                    toneGen?.startTone(ToneGenerator.TONE_DTMF_9, 220)
+                } catch (_: Exception) {}
+            }, 260)
+        } catch (_: Exception) {}
     }
 
     /**
@@ -68,12 +73,19 @@ object SoundHelper {
      */
     fun playRewardSound(context: Context) {
         if (!isSoundEnabled(context)) return
-        Thread {
-            try {
-                toneGen?.startTone(ToneGenerator.TONE_DTMF_8, 80)
-                Thread.sleep(90)
-                toneGen?.startTone(ToneGenerator.TONE_DTMF_A, 150)
-            } catch (_: Exception) {}
-        }.start()
+        val handler = android.os.Handler(android.os.Looper.getMainLooper())
+        try {
+            toneGen?.startTone(ToneGenerator.TONE_DTMF_8, 80)
+            handler.postDelayed({
+                try {
+                    toneGen?.startTone(ToneGenerator.TONE_DTMF_A, 150)
+                } catch (_: Exception) {}
+            }, 90)
+        } catch (_: Exception) {}
+    }
+
+    fun release() {
+        toneGen?.release()
+        toneGen = null
     }
 }

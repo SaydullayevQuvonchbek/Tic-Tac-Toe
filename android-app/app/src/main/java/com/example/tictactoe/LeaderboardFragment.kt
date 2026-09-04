@@ -87,12 +87,30 @@ class LeaderboardFragment : Fragment() {
 
         ApiClient.instance.getLeaderboard().enqueue(object : Callback<LeaderboardResponse> {
             override fun onResponse(call: Call<LeaderboardResponse>, response: Response<LeaderboardResponse>) {
+                if (!isAdded || _binding == null) return
                 binding.progressBar.visibility = View.GONE
                 if (response.isSuccessful && response.body()?.status == "success") {
                     val fullList = response.body()?.leaderboard ?: emptyList()
+                    // Remove previous empty state if exists
+                    val parent = binding.rvLeaderboard.parent as? ViewGroup
+                    parent?.findViewWithTag<View>("emptyState")?.let { parent.removeView(it) }
+                    if (fullList.isEmpty()) {
+                        val tv = android.widget.TextView(context ?: return).apply {
+                            tag = "emptyState"
+                            text = "Ma'lumot topilmadi"
+                            textSize = 18f
+                            setTextColor(Color.GRAY)
+                            gravity = android.view.Gravity.CENTER
+                            layoutParams = ViewGroup.LayoutParams(
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.MATCH_PARENT
+                            )
+                        }
+                        parent?.addView(tv)
+                    }
                     val top10 = fullList.take(10)
 
-                    val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+                    val sharedPref = (activity ?: return).getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
                     val myUsername = sharedPref.getString("username", "Player") ?: "Player"
                     val myLevel = sharedPref.getInt("level", 1)
                     val myXp = sharedPref.getInt("xp", 0)
@@ -146,7 +164,9 @@ class LeaderboardFragment : Fragment() {
             }
 
             override fun onFailure(call: Call<LeaderboardResponse>, t: Throwable) {
+                if (!isAdded || _binding == null) return
                 binding.progressBar.visibility = View.GONE
+                t.printStackTrace()
                 Toast.makeText(context, "Network Error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })

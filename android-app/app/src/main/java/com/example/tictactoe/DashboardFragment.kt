@@ -39,7 +39,7 @@ class DashboardFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.btnEditProfile.setOnClickListener {
+        binding.btnEditProfile.setThrottleClickListener {
             showEditProfileDialog()
         }
 
@@ -61,63 +61,63 @@ class DashboardFragment : Fragment() {
 
         updateQuickTogglesUI()
 
-        binding.cardTicTacToe.setOnClickListener {
+        binding.cardTicTacToe.setThrottleClickListener {
             if (ensureProfile()) findNavController().navigate(R.id.action_dashboardFragment_to_welcomeFragment)
         }
 
-        binding.cardMathGame.setOnClickListener {
+        binding.cardMathGame.setThrottleClickListener {
             if (ensureProfile()) findNavController().navigate(R.id.action_dashboardFragment_to_mathGameFragment)
         }
 
-        binding.cardMemoryGame.setOnClickListener {
+        binding.cardMemoryGame.setThrottleClickListener {
             handleGameClick("memory_game", 2, 50, binding.tvMemoryGame, "🧠 Memory Game", R.id.action_dashboardFragment_to_memoryGameFragment)
         }
 
-        binding.cardColorMatch.setOnClickListener {
+        binding.cardColorMatch.setThrottleClickListener {
             handleGameClick("color_match", 3, 100, binding.tvColorMatch, "🎨 Color Match", R.id.action_dashboardFragment_to_colorMatchFragment)
         }
 
-        binding.cardWaterSort.setOnClickListener {
+        binding.cardWaterSort.setThrottleClickListener {
             handleGameClick("water_sort", 3, 120, binding.tvWaterSort, "🧪 Water Sort 💧", R.id.action_dashboardFragment_to_waterSortFragment)
         }
 
-        binding.cardConnect4.setOnClickListener {
+        binding.cardConnect4.setThrottleClickListener {
             handleGameClick("connect4", 4, 150, binding.tvConnect4, "🔴 Connect 4 🟡", R.id.action_dashboardFragment_to_connect4Fragment)
         }
 
-        binding.card2048.setOnClickListener {
+        binding.card2048.setThrottleClickListener {
             handleGameClick("game_2048", 5, 200, binding.tv2048, "🔢 2048 Classic", R.id.action_dashboardFragment_to_game2048Fragment)
         }
 
-        binding.cardDropNumber.setOnClickListener {
+        binding.cardDropNumber.setThrottleClickListener {
             handleGameClick("drop_number", 3, 120, binding.tvDropNumber, "🎯 Drop & Merge 2048", R.id.action_dashboardFragment_to_dropNumberFragment)
         }
 
-        binding.cardDotsAndBoxes.setOnClickListener {
+        binding.cardDotsAndBoxes.setThrottleClickListener {
             handleGameClick("dots_and_boxes", 2, 100, binding.tvDotsAndBoxes, "🟥 Dots & Boxes", R.id.action_dashboardFragment_to_dotsAndBoxesFragment)
         }
 
-        binding.cardGomoku.setOnClickListener {
+        binding.cardGomoku.setThrottleClickListener {
             handleGameClick("gomoku", 3, 150, binding.tvGomoku, "⚪⚫ Gomoku (5 in a Row)", R.id.action_dashboardFragment_to_gomokuFragment)
         }
 
-        binding.cardCheckers.setOnClickListener {
+        binding.cardCheckers.setThrottleClickListener {
             handleGameClick("checkers", 1, 200, binding.tvCheckers, "👑 Shashka (Checkers)", R.id.action_dashboardFragment_to_checkersFragment)
         }
 
-        binding.cardDurak.setOnClickListener {
+        binding.cardDurak.setThrottleClickListener {
             handleGameClick("durak", 2, 100, binding.tvDurak, "🃏 Durak (Karta)", R.id.action_dashboardFragment_to_durakFragment)
         }
 
-        binding.cardChess.setOnClickListener {
+        binding.cardChess.setThrottleClickListener {
             handleGameClick("chess", 3, 150, binding.tvChess, "👑 Shaxmat (Chess PRO)", R.id.action_dashboardFragment_to_chessFragment)
         }
         
-        binding.cardDailyReward.setOnClickListener {
+        binding.cardDailyReward.setThrottleClickListener {
             if (ensureProfile()) claimDailyReward()
         }
 
-        binding.cardLuckyWheel.setOnClickListener {
+        binding.cardLuckyWheel.setThrottleClickListener {
             if (ensureProfile()) {
                 LuckyWheelDialog(requireContext()) { coins, xp ->
                     loadProfile()
@@ -138,8 +138,8 @@ class DashboardFragment : Fragment() {
 
     // ===== Quick Match hero =====
     private fun setupQuickMatch() {
-        binding.btnQuickPlay.setOnClickListener {
-            if (!ensureProfile()) return@setOnClickListener
+        binding.btnQuickPlay.setThrottleClickListener {
+            if (!ensureProfile()) return@setThrottleClickListener
             val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
             val userId = sharedPref.getInt("user_id", -1)
             val username = sharedPref.getString("username", "Player 1") ?: "Player 1"
@@ -319,13 +319,11 @@ class DashboardFragment : Fragment() {
                 .setMessage("Reach Level $reqLevel to unlock for free, or buy it now for $cost 🪙.")
                 .setPositiveButton("Buy ($cost 🪙)") { _, _ ->
                     if (coins >= cost && userId != -1) {
-                        val pd = android.app.ProgressDialog(context)
-                        pd.setMessage("Unlocking game...")
-                        pd.show()
+                        // TODO: Replaced ProgressDialog with inline progress state
                         
                         ApiClient.instance.buyItem(StoreBuyRequest(userId, key, cost)).enqueue(object : Callback<StoreBuyResponse> {
                             override fun onResponse(call: Call<StoreBuyResponse>, response: Response<StoreBuyResponse>) {
-                                pd.dismiss()
+                                if (!isAdded || _binding == null) return
                                 if (response.isSuccessful && response.body()?.status == "success") {
                                     val newCoins = response.body()?.new_coin_balance ?: (coins - cost)
                                     sharedPref.edit().apply {
@@ -342,7 +340,7 @@ class DashboardFragment : Fragment() {
                             }
 
                             override fun onFailure(call: Call<StoreBuyResponse>, t: Throwable) {
-                                pd.dismiss()
+                                if (!isAdded || _binding == null) return
                                 Toast.makeText(context, "Network Error: ${t.message}", Toast.LENGTH_SHORT).show()
                             }
                         })
@@ -556,15 +554,13 @@ class DashboardFragment : Fragment() {
         sharedPref.edit().putString("username", newUsername).apply()
         loadProfile()
 
-        val pd = android.app.ProgressDialog(context).apply {
-            setMessage("Profil saqlanmoqda...")
-            show()
-        }
+        // TODO: Removed ProgressDialog
+        // val pd = android.app.ProgressDialog(context).apply { ... }
 
         ApiClient.instance.auth(AuthRequest(deviceId, newUsername))
             .enqueue(object : Callback<AuthResponse> {
                 override fun onResponse(call: Call<AuthResponse>, response: Response<AuthResponse>) {
-                    try { pd.dismiss() } catch (_: Exception) {}
+                    if (!isAdded || _binding == null) return
                     if (response.isSuccessful && response.body()?.status == "success") {
                         val user = response.body()?.user
                         if (user != null) {
@@ -592,7 +588,7 @@ class DashboardFragment : Fragment() {
                 }
 
                 override fun onFailure(call: Call<AuthResponse>, t: Throwable) {
-                    try { pd.dismiss() } catch (_: Exception) {}
+                    if (!isAdded || _binding == null) return
                     // Saved locally anyway
                     Toast.makeText(context, "Profil saqlandi: $newUsername", Toast.LENGTH_SHORT).show()
                 }
@@ -604,14 +600,12 @@ class DashboardFragment : Fragment() {
         val userId = sharedPref.getInt("user_id", -1)
         if (userId == -1) return
 
-        val pd = android.app.ProgressDialog(context)
-        pd.setMessage("Claiming daily reward...")
-        pd.show()
+        // TODO: Removed ProgressDialog
 
         ApiClient.instance.claimDailyReward(DailyRewardRequest(userId))
             .enqueue(object : Callback<DailyRewardResponse> {
                 override fun onResponse(call: Call<DailyRewardResponse>, response: Response<DailyRewardResponse>) {
-                    pd.dismiss()
+                    if (!isAdded || _binding == null) return
                     if (response.isSuccessful && response.body()?.status == "success") {
                         val coinsGained = response.body()?.reward_coins ?: 0
                         val totalCoins = response.body()?.new_total_coins ?: 0
@@ -630,7 +624,7 @@ class DashboardFragment : Fragment() {
                 }
 
                 override fun onFailure(call: Call<DailyRewardResponse>, t: Throwable) {
-                    pd.dismiss()
+                    if (!isAdded || _binding == null) return
                     Toast.makeText(context, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
             })

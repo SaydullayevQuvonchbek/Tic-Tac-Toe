@@ -133,12 +133,12 @@ class GameFragment : Fragment() {
             if (isOnlineMode) {
                 val emoteIndex = EmoteHelper.EMOTES.indexOf(emote)
                 ApiClient.instance.makeMove(MoveRequest(roomCode, playerId, -888, emoteIndex, -1)).enqueue(object : Callback<MoveResponse> {
-                    override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) {}
-                    override fun onFailure(call: Call<MoveResponse>, t: Throwable) {}
+                    override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) { if (!isAdded || _binding == null) return }
+                    override fun onFailure(call: Call<MoveResponse>, t: Throwable) { if (!isAdded || _binding == null) return }
                 })
                 ApiClient.instance.sendEmote(EmoteRequest(roomCode, playerId, emote)).enqueue(object : Callback<EmoteResponse> {
-                    override fun onResponse(call: Call<EmoteResponse>, response: Response<EmoteResponse>) {}
-                    override fun onFailure(call: Call<EmoteResponse>, t: Throwable) {}
+                    override fun onResponse(call: Call<EmoteResponse>, response: Response<EmoteResponse>) { if (!isAdded || _binding == null) return }
+                    override fun onFailure(call: Call<EmoteResponse>, t: Throwable) { if (!isAdded || _binding == null) return }
                 })
             }
         }
@@ -175,8 +175,8 @@ class GameFragment : Fragment() {
                             ApiClient.instance.makeMove(
                                 MoveRequest(roomCode, playerId, -999, -999, -1)
                             ).enqueue(object : Callback<MoveResponse> {
-                                override fun onResponse(c: Call<MoveResponse>, r: Response<MoveResponse>) {}
-                                override fun onFailure(c: Call<MoveResponse>, t: Throwable) {}
+                                override fun onResponse(c: Call<MoveResponse>, r: Response<MoveResponse>) { if (!isAdded || _binding == null) return }
+                                override fun onFailure(c: Call<MoveResponse>, t: Throwable) { if (!isAdded || _binding == null) return }
                             })
                             PusherManager.unsubscribeFromRoom(roomCode)
                         }
@@ -220,6 +220,7 @@ class GameFragment : Fragment() {
         pusherManager.subscribeToRoom(roomCode,
             onGameStarted = { data: String ->
                 activity?.runOnUiThread {
+                    if (!isAdded || _binding == null) return@runOnUiThread
                     isMyTurnOnline = isHost
                     val size = if (isInfinityMode) infinityGameLogic!!.size else gameLogic!!.size
                     setButtonsEnabled(isMyTurnOnline, size)
@@ -228,6 +229,7 @@ class GameFragment : Fragment() {
             },
             onMoveMade = { data: String ->
                 activity?.runOnUiThread {
+                    if (!isAdded || _binding == null) return@runOnUiThread
                     try {
                         val json = JSONObject(data)
                         val senderId = json.optInt("player_id", json.optString("player_id", "-1").toIntOrNull() ?: -1)
@@ -264,8 +266,8 @@ class GameFragment : Fragment() {
                             }
 
                             // Opponent made a move
-                            HapticHelper.performClick(requireContext())
-                            SoundHelper.playMoveSound(requireContext())
+                            HapticHelper.performClick(context ?: return@runOnUiThread)
+                            SoundHelper.playMoveSound(context ?: return@runOnUiThread)
 
                             if (isInfinityMode) {
                                 infinityGameLogic!!.makeMove(row, col)
@@ -286,11 +288,13 @@ class GameFragment : Fragment() {
             },
             onOpponentLeft = {
                 activity?.runOnUiThread {
+                    if (!isAdded || _binding == null) return@runOnUiThread
                     handleOpponentForfeited()
                 }
             },
             onEmoteReceived = { eventData: String ->
                 activity?.runOnUiThread {
+                    if (!isAdded || _binding == null) return@runOnUiThread
                     try {
                         var json = JSONObject(eventData)
                         if (json.has("data") && json.get("data") is String) {
@@ -301,7 +305,7 @@ class GameFragment : Fragment() {
                         val emote = json.optString("emote", "🔥")
                         if (emote.isNotEmpty()) {
                             EmoteHelper.showFloatingEmote(binding.root as ViewGroup, emote, isOpponent = true)
-                            HapticHelper.performClick(requireContext())
+                            HapticHelper.performClick(context ?: return@runOnUiThread)
                         }
                     } catch (_: Exception) {}
                 }
@@ -379,8 +383,11 @@ class GameFragment : Fragment() {
                 com.example.tictactoe.network.ApiClient.instance.makeMove(
                     com.example.tictactoe.network.MoveRequest(roomCode, playerId, row, col, -1)
                 ).enqueue(object : retrofit2.Callback<com.example.tictactoe.network.MoveResponse> {
-                    override fun onResponse(c: retrofit2.Call<com.example.tictactoe.network.MoveResponse>, r: retrofit2.Response<com.example.tictactoe.network.MoveResponse>) {}
-                    override fun onFailure(c: retrofit2.Call<com.example.tictactoe.network.MoveResponse>, t: Throwable) {}
+                    override fun onResponse(c: retrofit2.Call<com.example.tictactoe.network.MoveResponse>, r: retrofit2.Response<com.example.tictactoe.network.MoveResponse>) { if (!isAdded || _binding == null) return }
+                    override fun onFailure(c: retrofit2.Call<com.example.tictactoe.network.MoveResponse>, t: Throwable) { if (!isAdded || _binding == null) return
+    t.printStackTrace()
+    context?.let { android.widget.Toast.makeText(it, "Tarmoq xatosi!", android.widget.Toast.LENGTH_SHORT).show() }
+}
                 })
             }
 
@@ -495,8 +502,8 @@ class GameFragment : Fragment() {
             com.example.tictactoe.network.ApiClient.instance.matchResult(
                 com.example.tictactoe.network.MatchResultRequest(playerId, result)
             ).enqueue(object : retrofit2.Callback<com.example.tictactoe.network.MatchResultResponse> {
-                override fun onResponse(c: retrofit2.Call<com.example.tictactoe.network.MatchResultResponse>, r: retrofit2.Response<com.example.tictactoe.network.MatchResultResponse>) {}
-                override fun onFailure(c: retrofit2.Call<com.example.tictactoe.network.MatchResultResponse>, t: Throwable) {}
+                override fun onResponse(c: retrofit2.Call<com.example.tictactoe.network.MatchResultResponse>, r: retrofit2.Response<com.example.tictactoe.network.MatchResultResponse>) { if (!isAdded || _binding == null) return }
+                override fun onFailure(c: retrofit2.Call<com.example.tictactoe.network.MatchResultResponse>, t: Throwable) { if (!isAdded || _binding == null) return }
             })
         }
 
@@ -560,6 +567,7 @@ class GameFragment : Fragment() {
         
         // Show result after a longer delay so user can clearly see the final move
         binding.root.postDelayed({
+            if (!isAdded || _binding == null) return@postDelayed
             try {
                 findNavController().navigate(R.id.action_gameFragment_to_resultFragment, bundle)
             } catch (e: Exception) {}

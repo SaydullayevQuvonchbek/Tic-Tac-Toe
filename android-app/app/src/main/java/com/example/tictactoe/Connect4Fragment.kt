@@ -82,8 +82,15 @@ class Connect4Fragment : Fragment() {
                 val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
                 val myUserId = sharedPref.getInt("user_id", -1)
                 ApiClient.instance.makeMove(MoveRequest(roomCode, myUserId, -99, -99, -1)).enqueue(object : Callback<MoveResponse> {
-                    override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) {}
-                    override fun onFailure(call: Call<MoveResponse>, t: Throwable) {}
+                    override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) {
+                    if (!isAdded || _binding == null) return
+                        if (!isAdded || _binding == null) return
+                    }
+                    override fun onFailure(call: Call<MoveResponse>, t: Throwable) {
+                    if (!isAdded || _binding == null) return
+    t.printStackTrace()
+    context?.let { android.widget.Toast.makeText(it, "Tarmoq xatosi!", android.widget.Toast.LENGTH_SHORT).show() }
+}
                 })
             }
         }
@@ -99,8 +106,15 @@ class Connect4Fragment : Fragment() {
                         val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
                         val myUserId = sharedPref.getInt("user_id", -1)
                         ApiClient.instance.makeMove(MoveRequest(roomCode, myUserId, -999, -999, -1)).enqueue(object : Callback<MoveResponse> {
-                            override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) {}
-                            override fun onFailure(call: Call<MoveResponse>, t: Throwable) {}
+                            override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) {
+                    if (!isAdded || _binding == null) return
+                        if (!isAdded || _binding == null) return
+                    }
+                            override fun onFailure(call: Call<MoveResponse>, t: Throwable) {
+                    if (!isAdded || _binding == null) return
+    t.printStackTrace()
+    context?.let { android.widget.Toast.makeText(it, "Tarmoq xatosi!", android.widget.Toast.LENGTH_SHORT).show() }
+}
                         })
                         PusherManager.unsubscribeFromRoom(roomCode)
                         Toast.makeText(context, getString(R.string.forfeit_you_lost), Toast.LENGTH_SHORT).show()
@@ -244,12 +258,26 @@ class Connect4Fragment : Fragment() {
                 val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
                 val userId = sharedPref.getInt("user_id", -1)
                 ApiClient.instance.makeMove(MoveRequest(roomCode, userId, -888, emoteIndex, -1)).enqueue(object : Callback<MoveResponse> {
-                    override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) {}
-                    override fun onFailure(call: Call<MoveResponse>, t: Throwable) {}
+                    override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) {
+                    if (!isAdded || _binding == null) return
+                        if (!isAdded || _binding == null) return
+                    }
+                    override fun onFailure(call: Call<MoveResponse>, t: Throwable) {
+                    if (!isAdded || _binding == null) return
+    t.printStackTrace()
+    context?.let { android.widget.Toast.makeText(it, "Tarmoq xatosi!", android.widget.Toast.LENGTH_SHORT).show() }
+}
                 })
                 ApiClient.instance.sendEmote(EmoteRequest(roomCode, userId, emote)).enqueue(object : Callback<EmoteResponse> {
-                    override fun onResponse(call: Call<EmoteResponse>, response: Response<EmoteResponse>) {}
-                    override fun onFailure(call: Call<EmoteResponse>, t: Throwable) {}
+                    override fun onResponse(call: Call<EmoteResponse>, response: Response<EmoteResponse>) {
+                    if (!isAdded || _binding == null) return
+                        if (!isAdded || _binding == null) return
+                    }
+                    override fun onFailure(call: Call<EmoteResponse>, t: Throwable) {
+                    if (!isAdded || _binding == null) return
+    t.printStackTrace()
+    context?.let { android.widget.Toast.makeText(it, "Tarmoq xatosi!", android.widget.Toast.LENGTH_SHORT).show() }
+}
                 })
             }
         }
@@ -267,6 +295,7 @@ class Connect4Fragment : Fragment() {
         ApiClient.instance.createRoom(RoomCreateRequest(userId, 7, false))
             .enqueue(object : Callback<RoomCreateResponse> {
                 override fun onResponse(call: Call<RoomCreateResponse>, response: Response<RoomCreateResponse>) {
+                    if (!isAdded || _binding == null) return
                     if (response.isSuccessful && response.body()?.status == "success") {
                         roomCode = response.body()?.room_code ?: ""
                         isOnlineMode = true
@@ -282,6 +311,7 @@ class Connect4Fragment : Fragment() {
                 }
 
                 override fun onFailure(call: Call<RoomCreateResponse>, t: Throwable) {
+                    if (!isAdded || _binding == null) return
                     Toast.makeText(context, "Network Error: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
             })
@@ -291,6 +321,7 @@ class Connect4Fragment : Fragment() {
         ApiClient.instance.joinRoom(RoomJoinRequest(userId, code))
             .enqueue(object : Callback<RoomJoinResponse> {
                 override fun onResponse(call: Call<RoomJoinResponse>, response: Response<RoomJoinResponse>) {
+                    if (!isAdded || _binding == null) return
                     if (response.isSuccessful && response.body()?.status == "success") {
                         roomCode = code
                         isOnlineMode = true
@@ -308,6 +339,7 @@ class Connect4Fragment : Fragment() {
                 }
 
                 override fun onFailure(call: Call<RoomJoinResponse>, t: Throwable) {
+                    if (!isAdded || _binding == null) return
                     Toast.makeText(context, "Network Error: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
             })
@@ -318,16 +350,18 @@ class Connect4Fragment : Fragment() {
             roomCode = roomCode,
             onGameStarted = {
                 activity?.runOnUiThread {
+                    if (!isAdded || _binding == null) return@runOnUiThread
                     startLocalGame()
                     Toast.makeText(context, "Friend joined! Match started!", Toast.LENGTH_SHORT).show()
                 }
             },
             onMoveMade = { eventData ->
                 activity?.runOnUiThread {
+                    if (!isAdded || _binding == null) return@runOnUiThread
                     try {
                         val json = JSONObject(eventData)
                         val senderId = json.optInt("player_id", -1)
-                        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+                        val sharedPref = (activity ?: return@runOnUiThread).getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
                         val myUserId = sharedPref.getInt("user_id", -1)
 
                         // Ignore our own move echoed back from Pusher
@@ -379,11 +413,13 @@ class Connect4Fragment : Fragment() {
             },
             onOpponentLeft = {
                 activity?.runOnUiThread {
+                    if (!isAdded || _binding == null) return@runOnUiThread
                     handleOpponentForfeited()
                 }
             },
             onEmoteReceived = { eventData ->
                 activity?.runOnUiThread {
+                    if (!isAdded || _binding == null) return@runOnUiThread
                     try {
                         var json = JSONObject(eventData)
                         if (json.has("data") && json.get("data") is String) {
@@ -454,8 +490,15 @@ class Connect4Fragment : Fragment() {
 
                 ApiClient.instance.makeMove(MoveRequest(roomCode, userId, -1, col, -1))
                     .enqueue(object : Callback<MoveResponse> {
-                        override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) {}
-                        override fun onFailure(call: Call<MoveResponse>, t: Throwable) {}
+                        override fun onResponse(call: Call<MoveResponse>, response: Response<MoveResponse>) {
+                    if (!isAdded || _binding == null) return
+                        if (!isAdded || _binding == null) return
+                    }
+                        override fun onFailure(call: Call<MoveResponse>, t: Throwable) {
+                    if (!isAdded || _binding == null) return
+    t.printStackTrace()
+    context?.let { android.widget.Toast.makeText(it, "Tarmoq xatosi!", android.widget.Toast.LENGTH_SHORT).show() }
+}
                     })
 
                 if (logic.isGameOver) {
@@ -559,12 +602,13 @@ class Connect4Fragment : Fragment() {
         }
 
         binding.root.postDelayed({
+            if (!isAdded || _binding == null) return@postDelayed
             submitScoreAndExit()
         }, 1500)
     }
 
     private fun submitScoreAndExit() {
-        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+        val sharedPref = (activity ?: return).getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
         val userId = sharedPref.getInt("user_id", -1)
         val username = sharedPref.getString("username", "") ?: ""
         val displayName = if (username.isNotEmpty()) username else "You"
@@ -574,8 +618,14 @@ class Connect4Fragment : Fragment() {
         if (userId != -1 && score > 0) {
             ApiClient.instance.submitGameScore(GameScoreRequest(userId, "connect4", score))
                 .enqueue(object : Callback<GameScoreResponse> {
-                    override fun onResponse(call: Call<GameScoreResponse>, response: Response<GameScoreResponse>) {}
-                    override fun onFailure(call: Call<GameScoreResponse>, t: Throwable) {}
+                    override fun onResponse(call: Call<GameScoreResponse>, response: Response<GameScoreResponse>) {
+                        if (!isAdded || _binding == null) return
+                    }
+                    override fun onFailure(call: Call<GameScoreResponse>, t: Throwable) {
+                        if (!isAdded || _binding == null) return
+                        t.printStackTrace()
+                        context?.let { android.widget.Toast.makeText(it, "Tarmoq xatosi!", android.widget.Toast.LENGTH_SHORT).show() }
+                    }
                 })
         }
 
@@ -600,6 +650,11 @@ class Connect4Fragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        for (r in 0 until 6) {
+            for (c in 0 until 7) {
+                cellViews[r][c] = null
+            }
+        }
         if (isOnlineMode && roomCode.isNotEmpty()) {
             PusherManager.unsubscribeFromRoom(roomCode)
         }
