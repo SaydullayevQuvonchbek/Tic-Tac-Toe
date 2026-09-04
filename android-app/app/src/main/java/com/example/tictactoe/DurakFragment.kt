@@ -395,32 +395,26 @@ class DurakFragment : Fragment() {
 
     private fun startGame() {
         selectedCard = null
+        selectedTargetAttackCard = null
         resetSeq()
-        logic.initNewGame()
 
         if (isOnlineMode) {
             subscribePusherEvents()
-            ApiClient.instance.startCardGame(CardStartRequest(roomCode, myPlayerId)).enqueue(object : Callback<CardStartResponse> {
-                override fun onResponse(call: Call<CardStartResponse>, response: Response<CardStartResponse>) {
-                    if (!isAdded || _binding == null) return
-                    val body = response.body()
-                    if (response.isSuccessful && body != null && body.trump_card != null) {
-                        val trump = Card.fromCode(body.trump_card)
-                        val p1 = if (isHost) body.player1_cards else body.player2_cards
-                        val p2 = if (isHost) body.player2_cards else body.player1_cards
-                        logic.initNewGame(trump, p1, p2)
-                        logic.isPlayerAttacker = (body.attacker_id == myPlayerId)
-                        renderBoard()
+            showGameplayScreen()
+            if (isHost) {
+                hostBroadcastGameInit()
+            } else {
+                sendCardActionOnline("guest_joined", "", "", seqTagged = false)
+                handler.postDelayed({
+                    if (_binding != null && isOnlineMode && !isHost && logic.deck.isEmpty() && logic.playerHand.isEmpty()) {
+                        sendCardActionOnline("guest_joined", "", "", seqTagged = false)
                     }
-                }
-                override fun onFailure(call: Call<CardStartResponse>, t: Throwable) {
-                    if (!isAdded || _binding == null) return
-    t.printStackTrace()
-    context?.let { android.widget.Toast.makeText(it, "Tarmoq xatosi!", android.widget.Toast.LENGTH_SHORT).show() }
-}
-            })
+                }, 1500L)
+            }
+            return
         }
 
+        logic.initNewGame()
         showGameplayScreen()
         renderBoard()
 
@@ -946,6 +940,7 @@ class DurakFragment : Fragment() {
 
             if (isOnlineMode) {
                 sendCardActionOnline("finalize_take", null, null)
+                if (isHost) broadcastFullState()
             }
             // In Bot mode: Human remains attacker, human throws next card. Bot doesn't act yet.
             checkGameOver()
@@ -960,6 +955,7 @@ class DurakFragment : Fragment() {
 
         if (isOnlineMode) {
             sendCardActionOnline("pass", null, null)
+            if (isHost) broadcastFullState()
         } else if (isAiMode) {
             // If it's now Bot's turn to attack, trigger bot action
             if (!logic.isPlayerAttacker && !logic.isGameOver) {
@@ -1215,7 +1211,11 @@ class DurakFragment : Fragment() {
             // Control messages bypass the sequence gate.
             when (action) {
                 "resync_req" -> { if (isHost) broadcastFullState(); return }
-                "sync_state" -> { applyFullState(targetCardCode); return }
+                "sync_state" -> {
+                    val raw = if (targetCardCode.startsWith("{")) targetCardCode else if (cardCode.startsWith("{")) cardCode else targetCardCode
+                    applyFullState(raw)
+                    return
+                }
             }
 
             // Game actions: enforce per-sender ordering, request a resync if we missed one.
@@ -1231,29 +1231,40 @@ class DurakFragment : Fragment() {
             when (action) {
                 "guest_joined" -> {
                     if (isHost) {
-                        hostBroadcastGameInit()
+                        if (mySeq > 0 || peerSeq > 0 || logic.tablePairs.isNotEmpty() || (logic.deck.isNotEmpty() && logic.deck.size < 24)) {
+                            broadcastFullState()
+                        } else {
+                            hostBroadcastGameInit()
+                        }
                     }
                 }
                 "sync_init" -> {
-                    if (!isHost && targetCardCode.isNotEmpty()) {
+                    if (!isHost) {
                         try {
-                            val initObj = JSONObject(targetCardCode)
-                            val trump = Card.fromCode(initObj.getString("trump"))
-                            val p1Arr = initObj.getJSONArray("p1")
-                            val p2Arr = initObj.getJSONArray("p2")
-                            val deckArr = initObj.getJSONArray("deck")
-                            val hostAttacks = initObj.getBoolean("host_attacks")
+                            val rawPayload = when {
+                                targetCardCode.startsWith("{") -> targetCardCode
+                                cardCode.startsWith("{") -> cardCode
+                                else -> targetCardCode
+                            }
+                            if (rawPayload.isNotEmpty()) {
+                                val initObj = JSONObject(rawPayload)
+                                val trump = Card.fromCode(initObj.getString("trump"))
+                                val p1Arr = initObj.getJSONArray("p1")
+                                val p2Arr = initObj.getJSONArray("p2")
+                                val deckArr = initObj.getJSONArray("deck")
+                                val hostAttacks = initObj.getBoolean("host_attacks")
 
-                            val myCards = (0 until p2Arr.length()).map { p2Arr.getString(it) }
-                            val oppCards = (0 until p1Arr.length()).map { p1Arr.getString(it) }
-                            val deckList = (0 until deckArr.length()).map { deckArr.getString(it) }
+                                val myCards = (0 until p2Arr.length()).map { p2Arr.getString(it) }
+                                val oppCards = (0 until p1Arr.length()).map { p1Arr.getString(it) }
+                                val deckList = (0 until deckArr.length()).map { deckArr.getString(it) }
 
-                            resetSeq()
-                            logic.initNewGameWithSyncedDeck(trump, myCards, oppCards, deckList)
-                            logic.isPlayerAttacker = !hostAttacks
-                            showGameplayScreen()
-                            renderBoard()
-                            return
+                                resetSeq()
+                                logic.initNewGameWithSyncedDeck(trump, myCards, oppCards, deckList)
+                                logic.isPlayerAttacker = !hostAttacks
+                                showGameplayScreen()
+                                renderBoard()
+                                return
+                            }
                         } catch (e: Exception) {
                             e.printStackTrace()
                         }
@@ -1280,6 +1291,7 @@ class DurakFragment : Fragment() {
                     logic.clearTableToBita()
                     HapticHelper.performClick(requireContext())
                     SoundHelper.playMoveSound(requireContext())
+                    if (isHost) broadcastFullState()
                 }
                 "take_declared" -> {
                     logic.declareTakeByDefender()
@@ -1290,11 +1302,13 @@ class DurakFragment : Fragment() {
                     logic.finalizeTakeByDefender(isDefenderPlayer = true)
                     HapticHelper.performHeavyImpact(requireContext())
                     SoundHelper.playCaptureSound(requireContext())
+                    if (isHost) broadcastFullState()
                 }
                 "take" -> {
                     logic.finalizeTakeByDefender(isDefenderPlayer = true)
                     HapticHelper.performHeavyImpact(requireContext())
                     SoundHelper.playCaptureSound(requireContext())
+                    if (isHost) broadcastFullState()
                 }
             }
 

@@ -10,7 +10,7 @@ enum class CardSuit(val code: String, val symbol: String, val isRed: Boolean, va
 
     companion object {
         fun fromCode(code: String): CardSuit {
-            return values().firstOrNull { it.code == code } ?: HEARTS
+            return values().firstOrNull { it.code.equals(code, ignoreCase = true) } ?: HEARTS
         }
     }
 }
@@ -28,7 +28,7 @@ enum class CardRank(val value: Int, val label: String) {
 
     companion object {
         fun fromLabel(label: String): CardRank {
-            return values().firstOrNull { it.label == label } ?: SIX
+            return values().firstOrNull { it.label.equals(label, ignoreCase = true) } ?: SIX
         }
     }
 }
@@ -38,9 +38,10 @@ data class Card(val suit: CardSuit, val rank: CardRank) {
 
     companion object {
         fun fromCode(code: String): Card {
-            if (code.length < 2) return Card(CardSuit.HEARTS, CardRank.SIX)
-            val suitCode = code.substring(0, 1)
-            val rankLabel = code.substring(1)
+            val clean = code.trim().replace("_", "")
+            if (clean.length < 2) return Card(CardSuit.HEARTS, CardRank.SIX)
+            val suitCode = clean.substring(0, 1)
+            val rankLabel = clean.substring(1)
             return Card(CardSuit.fromCode(suitCode), CardRank.fromLabel(rankLabel))
         }
     }
@@ -94,7 +95,9 @@ class DurakLogic {
                 }
             }
             deck.shuffle()
-            deck.add(trumpCard!!)
+            if (!playerHand.contains(trumpCard!!) && !opponentHand.contains(trumpCard!!)) {
+                deck.add(trumpCard!!)
+            }
         } else {
             deck.clear()
             for (s in CardSuit.values()) {
@@ -159,7 +162,19 @@ class DurakLogic {
         defenderTaking: Boolean
     ) {
         trumpCard = trump
-        playerHand = myCards.map { Card.fromCode(it) }.toMutableList()
+        val newPlayerCards = myCards.map { Card.fromCode(it) }
+        val retainedCards = playerHand.filter { newPlayerCards.contains(it) }.toMutableList()
+        for (c in newPlayerCards) {
+            if (!retainedCards.contains(c)) {
+                retainedCards.add(c)
+            }
+        }
+        if (retainedCards.size == newPlayerCards.size && retainedCards.containsAll(newPlayerCards)) {
+            playerHand = retainedCards
+        } else {
+            playerHand = newPlayerCards.toMutableList()
+        }
+
         opponentHand = oppCards.map { Card.fromCode(it) }.toMutableList()
         deck = deckCodes.map { Card.fromCode(it) }.toMutableList()
         tablePairs = table.map { (a, d) ->
