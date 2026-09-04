@@ -174,14 +174,33 @@ class MemoryGameFragment : Fragment() {
         val cardItems = (shuffledPool + shuffledPool).shuffled()
 
         val displayMetrics = resources.displayMetrics
-        val screenWidth = displayMetrics.widthPixels - (32 * displayMetrics.density)
-        val screenHeight = displayMetrics.heightPixels - (180 * displayMetrics.density)
+        val density = displayMetrics.density
 
-        val cardWidth = (screenWidth / cols).toInt() - (8 * displayMetrics.density).toInt()
-        val cardHeight = (screenHeight / rows).toInt() - (8 * displayMetrics.density).toInt()
-        val cardSize = Math.min(cardWidth, cardHeight).coerceIn(44, 96)
+        // Calculate available space dynamically
+        val availWidth = displayMetrics.widthPixels - (32 * density).toInt()
+        val availHeight = (displayMetrics.heightPixels - (200 * density).toInt()).coerceAtLeast((320 * density).toInt())
 
-        val marginPx = (3 * displayMetrics.density).toInt()
+        // Margin scales depending on grid density
+        val marginDp = when {
+            cols <= 2 -> 10f
+            cols == 3 -> 8f
+            cols == 4 -> 6f
+            else -> 4f
+        }
+        val marginPx = (marginDp * density).toInt()
+
+        // Card size: fits within available width and height for the given grid layout
+        val maxCardWidth = (availWidth / cols) - (marginPx * 2)
+        val maxCardHeight = (availHeight / rows) - (marginPx * 2)
+
+        // For early levels (e.g. 2x2, 2x3), cards can be comfortably large up to 145dp
+        val maxLimitPx = (145 * density).toInt()
+        val minLimitPx = (44 * density).toInt()
+        val cardSize = Math.min(maxCardWidth, maxCardHeight).coerceIn(minLimitPx, maxLimitPx)
+
+        val cornerRadiusPx = (cardSize * 0.16f).coerceIn(8f * density, 24f * density)
+        val elevationPx = (cardSize * 0.04f).coerceIn(4f * density, 10f * density)
+        val emojiSp = ((cardSize / density) * 0.44f).coerceIn(20f, 64f)
 
         for (i in 0 until count) {
             val card = CardView(requireContext()).apply {
@@ -197,15 +216,15 @@ class MemoryGameFragment : Fragment() {
                 }
                 layoutParams = params
                 setCardBackgroundColor(Color.parseColor("#312E81"))
-                radius = 16f
-                cardElevation = 6f
+                radius = cornerRadiusPx
+                cardElevation = elevationPx
                 tag = cardItems[i]
             }
 
             val tv = TextView(requireContext()).apply {
                 layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
                 gravity = Gravity.CENTER
-                textSize = if (cardSize > 64) 28f else 20f
+                textSize = emojiSp
                 text = ""
                 tag = "tv"
             }

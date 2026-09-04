@@ -142,10 +142,10 @@
         <GridLayout
             android:id="@+id/gridMemory"
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_gravity="center"
+            android:layout_height="wrap_content"
             android:alignmentMode="alignMargins"
-            android:useDefaultMargins="true"
+            android:useDefaultMargins="false"
+            app:layout_constraintVertical_bias="0.5"
             app:layout_constraintBottom_toTopOf="@+id/tvTip"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
