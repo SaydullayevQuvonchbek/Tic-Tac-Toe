@@ -93,7 +93,8 @@ class MemoryGameFragment : Fragment() {
             .putInt("xp", curXp + rewardCoins * 2)
             .apply()
 
-        QuestManager.recordGamePlayed(requireContext(), "memory_matrix", false, true)
+        GameEconomyManager.recordGamePlay(requireContext(), "memory_game")
+        QuestManager.recordGamePlayed(requireContext(), "memory_game", false, true)
     }
 
     private fun handleBackNavigation() {

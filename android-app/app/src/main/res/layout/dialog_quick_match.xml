@@ -17,37 +17,78 @@
 
         <ProgressBar
             android:id="@+id/pbMatch"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:indeterminateTint="#38BDF8" />
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:indeterminateTint="@color/accent_cyan" />
 
         <TextView
             android:id="@+id/tvMatchStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:fontFamily="sans-serif-black"
-            android:text="⚡ Searching for Opponent..."
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/chakra_petch"
+            android:gravity="center"
+            android:text="⚡ Raqib qidirilmoqda..."
             android:textColor="@color/text_color"
-            android:textSize="20sp" />
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tvMatchSub"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:text="Scanning online lobby..."
+            android:gravity="center"
+            android:text="Onlayn lobbi tekshirilmoqda..."
             android:textColor="@color/text_secondary"
-            android:textSize="13sp" />
+            android:textSize="12.5sp" />
+
+        <!-- Fallback Action Buttons (shown when no opponent is found) -->
+        <LinearLayout
+            android:id="@+id/layoutNotFoundActions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/btnPlayWithBot"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:background="@drawable/btn_gradient_cyan"
+                android:fontFamily="@font/chakra_petch"
+                android:gravity="center"
+                android:text="🤖 BOT BILAN O'YNASH"
+                android:textColor="@color/on_accent"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.04" />
+
+            <TextView
+                android:id="@+id/btnRetryMatch"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_pill_muted"
+                android:fontFamily="@font/chakra_petch"
+                android:gravity="center"
+                android:text="🔄 QAYTA IZLASH"
+                android:textColor="@color/accent_cyan"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+        </LinearLayout>
 
         <Button
             android:id="@+id/btnCancelMatch"
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Cancel"
-            android:textColor="#EF4444" />
+            android:layout_marginTop="12dp"
+            android:fontFamily="@font/chakra_petch"
+            android:text="Bekor qilish"
+            android:textColor="#EF4444"
+            android:textSize="12sp" />
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

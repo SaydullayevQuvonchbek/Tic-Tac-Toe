@@ -94,4 +94,19 @@
         android:textSize="11sp"
         android:textStyle="bold" />
 
+    <TextView
+        android:id="@+id/btnChallenge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/bg_pill_cyan"
+        android:fontFamily="@font/chakra_petch"
+        android:paddingHorizontal="7dp"
+        android:paddingVertical="4dp"
+        android:text="⚔ JANG"
+        android:textColor="@color/accent_cyan"
+        android:textSize="9.5sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
 </LinearLayout>

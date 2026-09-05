@@ -146,11 +146,10 @@ class ColorMatchFragment : Fragment() {
             sharedPref.edit().putInt("color_match_high_score", score).apply()
         }
 
-        val coinsEarned = (score / 35) * 5
-        if (coinsEarned > 0) {
-            val curCoins = sharedPref.getInt("coins", 0)
-            sharedPref.edit().putInt("coins", curCoins + coinsEarned).apply()
-        }
+        val coinsEarned = (score / 30).coerceIn(5, 60)
+        GameEconomyManager.addCoins(requireContext(), coinsEarned)
+        GameEconomyManager.recordGamePlay(requireContext(), "color_match")
+        QuestManager.recordGamePlayed(requireContext(), "color_match", false, score >= 100)
 
         if (userId != -1 && score > 0) {
             val safeContext = context

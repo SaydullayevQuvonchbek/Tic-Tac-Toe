@@ -119,6 +119,7 @@ class MathGameFragment : Fragment() {
             .putInt("xp", curXp + coinsEarned * 2)
             .apply()
 
+        GameEconomyManager.recordGamePlay(requireContext(), "math_game")
         QuestManager.recordGamePlayed(requireContext(), "math", false, true)
     }
 

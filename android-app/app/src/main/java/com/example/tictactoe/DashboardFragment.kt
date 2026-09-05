@@ -140,33 +140,76 @@ class DashboardFragment : Fragment() {
     private fun setupQuickMatch() {
         binding.btnQuickPlay.setThrottleClickListener {
             if (!ensureProfile()) return@setThrottleClickListener
-            val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
-            val userId = sharedPref.getInt("user_id", -1)
-            val username = sharedPref.getString("username", "Player 1") ?: "Player 1"
-
-            MatchmakingHelper.startQuickMatch(requireContext(), "tictactoe", 3) { code, host, _, isBot ->
-                if (_binding == null) return@startQuickMatch
-                val bundle = Bundle().apply {
-                    putBoolean("isOnlineMode", !isBot)
-                    putBoolean("isAiMode", isBot)
-                    putInt("playerId", userId)
-                    putString("roomCode", code)
-                    putBoolean("isHost", host)
-                    putString("username", username)
-                    putInt("boardSize", 3)
-                    putBoolean("isInfinityMode", false)
-                    putBoolean("isArcadeMode", false)
-                    putString("startingPlayer", "X")
-                }
-                findNavController().navigate(R.id.action_dashboardFragment_to_gameFragment, bundle)
-            }
+            showQuickMatchGameSelector()
         }
 
         binding.btnQuickFriends.setOnClickListener {
-            if (ensureProfile()) findNavController().navigate(R.id.action_dashboardFragment_to_welcomeFragment)
+            if (ensureProfile()) findNavController().navigate(R.id.leaderboardFragment)
         }
         binding.btnQuickRoomId.setOnClickListener {
             if (ensureProfile()) findNavController().navigate(R.id.action_dashboardFragment_to_welcomeFragment)
+        }
+    }
+
+    private fun showQuickMatchGameSelector() {
+        val games = arrayOf(
+            "❌ Tic Tac Toe (3×3 PRO)",
+            "👑 Shaxmat (Chess PRO)",
+            "♟️ Shashka (Checkers)",
+            "🔴 Connect 4",
+            "⚪ Gomoku (5 in a Row)",
+            "📦 Dots & Boxes",
+            "🃏 Durak (Karta)"
+        )
+        val gameKeys = arrayOf(
+            "tictactoe",
+            "chess",
+            "checkers",
+            "connect4",
+            "gomoku",
+            "dots_and_boxes",
+            "durak"
+        )
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("⚡ Tezkor o'yin (Quick Match)")
+            .setItems(games) { _, which ->
+                val selectedKey = gameKeys[which]
+                launchQuickMatchForGame(selectedKey)
+            }
+            .setNegativeButton("Bekor qilish", null)
+            .show()
+    }
+
+    private fun launchQuickMatchForGame(gameKey: String) {
+        val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+        val userId = sharedPref.getInt("user_id", -1)
+        val username = sharedPref.getString("username", "Player 1") ?: "Player 1"
+
+        MatchmakingHelper.startQuickMatch(requireContext(), gameKey, 3) { code, host, _, isBot ->
+            if (_binding == null) return@startQuickMatch
+            val bundle = Bundle().apply {
+                putBoolean("isOnlineMode", !isBot)
+                putBoolean("isAiMode", isBot)
+                putInt("playerId", userId)
+                putString("roomCode", code)
+                putBoolean("isHost", host)
+                putString("username", username)
+                putBoolean("isRematch", true)
+                putBoolean("isDirectLaunch", true)
+                putInt("boardSize", if (gameKey == "checkers" || gameKey == "chess") 8 else 3)
+                putString("startingPlayer", "X")
+            }
+
+            when (gameKey) {
+                "chess" -> findNavController().navigate(R.id.action_dashboardFragment_to_chessFragment, bundle)
+                "checkers" -> findNavController().navigate(R.id.action_dashboardFragment_to_checkersFragment, bundle)
+                "connect4" -> findNavController().navigate(R.id.action_dashboardFragment_to_connect4Fragment, bundle)
+                "gomoku" -> findNavController().navigate(R.id.action_dashboardFragment_to_gomokuFragment, bundle)
+                "dots_and_boxes" -> findNavController().navigate(R.id.action_dashboardFragment_to_dotsAndBoxesFragment, bundle)
+                "durak" -> findNavController().navigate(R.id.action_dashboardFragment_to_durakFragment, bundle)
+                else -> findNavController().navigate(R.id.action_dashboardFragment_to_gameFragment, bundle)
+            }
         }
     }
 

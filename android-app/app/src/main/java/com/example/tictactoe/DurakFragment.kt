@@ -1332,6 +1332,20 @@ class DurakFragment : Fragment() {
         val isUserWin = (logic.winner == 1)
         val isDraw = (logic.winner == 0)
 
+        val resultType = when {
+            isDraw -> GameEconomyManager.GameResult.DRAW
+            isUserWin -> GameEconomyManager.GameResult.WIN
+            else -> GameEconomyManager.GameResult.LOSS
+        }
+        val reward = GameEconomyManager.rewardMatchResult(
+            context = requireContext(),
+            gameKey = "durak",
+            isOnline = isOnlineMode,
+            result = resultType,
+            customCoins = if (isUserWin) 50 else if (isDraw) 20 else 10,
+            customXp = if (isUserWin) 100 else if (isDraw) 40 else 20
+        )
+
         if (isUserWin) {
             ConfettiView.show(binding.root as ViewGroup)
             HapticHelper.performVictory(requireContext())
@@ -1339,20 +1353,12 @@ class DurakFragment : Fragment() {
 
             val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
             val curWins = sharedPref.getInt("durak_wins", 0) + 1
-            val curCoins = sharedPref.getInt("coins", 0) + 75
-            val curXp = sharedPref.getInt("xp", 0) + 150
-            sharedPref.edit()
-                .putInt("durak_wins", curWins)
-                .putInt("coins", curCoins)
-                .putInt("xp", curXp)
-                .apply()
+            sharedPref.edit().putInt("durak_wins", curWins).apply()
         }
-
-        QuestManager.recordGamePlayed(requireContext(), "durak", isOnlineMode, isUserWin)
 
         AlertDialog.Builder(requireContext())
             .setTitle(if (isDraw) "🤝 Durrang!" else if (isUserWin) "🏆 G'ALABA! (Durak emassiz)" else "💀 DURAK BO'LDINGIZ!")
-            .setMessage(if (isUserWin) "Tabriklaymiz! Barcha kartalardan qutulib yutdingiz!\n\nMukofot: +75 🪙 | +150 XP ⚡" else "Afsuski, qo'lingizda karta qolib ketdi!")
+            .setMessage(if (isUserWin) "Tabriklaymiz! Barcha kartalardan qutulib yutdingiz!\n\nMukofot: +${reward.coinsEarned} 🪙 | +${reward.xpEarned} XP ⚡" else "Afsuski, qo'lingizda karta qolib ketdi!\n\nRag'bat: +${reward.coinsEarned} 🪙 | +${reward.xpEarned} XP ⚡")
             .setPositiveButton("QAYTA O'YNASH 🔄") { _, _ ->
                 startGame()
             }

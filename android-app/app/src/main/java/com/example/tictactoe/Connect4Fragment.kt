@@ -631,8 +631,24 @@ class Connect4Fragment : Fragment() {
                 })
         }
 
+        val isDraw = (logic.winner == 0)
+        val resultType = when {
+            isDraw -> GameEconomyManager.GameResult.DRAW
+            isWinner -> GameEconomyManager.GameResult.WIN
+            else -> GameEconomyManager.GameResult.LOSS
+        }
+        val reward = GameEconomyManager.rewardMatchResult(
+            context = requireContext(),
+            gameKey = "connect4",
+            isOnline = isOnlineMode,
+            result = resultType
+        )
+
         val bundle = Bundle().apply {
             putString("gameType", "connect4")
+            putInt("xpEarned", reward.xpEarned)
+            putInt("coinsEarned", reward.coinsEarned)
+            putBoolean("rewardProcessed", true)
             val winMsg = if (isOnlineMode) {
                 if (logic.winner == myPlayerNumber) "$displayName Won! 🎉" else if (logic.winner == 0) "It's a Draw!" else "You Lost!"
             } else if (isAiMode) {

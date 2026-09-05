@@ -641,46 +641,322 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
+                <!-- Shaxmat -->
                 <LinearLayout android:id="@+id/recChess" style="@style/RecCard">
-                    <View style="@style/RecCardTop" android:background="#769656" />
-                    <TextView style="@style/RecCardGlyph" android:text="♛" />
-                    <TextView style="@style/RecCardName" android:text="Shaxmat" />
-                    <TextView style="@style/RecCardMeta" android:text="Onlayn · AI Bot" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="38dp"
+                            android:layout_height="38dp"
+                            android:background="@drawable/bg_icon_tile"
+                            android:gravity="center"
+                            android:text="♛"
+                            android:textSize="18sp" />
+                        <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_pill_gold"
+                            android:fontFamily="@font/chakra_petch"
+                            android:paddingHorizontal="6dp"
+                            android:paddingVertical="2dp"
+                            android:text="PRO"
+                            android:textColor="@color/pill_gold_text"
+                            android:textSize="8.5sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="Shaxmat"
+                        android:textColor="@color/text_color"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="AI Bot · 1v1 Onlayn"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="10sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="@font/chakra_petch"
+                        android:text="O'ynash ›"
+                        android:textColor="@color/accent_cyan"
+                        android:textSize="10.5sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
 
-                <LinearLayout android:id="@+id/recCheckers" style="@style/RecCard" android:layout_marginStart="12dp">
-                    <View style="@style/RecCardTop" android:background="#B91C1C" />
-                    <TextView style="@style/RecCardGlyph" android:text="⬤" />
-                    <TextView style="@style/RecCardName" android:text="Shashka" />
-                    <TextView style="@style/RecCardMeta" android:text="Checkers · 1v1" />
+                <!-- Shashka -->
+                <LinearLayout android:id="@+id/recCheckers" style="@style/RecCard" android:layout_marginStart="10dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="38dp"
+                            android:layout_height="38dp"
+                            android:background="@drawable/bg_icon_tile"
+                            android:gravity="center"
+                            android:text="⬤"
+                            android:textSize="18sp" />
+                        <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_pill_red"
+                            android:fontFamily="@font/chakra_petch"
+                            android:paddingHorizontal="6dp"
+                            android:paddingVertical="2dp"
+                            android:text="1V1"
+                            android:textColor="@color/pill_red_text"
+                            android:textSize="8.5sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="Shashka"
+                        android:textColor="@color/text_color"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Klassik · Damka"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="10sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="@font/chakra_petch"
+                        android:text="O'ynash ›"
+                        android:textColor="@color/accent_cyan"
+                        android:textSize="10.5sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
 
-                <LinearLayout android:id="@+id/recConnect4" style="@style/RecCard" android:layout_marginStart="12dp">
-                    <View style="@style/RecCardTop" android:background="#1D4ED8" />
-                    <TextView style="@style/RecCardGlyph" android:text="🔴" />
-                    <TextView style="@style/RecCardName" android:text="Connect 4" />
-                    <TextView style="@style/RecCardMeta" android:text="Onlayn · Xona kodi" />
+                <!-- Connect 4 -->
+                <LinearLayout android:id="@+id/recConnect4" style="@style/RecCard" android:layout_marginStart="10dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="38dp"
+                            android:layout_height="38dp"
+                            android:background="@drawable/bg_icon_tile"
+                            android:gravity="center"
+                            android:text="🔴"
+                            android:textSize="18sp" />
+                        <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_pill_cyan"
+                            android:fontFamily="@font/chakra_petch"
+                            android:paddingHorizontal="6dp"
+                            android:paddingVertical="2dp"
+                            android:text="HOT"
+                            android:textColor="@color/accent_cyan"
+                            android:textSize="8.5sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="Connect 4"
+                        android:textColor="@color/text_color"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="4 tosh qatorda"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="10sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="@font/chakra_petch"
+                        android:text="O'ynash ›"
+                        android:textColor="@color/accent_cyan"
+                        android:textSize="10.5sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
 
-                <LinearLayout android:id="@+id/recWaterSort" style="@style/RecCard" android:layout_marginStart="12dp">
-                    <View style="@style/RecCardTop" android:background="#0D9488" />
-                    <TextView style="@style/RecCardGlyph" android:text="🧪" />
-                    <TextView style="@style/RecCardName" android:text="Water Sort" />
-                    <TextView style="@style/RecCardMeta" android:text="30 daraja kampaniya" />
+                <!-- Water Sort -->
+                <LinearLayout android:id="@+id/recWaterSort" style="@style/RecCard" android:layout_marginStart="10dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="38dp"
+                            android:layout_height="38dp"
+                            android:background="@drawable/bg_icon_tile"
+                            android:gravity="center"
+                            android:text="🧪"
+                            android:textSize="18sp" />
+                        <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_pill_muted"
+                            android:fontFamily="@font/chakra_petch"
+                            android:paddingHorizontal="6dp"
+                            android:paddingVertical="2dp"
+                            android:text="PUZZLE"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="8.5sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="Water Sort"
+                        android:textColor="@color/text_color"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="50 daraja saralash"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="10sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="@font/chakra_petch"
+                        android:text="O'ynash ›"
+                        android:textColor="@color/accent_cyan"
+                        android:textSize="10.5sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
 
-                <LinearLayout android:id="@+id/rec2048" style="@style/RecCard" android:layout_marginStart="12dp">
-                    <View style="@style/RecCardTop" android:background="#0284C7" />
-                    <TextView style="@style/RecCardGlyph" android:text="🔢" />
-                    <TextView style="@style/RecCardName" android:text="2048 Classic" />
-                    <TextView style="@style/RecCardMeta" android:text="Cheksiz rejim" />
+                <!-- 2048 -->
+                <LinearLayout android:id="@+id/rec2048" style="@style/RecCard" android:layout_marginStart="10dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="38dp"
+                            android:layout_height="38dp"
+                            android:background="@drawable/bg_icon_tile"
+                            android:gravity="center"
+                            android:text="🔢"
+                            android:textSize="18sp" />
+                        <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_pill_gold"
+                            android:fontFamily="@font/chakra_petch"
+                            android:paddingHorizontal="6dp"
+                            android:paddingVertical="2dp"
+                            android:text="LOGIC"
+                            android:textColor="@color/pill_gold_text"
+                            android:textSize="8.5sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="2048 Classic"
+                        android:textColor="@color/text_color"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Raqamlar jangi"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="10sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="@font/chakra_petch"
+                        android:text="O'ynash ›"
+                        android:textColor="@color/accent_cyan"
+                        android:textSize="10.5sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
 
-                <LinearLayout android:id="@+id/recGomoku" style="@style/RecCard" android:layout_marginStart="12dp">
-                    <View style="@style/RecCardTop" android:background="#475569" />
-                    <TextView style="@style/RecCardGlyph" android:text="⚫" />
-                    <TextView style="@style/RecCardName" android:text="Gomoku" />
-                    <TextView style="@style/RecCardMeta" android:text="5 tosh qatorda · AI" />
+                <!-- Gomoku -->
+                <LinearLayout android:id="@+id/recGomoku" style="@style/RecCard" android:layout_marginStart="10dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="38dp"
+                            android:layout_height="38dp"
+                            android:background="@drawable/bg_icon_tile"
+                            android:gravity="center"
+                            android:text="⚫"
+                            android:textSize="18sp" />
+                        <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_pill_cyan"
+                            android:fontFamily="@font/chakra_petch"
+                            android:paddingHorizontal="6dp"
+                            android:paddingVertical="2dp"
+                            android:text="1V1"
+                            android:textColor="@color/accent_cyan"
+                            android:textSize="8.5sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="Gomoku"
+                        android:textColor="@color/text_color"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="5 qatorda · AI"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="10sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="@font/chakra_petch"
+                        android:text="O'ynash ›"
+                        android:textColor="@color/accent_cyan"
+                        android:textSize="10.5sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
             </LinearLayout>
         </HorizontalScrollView>

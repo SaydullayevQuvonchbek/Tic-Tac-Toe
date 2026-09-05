@@ -9,7 +9,9 @@ import com.example.tictactoe.network.LeaderboardPlayer
 
 class LeaderboardAdapter(
     private var players: List<LeaderboardPlayer>,
-    private var currentUsername: String = ""
+    private var currentUsername: String = "",
+    private var showChallenge: Boolean = false,
+    private var onChallengeClicked: ((LeaderboardPlayer) -> Unit)? = null
 ) : RecyclerView.Adapter<LeaderboardAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -19,6 +21,7 @@ class LeaderboardAdapter(
         val tvYouBadge: TextView = view.findViewById(R.id.tvYouBadge)
         val tvLevel: TextView = view.findViewById(R.id.tvLevel)
         val tvXpWins: TextView = view.findViewById(R.id.tvXpWins)
+        val btnChallenge: TextView = view.findViewById(R.id.btnChallenge)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -37,13 +40,29 @@ class LeaderboardAdapter(
         holder.tvYouBadge.visibility = if (isMe) View.VISIBLE else View.GONE
         holder.tvLevel.text = "LVL ${player.level}"
         holder.tvXpWins.text = "${player.xp} XP • ${player.wins} Wins"
+
+        if (showChallenge && !isMe) {
+            holder.btnChallenge.visibility = View.VISIBLE
+            holder.btnChallenge.setOnClickListener {
+                onChallengeClicked?.invoke(player)
+            }
+        } else {
+            holder.btnChallenge.visibility = View.GONE
+        }
     }
 
     override fun getItemCount() = players.size
 
-    fun updateData(newPlayers: List<LeaderboardPlayer>, myUsername: String = currentUsername) {
+    fun updateData(
+        newPlayers: List<LeaderboardPlayer>,
+        myUsername: String = currentUsername,
+        showChallengeButton: Boolean = false,
+        onChallenge: ((LeaderboardPlayer) -> Unit)? = null
+    ) {
         players = newPlayers
         currentUsername = myUsername
+        showChallenge = showChallengeButton
+        onChallengeClicked = onChallenge
         notifyDataSetChanged()
     }
 

@@ -1,12 +1,13 @@
 package com.example.tictactoe
 
+import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.Button
@@ -15,15 +16,24 @@ import android.widget.TextView
 import com.example.tictactoe.network.ApiClient
 import com.example.tictactoe.network.MatchmakingRequest
 import com.example.tictactoe.network.MatchmakingResponse
-import com.example.tictactoe.network.RoomCreateRequest
-import com.example.tictactoe.network.RoomCreateResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 object MatchmakingHelper {
 
-    private val BOT_NAMES = listOf("Sardor_Pro", "Shohjahon_77", "Alex_King", "Dilshod_99", "Elena_Chess", "Bekzod_Gamer", "Ulugbek_UZ")
+    fun getGameTitle(gameType: String): String {
+        return when (gameType.lowercase()) {
+            "tictactoe", "tic_tac_toe" -> "Tic Tac Toe"
+            "chess" -> "Shaxmat"
+            "checkers" -> "Shashka"
+            "connect4" -> "Connect 4"
+            "gomoku" -> "Gomoku"
+            "dots_and_boxes" -> "Dots & Boxes"
+            "durak" -> "Durak"
+            else -> gameType.replace("_", " ").capitalize()
+        }
+    }
 
     fun startQuickMatch(
         context: Context,
@@ -31,6 +41,9 @@ object MatchmakingHelper {
         boardSize: Int = 3,
         onMatched: (roomCode: String, isHost: Boolean, opponentName: String, isBot: Boolean) -> Unit
     ) {
+        val activity = context as? Activity
+        if (activity != null && (activity.isFinishing || activity.isDestroyed)) return
+
         val dialog = Dialog(context).apply {
             requestWindowFeature(Window.FEATURE_NO_TITLE)
             setContentView(R.layout.dialog_quick_match)
@@ -39,130 +52,124 @@ object MatchmakingHelper {
             setCancelable(false)
         }
 
+        val pbMatch = dialog.findViewById<ProgressBar>(R.id.pbMatch)
         val tvStatus = dialog.findViewById<TextView>(R.id.tvMatchStatus)
         val tvSub = dialog.findViewById<TextView>(R.id.tvMatchSub)
+        val layoutNotFound = dialog.findViewById<View>(R.id.layoutNotFoundActions)
+        val btnPlayWithBot = dialog.findViewById<TextView>(R.id.btnPlayWithBot)
+        val btnRetryMatch = dialog.findViewById<TextView>(R.id.btnRetryMatch)
         val btnCancel = dialog.findViewById<Button>(R.id.btnCancelMatch)
 
         var isCancelled = false
         val handler = Handler(Looper.getMainLooper())
+        val gameTitle = getGameTitle(gameType)
+
+        fun dismissSafe() {
+            val act = context as? Activity
+            if (act == null || (!act.isFinishing && !act.isDestroyed)) {
+                try { dialog.dismiss() } catch (_: Exception) {}
+            }
+        }
 
         btnCancel.setOnClickListener {
             isCancelled = true
             handler.removeCallbacksAndMessages(null)
-            val act = context as? android.app.Activity
-            if (act != null && (act.isFinishing || act.isDestroyed)) return@setOnClickListener
-            try { dialog.dismiss() } catch (e: Exception) {}
+            dismissSafe()
         }
 
-        val activity = context as? android.app.Activity
-        if (activity != null && (activity.isFinishing || activity.isDestroyed)) return
+        btnPlayWithBot.setOnClickListener {
+            isCancelled = true
+            handler.removeCallbacksAndMessages(null)
+            dismissSafe()
+            HapticHelper.performClick(context)
+            onMatched("BOT_${(1000..9999).random()}", true, "AI Bot", true)
+        }
+
+        fun showNoOpponentState() {
+            if (isCancelled) return
+            pbMatch.visibility = View.GONE
+            tvStatus.text = "🔍 Raqib topilmadi"
+            tvSub.text = "Hozircha $gameTitle bo'yicha faol onlayn o'yinchi yo'q.\nSun'iy intellekt (Bot) bilan kuch sinashasizmi?"
+            layoutNotFound.visibility = View.VISIBLE
+            btnPlayWithBot.text = "🤖 $gameTitle BOT BILAN O'YNASH"
+            btnCancel.text = "Bekor qilish"
+        }
+
+        fun executeSearch() {
+            pbMatch.visibility = View.VISIBLE
+            layoutNotFound.visibility = View.GONE
+            tvStatus.text = "⚡ Raqib qidirilmoqda..."
+            tvSub.text = "$gameTitle lobbisida o'yinchilar qidirilmoqda..."
+            btnCancel.text = "Bekor qilish"
+
+            val sharedPref = context.getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+            val userId = sharedPref.getInt("user_id", -1)
+
+            var searchCompleted = false
+
+            // Timeout: if no real opponent responds within 5.5 seconds, show "No Opponent"
+            handler.postDelayed({
+                if (!isCancelled && !searchCompleted) {
+                    searchCompleted = true
+                    showNoOpponentState()
+                }
+            }, 5500)
+
+            ApiClient.instance.findMatch(MatchmakingRequest(userId, gameType))
+                .enqueue(object : Callback<MatchmakingResponse> {
+                    override fun onResponse(call: Call<MatchmakingResponse>, response: Response<MatchmakingResponse>) {
+                        if (isCancelled || searchCompleted) return
+
+                        val body = response.body()
+                        val hasRealOpponent = response.isSuccessful &&
+                                body != null &&
+                                body.status == "success" &&
+                                !body.room_code.isNullOrEmpty() &&
+                                body.opponent != null
+
+                        if (hasRealOpponent) {
+                            searchCompleted = true
+                            handler.removeCallbacksAndMessages(null)
+                            val roomCode = body?.room_code ?: ""
+                            val isHost = body?.is_host ?: true
+                            val oppName = body?.opponent?.username ?: "Player 2"
+
+                            tvStatus.text = "🎉 Raqib topildi!"
+                            tvSub.text = "Raqib: $oppName (Ulanmoqda...)"
+                            HapticHelper.performHeavyImpact(context)
+                            SoundHelper.playRewardSound(context)
+
+                            handler.postDelayed({
+                                if (!isCancelled) {
+                                    dismissSafe()
+                                    onMatched(roomCode, isHost, oppName, false)
+                                }
+                            }, 1200)
+                        } else {
+                            // No real opponent found immediately
+                            searchCompleted = true
+                            handler.removeCallbacksAndMessages(null)
+                            showNoOpponentState()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<MatchmakingResponse>, t: Throwable) {
+                        if (isCancelled || searchCompleted) return
+                        searchCompleted = true
+                        handler.removeCallbacksAndMessages(null)
+                        showNoOpponentState()
+                    }
+                })
+        }
+
+        btnRetryMatch.setOnClickListener {
+            HapticHelper.performClick(context)
+            executeSearch()
+        }
+
         dialog.show()
         HapticHelper.performClick(context)
         SoundHelper.playMoveSound(context)
-
-        val sharedPref = context.getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
-        val userId = sharedPref.getInt("user_id", -1)
-
-        tvStatus.text = "⚡ Searching for Opponent..."
-        tvSub.text = "Scanning online lobby for $gameType..."
-
-        // 1. Call server Matchmaking API
-        ApiClient.instance.findMatch(MatchmakingRequest(userId, gameType))
-            .enqueue(object : Callback<MatchmakingResponse> {
-                override fun onResponse(call: Call<MatchmakingResponse>, response: Response<MatchmakingResponse>) {
-                    if (isCancelled) return
-
-                    if (response.isSuccessful && response.body() != null) {
-                        val body = response.body()!!
-                        val roomCode = body.room_code ?: ""
-                        val isHost = body.is_host ?: true
-                        val oppName = body.opponent?.username ?: BOT_NAMES.random()
-
-                        tvStatus.text = "🎉 Match Found!"
-                        tvSub.text = "Opponent: $oppName (Connecting...)"
-                        HapticHelper.performHeavyImpact(context)
-                        SoundHelper.playRewardSound(context)
-
-                        handler.postDelayed({
-                            if (!isCancelled) {
-                                val act = context as? android.app.Activity
-                                if (act == null || (!act.isFinishing && !act.isDestroyed)) {
-                                    try { dialog.dismiss() } catch (e: Exception) {}
-                                }
-                                onMatched(roomCode, isHost, oppName, false)
-                            }
-                        }, 1200)
-                    } else {
-                        // Fallback to fast room match simulation
-                        fallbackMatch(context, gameType, boardSize, userId, dialog, tvStatus, tvSub, handler, isCancelled, onMatched)
-                    }
-                }
-
-                override fun onFailure(call: Call<MatchmakingResponse>, t: Throwable) {
-                    if (isCancelled) return
-                    fallbackMatch(context, gameType, boardSize, userId, dialog, tvStatus, tvSub, handler, isCancelled, onMatched)
-                }
-            })
-    }
-
-    private fun fallbackMatch(
-        context: Context,
-        gameType: String,
-        boardSize: Int,
-        userId: Int,
-        dialog: Dialog,
-        tvStatus: TextView,
-        tvSub: TextView,
-        handler: Handler,
-        isCancelled: Boolean,
-        onMatched: (roomCode: String, isHost: Boolean, opponentName: String, isBot: Boolean) -> Unit
-    ) {
-        if (isCancelled) return
-
-        // Create standard room on server
-        ApiClient.instance.createRoom(RoomCreateRequest(userId, boardSize, false, gameType))
-            .enqueue(object : Callback<RoomCreateResponse> {
-                override fun onResponse(call: Call<RoomCreateResponse>, response: Response<RoomCreateResponse>) {
-                    if (isCancelled) return
-                    val roomCode = if (response.isSuccessful) response.body()?.room_code ?: "QM${(1000..9999).random()}" else "QM${(1000..9999).random()}"
-                    val oppName = BOT_NAMES.random()
-
-                    tvStatus.text = "🎉 Match Found!"
-                    tvSub.text = "Opponent: $oppName (Entering arena...)"
-                    HapticHelper.performHeavyImpact(context)
-                    SoundHelper.playRewardSound(context)
-
-                    handler.postDelayed({
-                        if (!isCancelled) {
-                            val act = context as? android.app.Activity
-                            if (act == null || (!act.isFinishing && !act.isDestroyed)) {
-                                try { dialog.dismiss() } catch (e: Exception) {}
-                            }
-                            onMatched(roomCode, true, oppName, true)
-                        }
-                    }, 1400)
-                }
-
-                override fun onFailure(call: Call<RoomCreateResponse>, t: Throwable) {
-                    if (isCancelled) return
-                    val roomCode = "QM${(1000..9999).random()}"
-                    val oppName = BOT_NAMES.random()
-
-                    tvStatus.text = "🎉 Match Found!"
-                    tvSub.text = "Opponent: $oppName (Entering arena...)"
-                    HapticHelper.performHeavyImpact(context)
-                    SoundHelper.playRewardSound(context)
-
-                    handler.postDelayed({
-                        if (!isCancelled) {
-                            val act = context as? android.app.Activity
-                            if (act == null || (!act.isFinishing && !act.isDestroyed)) {
-                                try { dialog.dismiss() } catch (e: Exception) {}
-                            }
-                            onMatched(roomCode, true, oppName, true)
-                        }
-                    }, 1400)
-                }
-            })
+        executeSearch()
     }
 }

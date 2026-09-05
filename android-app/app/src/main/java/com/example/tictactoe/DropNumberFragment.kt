@@ -118,6 +118,7 @@ class DropNumberFragment : Fragment() {
             .putInt("xp", curXp)
             .apply()
 
+        GameEconomyManager.recordGamePlay(requireContext(), "drop_number")
         QuestManager.recordGamePlayed(requireContext(), "drop_number", false, true)
 
         AlertDialog.Builder(requireContext())

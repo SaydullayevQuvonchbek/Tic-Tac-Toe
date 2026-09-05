@@ -71,45 +71,13 @@
     </style>
 
     <style name="RecCard">
-        <item name="android:layout_width">160dp</item>
+        <item name="android:layout_width">138dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">vertical</item>
-        <item name="android:background">@drawable/bg_arena_card</item>
-        <item name="android:paddingBottom">12dp</item>
+        <item name="android:background">@drawable/bg_arena_card_sm</item>
+        <item name="android:padding">12dp</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
-    </style>
-
-    <style name="RecCardTop">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">72dp</item>
-    </style>
-
-    <style name="RecCardGlyph">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">12dp</item>
-        <item name="android:layout_marginTop">8dp</item>
-        <item name="android:textSize">22sp</item>
-    </style>
-
-    <style name="RecCardName">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">12dp</item>
-        <item name="android:layout_marginTop">8dp</item>
-        <item name="android:textColor">@color/text_color</item>
-        <item name="android:textSize">13sp</item>
-        <item name="android:textStyle">bold</item>
-    </style>
-
-    <style name="RecCardMeta">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">12dp</item>
-        <item name="android:layout_marginTop">3dp</item>
-        <item name="android:textColor">@color/text_secondary</item>
-        <item name="android:textSize">10.5sp</item>
     </style>
 
     <style name="GameRow">

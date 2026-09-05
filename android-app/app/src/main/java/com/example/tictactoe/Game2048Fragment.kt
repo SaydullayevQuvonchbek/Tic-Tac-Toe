@@ -317,6 +317,11 @@ class Game2048Fragment : Fragment() {
             sharedPref.edit().putInt("game_2048_high_score", score).apply()
         }
 
+        val coinsEarned = (score / 100).coerceIn(10, 80)
+        GameEconomyManager.addCoins(requireContext(), coinsEarned)
+        GameEconomyManager.recordGamePlay(requireContext(), "game_2048")
+        QuestManager.recordGamePlayed(requireContext(), "2048", false, score >= 400)
+
         if (userId != -1 && score > 0) {
             val safeContext = context
             val pd = safeContext?.let {

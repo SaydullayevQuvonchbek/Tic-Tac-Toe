@@ -20,4 +20,7 @@ object LevelHelper {
     /** Progress through the current level as a 0..100 percentage. */
     fun levelProgressPercent(xp: Int, level: Int): Int =
         (xpIntoLevel(xp, level) * 100 / XP_PER_LEVEL).coerceIn(0, 100)
+
+    /** Calculate level based on total XP (level 1 starts at 0 XP). */
+    fun levelForXp(xp: Int): Int = (xp.coerceAtLeast(0) / XP_PER_LEVEL) + 1
 }

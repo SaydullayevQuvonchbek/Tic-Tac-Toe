@@ -342,8 +342,24 @@ class GomokuFragment : Fragment() {
                 })
         }
 
+        val isDraw = (logic.winner == 0)
+        val resultType = when {
+            isDraw -> GameEconomyManager.GameResult.DRAW
+            isUserWinner -> GameEconomyManager.GameResult.WIN
+            else -> GameEconomyManager.GameResult.LOSS
+        }
+        val reward = GameEconomyManager.rewardMatchResult(
+            context = requireContext(),
+            gameKey = "gomoku",
+            isOnline = isOnlineMode,
+            result = resultType
+        )
+
         val bundle = Bundle().apply {
             putString("gameType", "gomoku")
+            putInt("xpEarned", reward.xpEarned)
+            putInt("coinsEarned", reward.coinsEarned)
+            putBoolean("rewardProcessed", true)
             val winMsg = if (isOnlineMode) {
                 if (logic.winner == myPlayerNumber) "You Won (5 in a Row)! 🎉" else if (logic.winner == 0) "It's a Draw!" else "You Lost!"
             } else if (isAiMode) {
@@ -352,7 +368,7 @@ class GomokuFragment : Fragment() {
                 if (logic.winner == 1) "Player 1 (Black) Wins!" else if (logic.winner == 2) "Player 2 (White) Wins!" else "It's a Draw!"
             }
             putString("resultMessage", winMsg)
-            putBoolean("isDraw", logic.winner == 0)
+            putBoolean("isDraw", isDraw)
             putBoolean("userWon", isUserWinner)
             putBoolean("isUserWin", isUserWinner)
             putBoolean("isAiMode", isAiMode)

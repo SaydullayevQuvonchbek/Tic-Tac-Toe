@@ -403,17 +403,28 @@ class CheckersFragment : Fragment() {
 
         val isUserWin = (isOnlineMode && ((isHost && logic.winner == 1) || (!isHost && logic.winner == 2))) ||
                 (!isOnlineMode && logic.winner == 1)
+        val isDraw = (logic.winner == 0)
 
         if (isUserWin) {
             val currentWins = sharedPref.getInt("checkers_wins", 0)
             sharedPref.edit().putInt("checkers_wins", currentWins + 1).apply()
         }
 
-        QuestManager.recordGamePlayed(requireContext(), "checkers", isOnlineMode, isUserWin)
+        val resultType = when {
+            isDraw -> GameEconomyManager.GameResult.DRAW
+            isUserWin -> GameEconomyManager.GameResult.WIN
+            else -> GameEconomyManager.GameResult.LOSS
+        }
+        val reward = GameEconomyManager.rewardMatchResult(
+            context = requireContext(),
+            gameKey = "checkers",
+            isOnline = isOnlineMode,
+            result = resultType
+        )
 
         val resultBundle = Bundle().apply {
             putString("resultMessage", if (logic.winner == 0) "Draw!" else "$winnerName Won!")
-            putBoolean("isDraw", logic.winner == 0)
+            putBoolean("isDraw", isDraw)
             putBoolean("userWon", isUserWin)
             putBoolean("isUserWin", isUserWin)
             putBoolean("isOnlineMode", isOnlineMode)
@@ -422,6 +433,9 @@ class CheckersFragment : Fragment() {
             putString("gameType", "checkers")
             putBoolean("isAiMode", isAiMode)
             putInt("boardSize", currentBoardSize)
+            putInt("xpEarned", reward.xpEarned)
+            putInt("coinsEarned", reward.coinsEarned)
+            putBoolean("rewardProcessed", true)
         }
 
         findNavController().navigate(R.id.action_checkersFragment_to_resultFragment, resultBundle)

@@ -511,31 +511,25 @@ class GameFragment : Fragment() {
 
         val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", android.content.Context.MODE_PRIVATE)
         val isUserWinner = if (isOnlineMode) winner == myOnlineSymbol else (username.isNotEmpty() && winner == arguments?.getString("startingPlayer")) || (!isAiMode && winner == "X") || (isAiMode && winner == "X")
-        var earnedXp = 0
-        var earnedCoins = 0
-        if (winner != "Draw" && isUserWinner) {
-            val currentWins = sharedPref.getInt("wins", 0) + 1
-            val addCoins = if (isOnlineMode) 50 else 20
-            val addXp = if (isOnlineMode) 100 else 50
-            earnedXp = addXp
-            earnedCoins = addCoins
-            val currentCoins = sharedPref.getInt("coins", 0) + addCoins
-            val currentXp = sharedPref.getInt("xp", 0) + addXp
-            sharedPref.edit()
-                .putInt("wins", currentWins)
-                .putInt("coins", currentCoins)
-                .putInt("xp", currentXp)
-                .apply()
-
-            QuestManager.recordGamePlayed(requireContext(), "tic_tac_toe", isOnlineMode, true)
-        } else {
-            QuestManager.recordGamePlayed(requireContext(), "tic_tac_toe", isOnlineMode, false)
+        val isDraw = (winner == "Draw")
+        val resultType = when {
+            isDraw -> GameEconomyManager.GameResult.DRAW
+            isUserWinner -> GameEconomyManager.GameResult.WIN
+            else -> GameEconomyManager.GameResult.LOSS
         }
 
+        val reward = GameEconomyManager.rewardMatchResult(
+            context = requireContext(),
+            gameKey = "tictactoe",
+            isOnline = isOnlineMode,
+            result = resultType
+        )
+
         val bundle = Bundle().apply {
-            putString("gameType", "tic_tac_toe")
-            putInt("xpEarned", earnedXp)
-            putInt("coinsEarned", earnedCoins)
+            putString("gameType", "tictactoe")
+            putInt("xpEarned", reward.xpEarned)
+            putInt("coinsEarned", reward.coinsEarned)
+            putBoolean("rewardProcessed", true)
             if (winner == "Draw") {
                 putString("resultMessage", "It's a Draw!")
                 putBoolean("isDraw", true)

@@ -254,32 +254,51 @@ class ResultFragment : Fragment() {
     }
 
     private fun populateStats(isDraw: Boolean, userWon: Boolean) {
+        val rewardAlreadyProcessed = arguments?.getBoolean("rewardProcessed", false) ?: false
+        val customCoins = arguments?.getInt("coinsEarned", Int.MIN_VALUE) ?: Int.MIN_VALUE
+        val customXp = arguments?.getInt("xpEarned", Int.MIN_VALUE) ?: Int.MIN_VALUE
+
+        val resultType = when {
+            isDraw -> GameEconomyManager.GameResult.DRAW
+            userWon -> GameEconomyManager.GameResult.WIN
+            else -> GameEconomyManager.GameResult.LOSS
+        }
+
+        val reward = if (!rewardAlreadyProcessed) {
+            GameEconomyManager.rewardMatchResult(
+                context = requireContext(),
+                gameKey = gameType,
+                isOnline = isOnlineMode,
+                result = resultType,
+                customCoins = if (customCoins != Int.MIN_VALUE) customCoins else -1,
+                customXp = if (customXp != Int.MIN_VALUE) customXp else -1
+            )
+        } else {
+            val prefs = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+            val xp = prefs.getInt("xp", 0)
+            val coins = prefs.getInt("coins", 0)
+            val level = prefs.getInt("level", 1)
+            val c = if (customCoins != Int.MIN_VALUE) customCoins else if (userWon) 25 else 0
+            val x = if (customXp != Int.MIN_VALUE) customXp else if (userWon) 50 else 0
+            GameEconomyManager.RewardResult(c, x, coins, xp, level, false)
+        }
+
         val prefs = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
-        val xp = prefs.getInt("xp", 0)
-        val level = prefs.getInt("level", 1)
         val streak = prefs.getInt("streak_count", 0)
+        val level = reward.newLevel
+        val xp = reward.newTotalXp
 
-        val xpEarned = arguments?.getInt("xpEarned", Int.MIN_VALUE) ?: Int.MIN_VALUE
-        val coinsEarned = arguments?.getInt("coinsEarned", Int.MIN_VALUE) ?: Int.MIN_VALUE
-
-        val xpVal = if (xpEarned != Int.MIN_VALUE) xpEarned else when {
-            isDraw -> 10
-            userWon -> if (isOnlineMode) 100 else 50
-            else -> -5
-        }
-        val coinVal = if (coinsEarned != Int.MIN_VALUE) coinsEarned else when {
-            isDraw -> 5
-            userWon -> if (isOnlineMode) 50 else 20
-            else -> 0
-        }
-
-        binding.tvStatXp.text = if (xpVal >= 0) "+$xpVal" else "$xpVal"
-        binding.tvStatCoins.text = "+$coinVal"
+        binding.tvStatXp.text = if (reward.xpEarned >= 0) "+${reward.xpEarned}" else "${reward.xpEarned}"
+        binding.tvStatCoins.text = "+${reward.coinsEarned}"
         binding.tvStatStreak.text = "🔥 $streak"
 
         binding.tvLevelRange.text = "LEVEL $level → ${level + 1}"
         binding.tvLevelXp.text = "${LevelHelper.xpIntoLevel(xp, level)}/${LevelHelper.XP_PER_LEVEL} XP"
         binding.pbLevel.progress = LevelHelper.levelProgressPercent(xp, level)
+
+        if (reward.leveledUp) {
+            Toast.makeText(context, "🎉 LEVEL UP! Level $level!", Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun shareResult() {

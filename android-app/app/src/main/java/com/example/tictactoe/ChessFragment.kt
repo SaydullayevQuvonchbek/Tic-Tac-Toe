@@ -102,6 +102,21 @@ class ChessFragment : Fragment() {
                 handleBackNavigation()
             }
         })
+
+        val isDirectLaunch = arguments?.getBoolean("isRematch", false) ?: arguments?.getBoolean("isDirectLaunch", false) ?: false
+        if (isDirectLaunch) {
+            isOnlineMode = arguments?.getBoolean("isOnlineMode", false) ?: false
+            isAiMode = arguments?.getBoolean("isAiMode", false) ?: false
+            roomCode = arguments?.getString("roomCode", "") ?: ""
+            isHost = arguments?.getBoolean("isHost", false) ?: false
+            myColor = if (isHost) PieceColor.WHITE else PieceColor.BLACK
+            if (isOnlineMode && roomCode.isNotEmpty()) {
+                subscribePusherEvents()
+                startOnlineGame()
+            } else {
+                startLocalGame()
+            }
+        }
     }
 
     private fun setupUI() {
@@ -813,6 +828,20 @@ class ChessFragment : Fragment() {
         val userWon = (logic.winner == myColor)
         val isDraw = logic.isDraw
 
+        val resultType = when {
+            isDraw -> GameEconomyManager.GameResult.DRAW
+            userWon -> GameEconomyManager.GameResult.WIN
+            else -> GameEconomyManager.GameResult.LOSS
+        }
+        val reward = GameEconomyManager.rewardMatchResult(
+            context = requireContext(),
+            gameKey = "chess",
+            isOnline = isOnlineMode,
+            result = resultType,
+            customCoins = if (userWon) 50 else if (isDraw) 20 else 10,
+            customXp = if (userWon) 100 else if (isDraw) 40 else 20
+        )
+
         if (userWon) {
             ConfettiView.show(binding.root as ViewGroup)
             HapticHelper.performVictory(requireContext())
@@ -820,16 +849,8 @@ class ChessFragment : Fragment() {
 
             val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
             val curWins = sharedPref.getInt("chess_wins", 0) + 1
-            val curCoins = sharedPref.getInt("coins", 0) + 100
-            val curXp = sharedPref.getInt("xp", 0) + 200
-            sharedPref.edit()
-                .putInt("chess_wins", curWins)
-                .putInt("coins", curCoins)
-                .putInt("xp", curXp)
-                .apply()
+            sharedPref.edit().putInt("chess_wins", curWins).apply()
         }
-
-        QuestManager.recordGamePlayed(requireContext(), "chess", isOnlineMode, userWon)
 
         val title = when {
             isDraw -> "🤝 Durrang (Pat)!"
@@ -837,9 +858,9 @@ class ChessFragment : Fragment() {
             else -> "💀 MAG'LUBIYAT (Mot bo'ldingiz)!"
         }
         val msg = when {
-            userWon -> "Tabriklaymiz! Raqib shohini mot qildingiz!\n\nMukofot: +100 🪙 | +200 XP ⚡"
-            isDraw -> "O'yin durrang bilan yakunlandi!"
-            else -> "Afsuski, shohingiz mot qilindi!"
+            userWon -> "Tabriklaymiz! Raqib shohini mot qildingiz!\n\nMukofot: +${reward.coinsEarned} 🪙 | +${reward.xpEarned} XP ⚡"
+            isDraw -> "O'yin durrang bilan yakunlandi!\n\nMukofot: +${reward.coinsEarned} 🪙 | +${reward.xpEarned} XP ⚡"
+            else -> "Afsuski, shohingiz mot qilindi!\n\nRag'bat: +${reward.coinsEarned} 🪙 | +${reward.xpEarned} XP ⚡"
         }
 
         AlertDialog.Builder(requireContext())
