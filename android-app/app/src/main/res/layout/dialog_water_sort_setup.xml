@@ -4,13 +4,13 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="24dp"
-    android:background="#1E293B">
+    android:background="@color/card_background">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="🧪 Water Sort Setup 💧"
-        android:textColor="@color/white"
+        android:textColor="@color/text_color"
         android:textSize="20sp"
         android:textStyle="bold"
         android:layout_marginBottom="16dp"/>
@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Select Difficulty:"
-        android:textColor="#94A3B8"
+        android:textColor="@color/text_secondary"
         android:textSize="14sp"
         android:layout_marginBottom="12dp"/>
 
@@ -35,7 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="🟢 Easy (3 Colors - 5 Tubes)"
-            android:textColor="@color/white"
+            android:textColor="@color/text_color"
             android:textSize="16sp"
             android:padding="8dp"
             android:checked="true"/>
@@ -45,7 +45,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="🟡 Medium (5 Colors - 7 Tubes)"
-            android:textColor="@color/white"
+            android:textColor="@color/text_color"
             android:textSize="16sp"
             android:padding="8dp"/>
 
@@ -54,7 +54,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="🔴 Hard (7 Colors - 9 Tubes)"
-            android:textColor="@color/white"
+            android:textColor="@color/text_color"
             android:textSize="16sp"
             android:padding="8dp"/>
     </RadioGroup>
@@ -74,8 +74,8 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:text="BACK TO MENU"
-        android:backgroundTint="#334155"
-        android:textColor="#94A3B8"
+        android:backgroundTint="@color/card_surface"
+        android:textColor="@color/text_secondary"
         android:layout_marginTop="8dp"
         android:textStyle="bold"
         android:textSize="14sp"/>

@@ -4,13 +4,13 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="24dp"
-    android:background="#1E293B">
+    android:background="@color/card_background">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="🔴 Connect 4 Setup 🟡"
-        android:textColor="@color/white"
+        android:textColor="@color/text_color"
         android:textSize="20sp"
         android:textStyle="bold"
         android:layout_marginBottom="16dp"/>
@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Select Game Mode:"
-        android:textColor="#94A3B8"
+        android:textColor="@color/text_secondary"
         android:textSize="14sp"
         android:layout_marginBottom="12dp"/>
 
@@ -35,7 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="🤖 Play vs AI (Bot)"
-            android:textColor="@color/white"
+            android:textColor="@color/text_color"
             android:textSize="16sp"
             android:padding="8dp"
             android:checked="true"/>
@@ -45,7 +45,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="👥 2 Players (Pass &amp; Play)"
-            android:textColor="@color/white"
+            android:textColor="@color/text_color"
             android:textSize="16sp"
             android:padding="8dp"/>
 
@@ -54,7 +54,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="🌐 Create Online Room (Host)"
-            android:textColor="@color/white"
+            android:textColor="@color/text_color"
             android:textSize="16sp"
             android:padding="8dp"/>
 
@@ -63,7 +63,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="🔗 Join Online Room (Enter Code)"
-            android:textColor="@color/white"
+            android:textColor="@color/text_color"
             android:textSize="16sp"
             android:padding="8dp"/>
     </RadioGroup>
@@ -81,10 +81,10 @@
             android:id="@+id/etRoomCode"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:background="#334155"
+            android:background="@drawable/bg_leaderboard_item"
             android:hint="Enter 4-letter Room Code"
-            android:textColorHint="#64748B"
-            android:textColor="@color/white"
+            android:textColorHint="@color/text_muted"
+            android:textColor="@color/text_color"
             android:textAllCaps="true"
             android:gravity="center"
             android:textSize="18sp"

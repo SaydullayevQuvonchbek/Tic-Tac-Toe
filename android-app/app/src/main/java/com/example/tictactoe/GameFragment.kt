@@ -1,11 +1,13 @@
 package com.example.tictactoe
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.tictactoe.databinding.FragmentGameBinding
@@ -117,9 +119,11 @@ class GameFragment : Fragment() {
                 params.setMargins(marginPx, marginPx, marginPx, marginPx)
                 button.layoutParams = params
 
-                button.backgroundTintList = android.content.res.ColorStateList.valueOf(0xFFF5F5F5.toInt())
+                val cellBg = ContextCompat.getColor(requireContext(), R.color.card_surface)
+                val textColor = ContextCompat.getColor(requireContext(), R.color.text_color)
+                button.backgroundTintList = ColorStateList.valueOf(cellBg)
                 button.textSize = if (boardSize == 5) 24f else 36f
-                button.setTextColor(0xFF333333.toInt()) // Default text color
+                button.setTextColor(textColor)
 
                 button.setOnClickListener { onCellClicked(r, c) }
                 gridLayout.addView(button)
@@ -421,22 +425,27 @@ class GameFragment : Fragment() {
         val fadingMove = if (isInfinityMode) infinityGameLogic!!.getFadingMove() else null
         val winningLine = if (isInfinityMode) infinityGameLogic!!.winningLine else gameLogic!!.winningLine
 
+        val cellBg = ContextCompat.getColor(requireContext(), R.color.card_surface)
+        val colorX = ContextCompat.getColor(requireContext(), R.color.accent_blue)
+        val colorO = ContextCompat.getColor(requireContext(), R.color.accent_red)
+        val winBg = ContextCompat.getColor(requireContext(), R.color.accent_green)
+
         for (r in 0 until boardSize) {
             for (c in 0 until boardSize) {
                 val player = currentBoard[r][c]
                 val button = buttons[r][c]
                 button.text = player
                 if (player == "X") {
-                    button.setTextColor(0xFF556B2F.toInt())
+                    button.setTextColor(colorX)
                 } else if (player == "O") {
-                    button.setTextColor(0xFF8B0000.toInt())
+                    button.setTextColor(colorO)
                 }
                 
                 // Highlight winning line
                 if (winningLine != null && winningLine.contains(Pair(r, c))) {
-                    button.backgroundTintList = android.content.res.ColorStateList.valueOf(0xFFC8E6C9.toInt()) // Light green
+                    button.backgroundTintList = ColorStateList.valueOf(winBg)
                 } else {
-                    button.backgroundTintList = android.content.res.ColorStateList.valueOf(0xFFF5F5F5.toInt())
+                    button.backgroundTintList = ColorStateList.valueOf(cellBg)
                 }
                 
                 // Animatsiya: O'chib ketuvchi toshni xiralashtirish

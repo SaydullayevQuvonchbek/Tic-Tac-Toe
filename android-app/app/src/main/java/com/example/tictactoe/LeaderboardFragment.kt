@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.tictactoe.databinding.FragmentLeaderboardBinding
@@ -230,8 +231,8 @@ class LeaderboardFragment : Fragment() {
         val input = EditText(requireContext()).apply {
             hint = "Foydalanuvchi nomi..."
             setPadding(40, 30, 40, 30)
-            setTextColor(Color.WHITE)
-            setHintTextColor(Color.GRAY)
+            setTextColor(ContextCompat.getColor(requireContext(), R.color.text_color))
+            setHintTextColor(ContextCompat.getColor(requireContext(), R.color.text_muted))
         }
 
         AlertDialog.Builder(requireContext())

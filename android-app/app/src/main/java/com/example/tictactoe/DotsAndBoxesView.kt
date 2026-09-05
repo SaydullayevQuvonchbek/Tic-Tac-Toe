@@ -10,6 +10,7 @@ import android.util.AttributeSet
 import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
 import android.view.View
+import androidx.core.content.ContextCompat
 import kotlin.math.abs
 import kotlin.math.hypot
 import kotlin.math.min
@@ -29,8 +30,8 @@ class DotsAndBoxesView @JvmOverloads constructor(
     var onEdgeSelectedListener: ((isVertical: Boolean, r: Int, c: Int) -> Unit)? = null
 
     // Colors
-    private val colorDot = Color.parseColor("#1E293B")
-    private val colorUnselected = Color.parseColor("#CBD5E1")
+    private val colorDot = ContextCompat.getColor(context, R.color.text_color)
+    private val colorUnselected = ContextCompat.getColor(context, R.color.border_color)
     private val colorP1 = Color.parseColor("#06B6D4") // Cyan
     private val colorP1Fill = Color.parseColor("#3306B6D4")
     private val colorP2 = Color.parseColor("#F59E0B") // Amber

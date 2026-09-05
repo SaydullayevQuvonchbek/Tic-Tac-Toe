@@ -268,11 +268,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:background="#E0F2FE"
+            android:background="@drawable/bg_leaderboard_item"
             android:paddingHorizontal="24dp"
             android:paddingVertical="10dp"
             android:text="ROOM: ABCD"
-            android:textColor="#0369A1"
+            android:textColor="@color/accent_cyan"
             android:textSize="24sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/btnInviteFriend"
@@ -427,7 +427,7 @@
                         android:ellipsize="end"
                         android:maxLines="1"
                         android:text="Bot"
-                        android:textColor="@color/white"
+                        android:textColor="@color/text_color"
                         android:textSize="13sp"
                         android:textStyle="bold" />
 
@@ -437,7 +437,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-black"
                         android:text="0"
-                        android:textColor="@color/white"
+                        android:textColor="@color/text_color"
                         android:textSize="26sp" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>

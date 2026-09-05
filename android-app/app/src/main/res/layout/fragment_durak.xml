@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#070A12">
+    android:background="@color/background_color">
 
     <!-- ========================================================= -->
     <!-- 1. SETUP SCREEN (Design 3d: Durak sozlash)                -->
@@ -13,7 +13,7 @@
         android:id="@+id/setupContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#070A12"
+        android:background="@color/background_color"
         android:visibility="visible">
 
         <!-- Top Header Navigation -->
@@ -35,7 +35,7 @@
                 android:fontFamily="sans-serif-black"
                 android:gravity="center"
                 android:text="‹"
-                android:textColor="#F2F5FF"
+                android:textColor="@color/text_color"
                 android:textSize="20sp" />
 
             <LinearLayout
@@ -52,7 +52,7 @@
                     android:fontFamily="sans-serif-black"
                     android:letterSpacing="0.04"
                     android:text="DURAK"
-                    android:textColor="#F2F5FF"
+                    android:textColor="@color/text_color"
                     android:textSize="18sp" />
 
                 <TextView
@@ -60,7 +60,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="1dp"
                     android:text="Podkidnoy · 36 karta"
-                    android:textColor="#8492B0"
+                    android:textColor="@color/text_secondary"
                     android:textSize="10.5sp" />
             </LinearLayout>
         </LinearLayout>
@@ -166,7 +166,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="8dp"
-                        android:background="@drawable/bg_durak_rules_card"
+                        android:background="@drawable/bg_arena_card_sm"
                         android:button="@null"
                         android:checked="true"
                         android:drawableStart="@drawable/ic_radio_state"
@@ -174,7 +174,7 @@
                         android:fontFamily="sans-serif-black"
                         android:padding="13dp"
                         android:text="⚡  Avto qidiruv\n1-tap · o'rtacha 8 soniya"
-                        android:textColor="#F2F5FF"
+                        android:textColor="@color/text_color"
                         android:textSize="12.5sp" />
 
                     <!-- 2. Bot bilan (Offline) -->
@@ -190,7 +190,7 @@
                         android:fontFamily="sans-serif-black"
                         android:padding="13dp"
                         android:text="🤖  Bot bilan (Offline)\nDurakAI · internetsiz"
-                        android:textColor="#F2F5FF"
+                        android:textColor="@color/text_color"
                         android:textSize="12.5sp" />
 
                     <!-- 3. Xona ochish -->
@@ -206,7 +206,7 @@
                         android:fontFamily="sans-serif-black"
                         android:padding="13dp"
                         android:text="👑  Xona ochish\nDo'stni kod bilan taklif qilish"
-                        android:textColor="#F2F5FF"
+                        android:textColor="@color/text_color"
                         android:textSize="12.5sp" />
 
                     <!-- 4. Kod orqali kirish -->
@@ -221,7 +221,7 @@
                         android:fontFamily="sans-serif-black"
                         android:padding="13dp"
                         android:text="🚪  Kod orqali kirish\n4-6 belgili xona kodi"
-                        android:textColor="#F2F5FF"
+                        android:textColor="@color/text_color"
                         android:textSize="12.5sp" />
                 </RadioGroup>
 
@@ -435,14 +435,14 @@
         android:id="@+id/waitingContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#070A12"
+        android:background="@color/background_color"
         android:padding="18dp"
         android:visibility="gone">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_durak_rules_card"
+            android:background="@drawable/bg_arena_card"
             android:gravity="center"
             android:orientation="vertical"
             android:padding="18dp"
@@ -456,7 +456,7 @@
                 android:fontFamily="sans-serif-black"
                 android:letterSpacing="0.14"
                 android:text="XONA YARATILDI"
-                android:textColor="#64748B"
+                android:textColor="@color/text_secondary"
                 android:textSize="10sp" />
 
             <!-- 4 Distinct Room Code Tiles (Design 3d: [ 7 ] [ K ] [ Q ] [ Z ]) -->
@@ -558,11 +558,11 @@
                     android:layout_height="40dp"
                     android:layout_marginEnd="4dp"
                     android:layout_weight="1"
-                    android:background="@drawable/bg_durak_top_btn"
+                    android:background="@drawable/bg_arena_card_sm"
                     android:fontFamily="sans-serif-black"
                     android:gravity="center"
                     android:text="📋 NUSXA"
-                    android:textColor="#CBD5E1"
+                    android:textColor="@color/text_color"
                     android:textSize="11sp" />
 
                 <TextView
@@ -617,7 +617,7 @@
                 android:id="@+id/btnGameplayBack"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:background="@drawable/bg_durak_top_btn"
+                android:background="@drawable/bg_durak_felt_btn"
                 android:fontFamily="sans-serif-black"
                 android:gravity="center"
                 android:text="‹"

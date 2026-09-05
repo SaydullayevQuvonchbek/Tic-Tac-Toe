@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FAF8EF"
+    android:background="@color/background_color"
     android:id="@+id/rootLayout">
 
     <LinearLayout
@@ -22,14 +22,14 @@
             android:layout_marginEnd="16dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/ic_menu_revert"
-            app:tint="#776E65" />
+            app:tint="@color/text_color" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:text="2048"
-            android:textColor="#776E65"
+            android:textColor="@color/text_color"
             android:textSize="48sp"
             android:textStyle="bold" />
 
@@ -65,7 +65,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Swipe to join the numbers!"
-        android:textColor="#776E65"
+        android:textColor="@color/text_secondary"
         android:textSize="16sp"
         android:layout_marginStart="24dp"
         app:layout_constraintStart_toStartOf="parent"
