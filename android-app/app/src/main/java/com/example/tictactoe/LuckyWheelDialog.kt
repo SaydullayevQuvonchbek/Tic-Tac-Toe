@@ -13,6 +13,7 @@ import android.widget.Toast
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import com.example.tictactoe.repository.EconomyRepository
 
 class LuckyWheelDialog(
     context: Context,
@@ -70,31 +71,45 @@ class LuckyWheelDialog(
             HapticHelper.performClick(context)
             SoundHelper.playRewardSound(context)
 
-            wheelView.startSpin { item ->
-                // Record free spin date
-                prefs.edit().putString("last_lucky_wheel_date", today).apply()
+            EconomyRepository.spinWheel { success, segment, label, coins, xp, newBalance, nextSpinAt, message ->
+                if (!success) {
+                    tvResult.text = message ?: "Xatolik yuz berdi"
+                    tvResult.setTextColor(Color.parseColor("#EF4444"))
+                    btnSpin.isEnabled = true
+                    btnClose.isEnabled = true
+                    return@spinWheel
+                }
 
-                // Award prize
-                val updatedCoins = prefs.getInt("coins", 0) + item.coinAmount
-                val updatedXp = prefs.getInt("xp", 0) + item.xpAmount
-                prefs.edit()
-                    .putInt("coins", updatedCoins)
-                    .putInt("xp", updatedXp)
-                    .apply()
+                val targetIndex = when (segment) {
+                    "COIN_50" -> 0
+                    "XP_100" -> 1
+                    "COIN_100" -> 2
+                    "XP_250" -> 3
+                    "MEGA_COIN_200" -> 4
+                    "PACKAGE_150" -> 5
+                    "JACKPOT_500" -> 6
+                    "BONUS_XP_150" -> 7
+                    else -> 0
+                }
 
-                tvResult.text = "🎉 TABRIKLAYMIZ: ${item.label} (${item.sublabel})!"
-                tvResult.setTextColor(Color.parseColor("#10B981"))
+                wheelView.startSpin(targetIndex) { item ->
+                    // Record spin date
+                    prefs.edit().putString("last_lucky_wheel_date", today).apply()
 
-                // Confetti Explosion
-                ConfettiView.show(rootLayout)
+                    tvResult.text = "🎉 TABRIKLAYMIZ: ${label ?: item.label}!"
+                    tvResult.setTextColor(Color.parseColor("#10B981"))
 
-                btnSpin.text = "QABUL QILISH! 🎁"
-                btnSpin.isEnabled = true
-                btnClose.isEnabled = true
+                    // Confetti Explosion
+                    ConfettiView.show(rootLayout)
 
-                btnSpin.setOnClickListener {
-                    onRewardClaimed(item.coinAmount, item.xpAmount)
-                    dismiss()
+                    btnSpin.text = "QABUL QILISH! 🎁"
+                    btnSpin.isEnabled = true
+                    btnClose.isEnabled = true
+
+                    btnSpin.setOnClickListener {
+                        onRewardClaimed(coins, xp)
+                        dismiss()
+                    }
                 }
             }
         }

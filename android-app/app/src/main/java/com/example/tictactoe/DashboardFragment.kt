@@ -18,7 +18,7 @@ import com.example.tictactoe.network.AuthResponse
 import com.example.tictactoe.network.DailyRewardRequest
 import com.example.tictactoe.network.DailyRewardResponse
 import com.example.tictactoe.network.StoreBuyRequest
-import com.example.tictactoe.network.StoreBuyResponse
+import com.example.tictactoe.repository.EconomyRepository
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -361,34 +361,20 @@ class DashboardFragment : Fragment() {
                 .setTitle("Game Locked 🔒")
                 .setMessage("Reach Level $reqLevel to unlock for free, or buy it now for $cost 🪙.")
                 .setPositiveButton("Buy ($cost 🪙)") { _, _ ->
-                    if (coins >= cost && userId != -1) {
-                        // TODO: Replaced ProgressDialog with inline progress state
-                        
-                        ApiClient.instance.buyItem(StoreBuyRequest(userId, key, cost)).enqueue(object : Callback<StoreBuyResponse> {
-                            override fun onResponse(call: Call<StoreBuyResponse>, response: Response<StoreBuyResponse>) {
-                                if (!isAdded || _binding == null) return
-                                if (response.isSuccessful && response.body()?.status == "success") {
-                                    val newCoins = response.body()?.new_coin_balance ?: (coins - cost)
-                                    sharedPref.edit().apply {
-                                        putInt("coins", newCoins)
-                                        putBoolean("unlocked_$key", true)
-                                        apply()
-                                    }
-                                    loadProfile()
-                                    Toast.makeText(context, "$title Unlocked! 🎉", Toast.LENGTH_SHORT).show()
-                                    findNavController().navigate(actionId)
-                                } else {
-                                    Toast.makeText(context, response.body()?.message ?: "Failed to buy item", Toast.LENGTH_SHORT).show()
-                                }
+                    if (coins >= cost) {
+                        EconomyRepository.buyStoreItem("game_unlock_$key") { success, newBalance, message ->
+                            if (!isAdded || _binding == null) return@buyStoreItem
+                            if (success) {
+                                sharedPref.edit().putBoolean("unlocked_$key", true).apply()
+                                loadProfile()
+                                Toast.makeText(context, "$title Unlocked! 🎉", Toast.LENGTH_SHORT).show()
+                                findNavController().navigate(actionId)
+                            } else {
+                                Toast.makeText(context, message ?: "Failed to buy item", Toast.LENGTH_SHORT).show()
                             }
-
-                            override fun onFailure(call: Call<StoreBuyResponse>, t: Throwable) {
-                                if (!isAdded || _binding == null) return
-                                Toast.makeText(context, "Network Error: ${t.message}", Toast.LENGTH_SHORT).show()
-                            }
-                        })
+                        }
                     } else {
-                        Toast.makeText(context, "Not enough coins! You have $coins 🪙", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Mablag' yetarli emas! Sizda $coins 🪙 bor.", Toast.LENGTH_SHORT).show()
                     }
                 }
                 .setNegativeButton("Cancel", null)
@@ -605,14 +591,20 @@ class DashboardFragment : Fragment() {
                 override fun onResponse(call: Call<AuthResponse>, response: Response<AuthResponse>) {
                     if (!isAdded || _binding == null) return
                     if (response.isSuccessful && response.body()?.status == "success") {
-                        val user = response.body()?.user
+                        val body = response.body()
+                        val user = body?.user
+                        val token = body?.token
+                        val serverBalance = body?.balance
                         if (user != null) {
                             sharedPref.edit().apply {
+                                if (!token.isNullOrBlank()) {
+                                    putString("auth_token", token)
+                                }
                                 putInt("user_id", user.id)
                                 putString("username", user.username)
                                 putInt("level", user.level)
                                 putInt("xp", user.xp)
-                                putInt("coins", user.coins)
+                                putInt("coins", serverBalance ?: user.coins)
                                 putInt("streak_count", user.streak_count)
                                 if (user.unlocked_games != null) {
                                     for (item in user.unlocked_games) {

@@ -3,10 +3,12 @@ package com.example.tictactoe.network
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 data class AuthRequest(val device_id: String, val username: String)
-data class AuthResponse(val status: String, val user: User?)
+data class AuthResponse(val status: String, val user: User?, val token: String? = null, val balance: Int? = null)
 data class User(val id: Int, val username: String, val level: Int, val xp: Int, val wins: Int, val losses: Int, val coins: Int, val streak_count: Int, val unlocked_games: List<String>?)
 
 data class StoreBuyRequest(val player_id: Int, val item_id: String, val cost: Int)
@@ -113,4 +115,44 @@ interface ApiService {
 
     @POST("room/card/refill")
     fun refillCards(@Body req: CardRefillRequest): Call<CardRefillResponse>
+
+    // ===== Server-Authoritative Economy Endpoints =====
+    @GET("economy/profile")
+    fun getEconomyProfile(): Call<EconomyProfileDto>
+
+    @GET("economy/history")
+    fun getEconomyHistory(): Call<EconomyHistoryDto>
+
+    @POST("matches/{matchId}/claim")
+    fun claimMatchReward(@Path("matchId") matchId: String): Call<MatchClaimResponseDto>
+
+    @POST("game-sessions/start")
+    fun startSession(@Body req: GameSessionStartRequest): Call<GameSessionStartResponse>
+
+    @POST("game-sessions/{sessionId}/finish")
+    fun finishSession(@Path("sessionId") sessionId: String, @Body req: GameSessionFinishRequest): Call<GameSessionFinishResponse>
+
+    @GET("quests/today")
+    fun getTodayQuests(): Call<QuestListResponse>
+
+    @POST("quests/{questId}/claim")
+    fun claimQuestReward(@Path("questId") questId: Long): Call<QuestClaimResponse>
+
+    @POST("wheel/spin")
+    fun spinWheel(): Call<SpinResponseDto>
+
+    @GET("store/items")
+    fun getStoreItems(): Call<StoreItemListResponse>
+
+    @POST("store/items/{itemKey}/buy")
+    fun buyStoreItem(
+        @Path("itemKey") itemKey: String,
+        @Header("Idempotency-Key") idempotencyKey: String
+    ): Call<StoreBuyResponseDto>
+
+    @GET("inventory")
+    fun getInventory(): Call<InventoryListResponse>
+
+    @POST("inventory/{itemKey}/equip")
+    fun equipItem(@Path("itemKey") itemKey: String): Call<EquipResponseDto>
 }

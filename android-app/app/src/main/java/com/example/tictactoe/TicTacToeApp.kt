@@ -23,8 +23,14 @@ class CrashReporterActivity : AppCompatActivity() {
 }
 
 class TicTacToeApp : Application() {
+    companion object {
+        lateinit var instance: TicTacToeApp
+            private set
+    }
+
     override fun onCreate() {
         super.onCreate()
+        instance = this
         
         Thread.setDefaultUncaughtExceptionHandler { _, throwable ->
             val stackTrace = throwable.stackTraceToString().take(50000)

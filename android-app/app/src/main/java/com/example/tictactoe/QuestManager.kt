@@ -230,14 +230,18 @@ object QuestManager {
         if (!quest.isCompleted || quest.isClaimed) return false
 
         val keyClaimed = "quest_${questIndex}_claimed"
-        val curCoins = prefs.getInt("coins", 0)
+        val curCoins = com.example.tictactoe.repository.EconomyRepository.getCachedBalance()
         val curXp = prefs.getInt("xp", 0)
 
         prefs.edit()
             .putBoolean(keyClaimed, true)
-            .putInt("coins", curCoins + quest.coinReward)
             .putInt("xp", curXp + quest.xpReward)
             .apply()
+
+        com.example.tictactoe.repository.EconomyRepository.saveBalance(curCoins + quest.coinReward)
+
+        // Asynchronously synchronize with server
+        com.example.tictactoe.repository.EconomyRepository.claimQuest((questIndex + 1).toLong()) { _, _, _, _, _ -> }
 
         return true
     }

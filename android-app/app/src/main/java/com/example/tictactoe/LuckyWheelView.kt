@@ -113,14 +113,18 @@ class LuckyWheelView @JvmOverloads constructor(
         canvas.restore()
     }
 
-    fun startSpin(onFinished: (WheelItem) -> Unit) {
+    fun startSpin(targetIndex: Int? = null, onFinished: (WheelItem) -> Unit) {
         if (isSpinning) return
         isSpinning = true
 
-        val targetIndex = Random.nextInt(items.size)
+        val resolvedIndex = if (targetIndex != null && targetIndex in items.indices) {
+            targetIndex
+        } else {
+            Random.nextInt(items.size)
+        }
         val sweepAngle = 360f / items.size
         // Land in middle of chosen sector (indicator is at top: 270 degrees)
-        val targetSectorAngle = targetIndex * sweepAngle + (sweepAngle / 2f)
+        val targetSectorAngle = resolvedIndex * sweepAngle + (sweepAngle / 2f)
         val targetAngle = 270f - targetSectorAngle
 
         val fullRotations = (5 + Random.nextInt(3)) * 360f
@@ -136,7 +140,7 @@ class LuckyWheelView @JvmOverloads constructor(
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
                     isSpinning = false
-                    val winningItem = items[targetIndex]
+                    val winningItem = items[resolvedIndex]
                     onFinished(winningItem)
                 }
             })

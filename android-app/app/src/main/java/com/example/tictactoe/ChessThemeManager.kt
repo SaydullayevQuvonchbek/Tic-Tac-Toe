@@ -5,6 +5,7 @@ import android.graphics.Color
 import com.example.tictactoe.network.ApiClient
 import com.example.tictactoe.network.StoreBuyRequest
 import com.example.tictactoe.network.StoreBuyResponse
+import com.example.tictactoe.repository.EconomyRepository
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -183,62 +184,46 @@ object ChessThemeManager {
     }
 
     fun buyBoardTheme(context: Context, theme: BoardTheme, onResult: (success: Boolean, msg: String) -> Unit) {
-        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        val currentCoins = prefs.getInt("coins", 0)
-        val userId = prefs.getInt("user_id", -1)
-
+        val currentCoins = EconomyRepository.getCachedBalance()
         if (currentCoins < theme.cost) {
             onResult(false, "Mablag' yetarli emas! Sizda $currentCoins 🪙 bor.")
             return
         }
 
-        val newCoins = currentCoins - theme.cost
-        prefs.edit()
-            .putInt("coins", newCoins)
-            .putBoolean("unlocked_chess_board_${theme.id}", true)
-            .putString("equipped_chess_board", theme.id)
-            .apply()
-
-        if (userId != -1) {
-            ApiClient.instance.buyItem(StoreBuyRequest(userId, "chess_board_${theme.id}", theme.cost))
-                .enqueue(object : Callback<StoreBuyResponse> {
-                    override fun onResponse(call: Call<StoreBuyResponse>, response: Response<StoreBuyResponse>) {}
-                    override fun onFailure(call: Call<StoreBuyResponse>, t: Throwable) {
-    t.printStackTrace()
-}
-                })
+        val itemKey = "chess_board_${theme.id}"
+        EconomyRepository.buyStoreItem(itemKey) { success, newBalance, message ->
+            if (success) {
+                val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                prefs.edit()
+                    .putBoolean("unlocked_chess_board_${theme.id}", true)
+                    .putString("equipped_chess_board", theme.id)
+                    .apply()
+                onResult(true, "🎉 ${theme.name} muvaffaqiyatli sotib olindi va o'rnatildi!")
+            } else {
+                onResult(false, message ?: "Xarid amalga oshmadi")
+            }
         }
-
-        onResult(true, "🎉 ${theme.name} muvaffaqiyatli sotib olindi va o'rnatildi!")
     }
 
     fun buyPieceSkin(context: Context, skin: PieceSkin, onResult: (success: Boolean, msg: String) -> Unit) {
-        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        val currentCoins = prefs.getInt("coins", 0)
-        val userId = prefs.getInt("user_id", -1)
-
+        val currentCoins = EconomyRepository.getCachedBalance()
         if (currentCoins < skin.cost) {
             onResult(false, "Mablag' yetarli emas! Sizda $currentCoins 🪙 bor.")
             return
         }
 
-        val newCoins = currentCoins - skin.cost
-        prefs.edit()
-            .putInt("coins", newCoins)
-            .putBoolean("unlocked_chess_piece_${skin.id}", true)
-            .putString("equipped_chess_piece", skin.id)
-            .apply()
-
-        if (userId != -1) {
-            ApiClient.instance.buyItem(StoreBuyRequest(userId, "chess_piece_${skin.id}", skin.cost))
-                .enqueue(object : Callback<StoreBuyResponse> {
-                    override fun onResponse(call: Call<StoreBuyResponse>, response: Response<StoreBuyResponse>) {}
-                    override fun onFailure(call: Call<StoreBuyResponse>, t: Throwable) {
-    t.printStackTrace()
-}
-                })
+        val itemKey = "chess_piece_${skin.id}"
+        EconomyRepository.buyStoreItem(itemKey) { success, newBalance, message ->
+            if (success) {
+                val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                prefs.edit()
+                    .putBoolean("unlocked_chess_piece_${skin.id}", true)
+                    .putString("equipped_chess_piece", skin.id)
+                    .apply()
+                onResult(true, "🎉 ${skin.name} muvaffaqiyatli sotib olindi va o'rnatildi!")
+            } else {
+                onResult(false, message ?: "Xarid amalga oshmadi")
+            }
         }
-
-        onResult(true, "🎉 ${skin.name} muvaffaqiyatli sotib olindi va o'rnatildi!")
     }
 }

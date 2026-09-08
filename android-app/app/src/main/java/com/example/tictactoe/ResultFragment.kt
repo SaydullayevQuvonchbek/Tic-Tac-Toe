@@ -20,6 +20,7 @@ import com.example.tictactoe.network.PusherManager
 import nl.dionsegijn.konfetti.core.Party
 import nl.dionsegijn.konfetti.core.Position
 import nl.dionsegijn.konfetti.core.emitter.Emitter
+import com.example.tictactoe.repository.EconomyRepository
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -298,6 +299,17 @@ class ResultFragment : Fragment() {
 
         if (reward.leveledUp) {
             Toast.makeText(context, "🎉 LEVEL UP! Level $level!", Toast.LENGTH_LONG).show()
+        }
+
+        if (isOnlineMode && roomCode.isNotEmpty()) {
+            EconomyRepository.claimMatch(roomCode) { success, coins, xpEarned, newBalance, msg ->
+                if (success && isAdded && _binding != null) {
+                    binding.tvStatCoins.text = "+$coins"
+                    binding.tvStatXp.text = "+$xpEarned"
+                }
+            }
+        } else {
+            EconomyRepository.refreshProfile()
         }
     }
 

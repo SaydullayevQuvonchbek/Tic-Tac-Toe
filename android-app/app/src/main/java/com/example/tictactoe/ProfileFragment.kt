@@ -113,14 +113,20 @@ class ProfileFragment : Fragment() {
                 override fun onResponse(call: retrofit2.Call<com.example.tictactoe.network.AuthResponse>, response: retrofit2.Response<com.example.tictactoe.network.AuthResponse>) {
                     if (!isAdded || _binding == null) return
                     if (response.isSuccessful && response.body()?.status == "success") {
-                        val user = response.body()?.user
+                        val body = response.body()
+                        val user = body?.user
+                        val token = body?.token
+                        val serverBalance = body?.balance
                         if (user != null) {
                             sharedPref.edit().apply {
+                                if (!token.isNullOrBlank()) {
+                                    putString("auth_token", token)
+                                }
                                 putInt("user_id", user.id)
                                 putString("username", user.username)
                                 putInt("level", user.level)
                                 putInt("xp", user.xp)
-                                putInt("coins", user.coins)
+                                putInt("coins", serverBalance ?: user.coins)
                                 putInt("streak_count", user.streak_count)
                                 apply()
                             }

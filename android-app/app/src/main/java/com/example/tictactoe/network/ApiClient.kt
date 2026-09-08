@@ -1,5 +1,7 @@
 package com.example.tictactoe.network
 
+import android.content.Context
+import com.example.tictactoe.TicTacToeApp
 import okhttp3.ConnectionPool
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -16,6 +18,25 @@ object ApiClient {
             .readTimeout(15, TimeUnit.SECONDS)
             .writeTimeout(15, TimeUnit.SECONDS)
             .retryOnConnectionFailure(true)
+            .addInterceptor { chain ->
+                val original = chain.request()
+                val requestBuilder = original.newBuilder()
+                    .header("Accept", "application/json")
+
+                val token = try {
+                    TicTacToeApp.instance
+                        .getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+                        .getString("auth_token", null)
+                } catch (e: Exception) {
+                    null
+                }
+
+                if (!token.isNullOrBlank()) {
+                    requestBuilder.header("Authorization", "Bearer $token")
+                }
+
+                chain.proceed(requestBuilder.build())
+            }
             .build()
     }
 

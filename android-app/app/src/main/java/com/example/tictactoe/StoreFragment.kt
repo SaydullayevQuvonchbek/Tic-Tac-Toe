@@ -21,6 +21,7 @@ import com.example.tictactoe.databinding.FragmentStoreBinding
 import com.example.tictactoe.network.ApiClient
 import com.example.tictactoe.network.StoreBuyRequest
 import com.example.tictactoe.network.StoreBuyResponse
+import com.example.tictactoe.repository.EconomyRepository
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -29,6 +30,7 @@ class StoreFragment : Fragment() {
 
     private var _binding: FragmentStoreBinding? = null
     private val binding get() = _binding!!
+    private var isPurchasing = false
 
     enum class StoreCategory {
         CHESS,
@@ -69,8 +71,7 @@ class StoreFragment : Fragment() {
     }
 
     private fun updateCoinBalance() {
-        val prefs = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
-        val coins = prefs.getInt("coins", 0)
+        val coins = EconomyRepository.getCachedBalance()
         binding.tvStoreCoins.text = "🪙 $coins"
     }
 
@@ -207,7 +208,11 @@ class StoreFragment : Fragment() {
                     renderCurrentContent()
                 },
                 onBuy = {
+                    if (isPurchasing) return@createItemCard
+                    isPurchasing = true
                     ChessThemeManager.buyBoardTheme(requireContext(), theme) { success, msg ->
+                        isPurchasing = false
+                        if (!isAdded || _binding == null) return@buyBoardTheme
                         Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                         if (success) {
                             HapticHelper.performVictory(requireContext())
@@ -265,7 +270,11 @@ class StoreFragment : Fragment() {
                     renderCurrentContent()
                 },
                 onBuy = {
+                    if (isPurchasing) return@createItemCard
+                    isPurchasing = true
                     ChessThemeManager.buyPieceSkin(requireContext(), skin) { success, msg ->
+                        isPurchasing = false
+                        if (!isAdded || _binding == null) return@buyPieceSkin
                         Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                         if (success) {
                             HapticHelper.performVictory(requireContext())
@@ -297,7 +306,11 @@ class StoreFragment : Fragment() {
                     renderCurrentContent()
                 },
                 onBuy = {
+                    if (isPurchasing) return@createItemCard
+                    isPurchasing = true
                     CheckersThemeManager.buyBoardTheme(requireContext(), theme) { success, msg ->
+                        isPurchasing = false
+                        if (!isAdded || _binding == null) return@buyBoardTheme
                         Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                         if (success) {
                             HapticHelper.performVictory(requireContext())
@@ -359,7 +372,11 @@ class StoreFragment : Fragment() {
                     renderCurrentContent()
                 },
                 onBuy = {
+                    if (isPurchasing) return@createItemCard
+                    isPurchasing = true
                     CheckersThemeManager.buyPieceSkin(requireContext(), skin) { success, msg ->
+                        isPurchasing = false
+                        if (!isAdded || _binding == null) return@buyPieceSkin
                         Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                         if (success) {
                             HapticHelper.performVictory(requireContext())
@@ -443,37 +460,29 @@ class StoreFragment : Fragment() {
     }
 
     private fun buyGenericItem(key: String, name: String, cost: Int) {
-        val prefs = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
-        val currentCoins = prefs.getInt("coins", 0)
-        val userId = prefs.getInt("user_id", -1)
+        if (isPurchasing) return
+        val currentCoins = EconomyRepository.getCachedBalance()
 
         if (currentCoins < cost) {
             Toast.makeText(context, "Mablag' yetarli emas! Sizda $currentCoins 🪙 bor.", Toast.LENGTH_SHORT).show()
             return
         }
 
-        prefs.edit()
-            .putInt("coins", currentCoins - cost)
-            .putBoolean("unlocked_$key", true)
-            .apply()
-
-        if (userId != -1) {
-            ApiClient.instance.buyItem(StoreBuyRequest(userId, key, cost)).enqueue(object : Callback<StoreBuyResponse> {
-                override fun onResponse(call: Call<StoreBuyResponse>, response: Response<StoreBuyResponse>) {
-                    if (!isAdded || _binding == null) return
-                }
-                override fun onFailure(call: Call<StoreBuyResponse>, t: Throwable) {
-                    if (!isAdded || _binding == null) return
-                    t.printStackTrace()
-                    context?.let { android.widget.Toast.makeText(it, "Tarmoq xatosi!", android.widget.Toast.LENGTH_SHORT).show() }
-                }
-            })
+        isPurchasing = true
+        EconomyRepository.buyStoreItem(key) { success, newBalance, message ->
+            isPurchasing = false
+            if (!isAdded || _binding == null) return@buyStoreItem
+            if (success) {
+                val prefs = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+                prefs.edit().putBoolean("unlocked_$key", true).apply()
+                HapticHelper.performVictory(requireContext())
+                Toast.makeText(context, "🎉 $name muvaffaqiyatli sotib olindi!", Toast.LENGTH_SHORT).show()
+                updateCoinBalance()
+                renderCurrentContent()
+            } else {
+                Toast.makeText(context, message ?: "Xarid amalga oshmadi", Toast.LENGTH_SHORT).show()
+            }
         }
-
-        HapticHelper.performVictory(requireContext())
-        Toast.makeText(context, "🎉 $name muvaffaqiyatli sotib olindi!", Toast.LENGTH_SHORT).show()
-        updateCoinBalance()
-        renderCurrentContent()
     }
 
     private fun createCheckerboardPreview(lightColor: Int, darkColor: Int): LinearLayout {

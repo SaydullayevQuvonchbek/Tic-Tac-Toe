@@ -16,6 +16,7 @@ import com.example.tictactoe.network.ApiClient
 import com.example.tictactoe.network.StoreBuyRequest
 import com.example.tictactoe.network.StoreBuyResponse
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.example.tictactoe.repository.EconomyRepository
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -146,44 +147,27 @@ class ReactionBottomSheetDialog(
     }
 
     private fun buyEmote(item: EmoteHelper.EmoteItem) {
-        val prefs = context.getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
-        val coins = prefs.getInt("coins", 0)
-        val userId = prefs.getInt("user_id", -1)
+        val coins = EconomyRepository.getCachedBalance()
 
         if (coins < item.cost) {
             Toast.makeText(context, "Mablag' yetarli emas! Sizda $coins 🪙 bor.", Toast.LENGTH_SHORT).show()
             return
         }
 
-        val successAction = {
-            val newCoins = coins - item.cost
-            prefs.edit()
-                .putInt("coins", newCoins)
-                .putBoolean("unlocked_emote_${item.emoji}", true)
-                .apply()
-            HapticHelper.performVictory(context)
-            Toast.makeText(context, "🎉 ${item.emoji} ochildi!", Toast.LENGTH_SHORT).show()
-            binding.tvReactionCoins.text = "🪙 $newCoins"
-            renderCategory(currentCategory)
-        }
-
-        if (userId != -1) {
-            ApiClient.instance.buyItem(StoreBuyRequest(userId, "emote_${item.name.lowercase().replace(" ", "_")}", item.cost))
-                .enqueue(object : Callback<StoreBuyResponse> {
-                    override fun onResponse(call: Call<StoreBuyResponse>, response: Response<StoreBuyResponse>) {
-                        if (response.isSuccessful) {
-                            successAction()
-                        } else {
-                            context?.let { Toast.makeText(it, "Server xatosi: ${response.code()}", Toast.LENGTH_SHORT).show() }
-                        }
-                    }
-                    override fun onFailure(call: Call<StoreBuyResponse>, t: Throwable) {
-                        t.printStackTrace()
-                        context?.let { Toast.makeText(it, "Tarmoq xatosi!", Toast.LENGTH_SHORT).show() }
-                    }
-                })
-        } else {
-            successAction()
+        val itemKey = "emote_${item.name.lowercase().replace(" ", "_")}"
+        EconomyRepository.buyStoreItem(itemKey) { success, newBalance, message ->
+            if (success) {
+                val prefs = context.getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
+                prefs.edit()
+                    .putBoolean("unlocked_emote_${item.emoji}", true)
+                    .apply()
+                HapticHelper.performVictory(context)
+                Toast.makeText(context, "🎉 ${item.emoji} ochildi!", Toast.LENGTH_SHORT).show()
+                binding.tvReactionCoins.text = "🪙 $newBalance"
+                renderCategory(currentCategory)
+            } else {
+                Toast.makeText(context, message ?: "Xarid amalga oshmadi", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }
