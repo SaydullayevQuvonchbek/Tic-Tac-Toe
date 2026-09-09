@@ -11,7 +11,20 @@ import retrofit2.http.Query
 
 data class AuthRequest(val device_id: String, val username: String)
 data class AuthResponse(val status: String, val user: User?, val token: String? = null, val balance: Int? = null)
-data class User(val id: Int, val username: String, val level: Int, val xp: Int, val wins: Int, val losses: Int, val coins: Int, val streak_count: Int, val unlocked_games: List<String>?)
+data class User(
+    val id: Int,
+    val username: String,
+    val level: Int = 1,
+    val xp: Int = 0,
+    val wins: Int = 0,
+    val losses: Int = 0,
+    val coins: Int = 0,
+    val streak_count: Int = 0,
+    val unlocked_games: List<String>? = null,
+    val device_id: String? = null,
+    val created_at: String? = null,
+    val updated_at: String? = null
+)
 
 data class StoreBuyRequest(val player_id: Int, val item_id: String, val cost: Int)
 data class StoreBuyResponse(val status: String, val new_coin_balance: Int?, val message: String?)
