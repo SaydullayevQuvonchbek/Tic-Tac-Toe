@@ -64,16 +64,26 @@ object AuthManager {
                 val body = response.body()
                 if (response.isSuccessful && body != null) {
                     val token = body.token
-                    if (!token.isNullOrBlank()) {
-                        prefs.edit().putString(KEY_AUTH_TOKEN, token).apply()
-                    }
                     val user = body.user
-                    if (user != null) {
-                        prefs.edit()
-                            .putInt(KEY_USER_ID, user.id)
-                            .apply()
-                    }
-                    onComplete?.invoke(true, token)
+                    val serverCoins = body.balance ?: user?.coins
+
+                    prefs.edit().apply {
+                        if (!token.isNullOrBlank()) {
+                            putString(KEY_AUTH_TOKEN, token.trim())
+                        }
+                        if (user != null) {
+                            putInt(KEY_USER_ID, user.id)
+                            putString(KEY_USERNAME, user.username)
+                            putInt("level", user.level)
+                            putInt("xp", user.xp)
+                        }
+                        if (serverCoins != null) {
+                            putInt("coins", serverCoins)
+                        }
+                    }.apply()
+
+                    val hasToken = !token.isNullOrBlank()
+                    onComplete?.invoke(hasToken, token)
                 } else {
                     onComplete?.invoke(false, null)
                 }

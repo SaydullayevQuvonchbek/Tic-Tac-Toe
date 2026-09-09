@@ -32,7 +32,7 @@ object ApiClient {
                 }
 
                 if (!token.isNullOrBlank()) {
-                    requestBuilder.header("Authorization", "Bearer $token")
+                    requestBuilder.header("Authorization", "Bearer ${token.trim()}")
                 }
 
                 chain.proceed(requestBuilder.build())

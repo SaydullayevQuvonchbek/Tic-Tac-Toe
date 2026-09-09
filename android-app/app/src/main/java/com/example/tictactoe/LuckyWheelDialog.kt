@@ -68,91 +68,87 @@ class LuckyWheelDialog(
 
             btnSpin.isEnabled = false
             btnClose.isEnabled = false
-            tvResult.text = "🎡 Omad tilaymiz! Sovg'a aniqlanmoqda..."
+            tvResult.text = "🎡 Server bilan bog'lanilmoqda..."
+            tvResult.setTextColor(Color.parseColor("#38BDF8"))
 
-            HapticHelper.performClick(context)
-            SoundHelper.playRewardSound(context)
+            fun performServerSpin() {
+                tvResult.text = "🎡 Omad tilaymiz! Sovg'a aniqlanmoqda..."
+                HapticHelper.performClick(context)
+                SoundHelper.playRewardSound(context)
 
-            val triggerLocalSpin: () -> Unit = {
-                wheelView.startSpin(null) { item ->
-                    prefs.edit().putString("last_lucky_wheel_date", today).apply()
+                EconomyRepository.spinWheel { success, segment, label, coins, xp, newBalance, nextSpinAt, message ->
+                    if (!success) {
+                        btnSpin.isEnabled = true
+                        btnClose.isEnabled = true
 
-                    val coinsEarned = item.coinAmount
-                    val xpEarned = item.xpAmount
-                    if (coinsEarned > 0) {
-                        GameEconomyManager.addCoins(context, coinsEarned)
+                        when {
+                            message == "401_NO_TOKEN" || message == "401_UNAUTHORIZED" || message?.contains("401") == true || message?.contains("Unauthenticated") == true -> {
+                                AuthManager.clearToken(context)
+                                tvResult.text = "🔒 Avtorizatsiya xatosi (401). Qaytadan bosing (qayta ulaniladi)."
+                                tvResult.setTextColor(Color.parseColor("#EF4444"))
+                            }
+                            message != null && (message.contains("429") || message.contains("kelmadi") || message.contains("allaqachon")) -> {
+                                tvResult.text = message
+                                tvResult.setTextColor(Color.parseColor("#F59E0B"))
+                            }
+                            else -> {
+                                tvResult.text = message ?: "Server xatosi yuz berdi. Qayta urinib ko'ring."
+                                tvResult.setTextColor(Color.parseColor("#EF4444"))
+                            }
+                        }
+                        // CHEAT PREVENTION: DO NOT spin, DO NOT add coins, DO NOT add XP!
+                        return@spinWheel
                     }
-                    if (xpEarned > 0) {
-                        val curXp = prefs.getInt("xp", 0) + xpEarned
-                        prefs.edit().putInt("xp", curXp).apply()
+
+                    // STRICTLY SERVER-AUTHORITATIVE: Spin ONLY after server confirmed success and reward!
+                    val targetIndex = when (segment) {
+                        "COIN_50" -> 0
+                        "XP_100" -> 1
+                        "COIN_100" -> 2
+                        "XP_250" -> 3
+                        "MEGA_COIN_200" -> 4
+                        "PACKAGE_150" -> 5
+                        "JACKPOT_500" -> 6
+                        "BONUS_XP_150" -> 7
+                        else -> 0
                     }
 
-                    tvResult.text = "🎉 TABRIKLAYMIZ: ${item.label}!"
-                    tvResult.setTextColor(Color.parseColor("#10B981"))
+                    wheelView.startSpin(targetIndex) { item ->
+                        // Record spin date only after successful server spin
+                        prefs.edit().putString("last_lucky_wheel_date", today).apply()
 
-                    ConfettiView.show(rootLayout)
+                        tvResult.text = "🎉 TABRIKLAYMIZ: ${label ?: item.label}!"
+                        tvResult.setTextColor(Color.parseColor("#10B981"))
 
-                    btnSpin.text = "QABUL QILISH! 🎁"
-                    btnSpin.isEnabled = true
-                    btnClose.isEnabled = true
+                        // Confetti Explosion
+                        ConfettiView.show(rootLayout)
 
-                    btnSpin.setOnClickListener {
-                        onRewardClaimed(coinsEarned, xpEarned)
-                        dismiss()
+                        btnSpin.text = "QABUL QILISH! 🎁"
+                        btnSpin.isEnabled = true
+                        btnClose.isEnabled = true
+
+                        btnSpin.setOnClickListener {
+                            onRewardClaimed(coins, xp)
+                            dismiss()
+                        }
                     }
                 }
             }
 
             if (!AuthManager.hasValidToken(context)) {
-                triggerLocalSpin()
-                return@setOnClickListener
-            }
-
-            EconomyRepository.spinWheel { success, segment, label, coins, xp, newBalance, nextSpinAt, message ->
-                if (!success) {
-                    if (message != null && (message.contains("429") || message.contains("kelmadi") || message.contains("allaqachon"))) {
-                        tvResult.text = message
+                // Ensure authentication first, strictly obtain Sanctum Bearer token
+                AuthManager.ensureAuthenticated(context) { authSuccess, token ->
+                    if (!authSuccess || token.isNullOrBlank()) {
+                        tvResult.text = "⚠️ Avtorizatsiyadan o'tib bo'lmadi. Internetni tekshirib, qayta urinib ko'ring."
                         tvResult.setTextColor(Color.parseColor("#EF4444"))
                         btnSpin.isEnabled = true
                         btnClose.isEnabled = true
-                        return@spinWheel
+                        return@ensureAuthenticated
                     }
-
-                    // Fallback to local spin on 401, network failure or server error
-                    triggerLocalSpin()
-                    return@spinWheel
+                    performServerSpin()
                 }
-
-                val targetIndex = when (segment) {
-                    "COIN_50" -> 0
-                    "XP_100" -> 1
-                    "COIN_100" -> 2
-                    "XP_250" -> 3
-                    "MEGA_COIN_200" -> 4
-                    "PACKAGE_150" -> 5
-                    "JACKPOT_500" -> 6
-                    "BONUS_XP_150" -> 7
-                    else -> 0
-                }
-
-                wheelView.startSpin(targetIndex) { item ->
-                    prefs.edit().putString("last_lucky_wheel_date", today).apply()
-
-                    tvResult.text = "🎉 TABRIKLAYMIZ: ${label ?: item.label}!"
-                    tvResult.setTextColor(Color.parseColor("#10B981"))
-
-                    // Confetti Explosion
-                    ConfettiView.show(rootLayout)
-
-                    btnSpin.text = "QABUL QILISH! 🎁"
-                    btnSpin.isEnabled = true
-                    btnClose.isEnabled = true
-
-                    btnSpin.setOnClickListener {
-                        onRewardClaimed(coins, xp)
-                        dismiss()
-                    }
-                }
+            } else {
+                performServerSpin()
             }
         }
     }

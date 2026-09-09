@@ -51,25 +51,40 @@ class UserController extends Controller
         }
 
         // Ensure wallet exists
-        $initialBalance = EconomySetting::getInt('INITIAL_WALLET_BALANCE', 100);
-        $wallet = Wallet::firstOrCreate(
-            ['user_id' => $user->id],
-            ['balance' => $initialBalance, 'version' => 1]
-        );
+        $balance = 100;
+        try {
+            $initialBalance = class_exists(EconomySetting::class) ? EconomySetting::getInt('INITIAL_WALLET_BALANCE', 100) : 100;
+            $wallet = Wallet::firstOrCreate(
+                ['user_id' => $user->id],
+                ['balance' => $initialBalance, 'version' => 1]
+            );
+            $balance = (int) $wallet->balance;
+        } catch (\Throwable $e) {
+            $balance = (int) ($user->coins ?? 100);
+        }
 
-        // Revoke old tokens if necessary & create fresh Sanctum token
-        if (method_exists($user, 'tokens')) {
-            $user->tokens()->where('name', 'android-app')->delete();
-            $token = $user->createToken('android-app')->plainTextToken;
-        } else {
-            // Fallback if Sanctum trait not loaded on User model
-            $token = base64_encode($user->id . ':' . hash('sha256', $user->device_id . env('APP_KEY')));
+        // Issue fresh Sanctum Bearer token
+        $token = null;
+        try {
+            if (method_exists($user, 'createToken')) {
+                try {
+                    $user->tokens()->where('name', 'android-app')->delete();
+                } catch (\Throwable $te) {}
+                $token = $user->createToken('android-app')->plainTextToken;
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Sanctum token generation failed: ' . $e->getMessage());
+        }
+
+        if (empty($token)) {
+            // Fallback token if Sanctum table not yet migrated
+            $token = base64_encode($user->id . ':' . hash('sha256', $user->device_id . (config('app.key') ?: 'secret')));
         }
 
         return response()->json([
             'status' => 'success',
             'token' => $token,
-            'balance' => $wallet->balance,
+            'balance' => $balance,
             'user' => [
                 'id' => (int) $user->id,
                 'username' => $user->username,
