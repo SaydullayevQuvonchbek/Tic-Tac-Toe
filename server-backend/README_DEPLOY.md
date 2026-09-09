@@ -53,4 +53,29 @@ php artisan route:clear
 php artisan config:clear
 ```
 
+---
+
+## 4. Charxpalak va 401 (Unauthenticated) Xatoligini Bartaraf Qilish
+Agar ilovada charxpalak aylantirishda yoki boshqa so'rovlarda `401 Unauthorized` xatosi chiqsa:
+
+1. **phpMyAdmin da `personal_access_tokens` jadvali borligini tekshiring:**
+   - Agar bo'lmasa, `database_updates.sql` dagi 11-jadval (`personal_access_tokens`) SQL ini ishga tushiring.
+2. **`app/Models/User.php` modelida Sanctum ulangan bo'lishi kerak:**
+   ```php
+   use Laravel\Sanctum\HasApiTokens;
+   
+   class User extends Authenticatable {
+       use HasApiTokens, HasFactory, Notifiable;
+       ...
+   }
+   ```
+3. **Yoki Omad Charxpalagini (Lucky Wheel) token talab qilmaydigan qilish:**
+   - Serverdagi `routes/api.php` da quyidagi qatorni:
+     ```php
+     Route::post('wheel/spin', [EconomyController::class, 'spinWheel']);
+     ```
+     `Route::middleware('auth:sanctum')->group(...)` ichidan chiqarib, **1. PUBLIC ROUTES** bo'limiga qo'ying. Shunda har qanday o'yinchi tokenni kutmasdan to'g'ridan-to'g'ri serverdan sovg'a ola oladi.
+
+---
+
 Tabriklaymiz! Serveringiz endi to'liq xavfsiz va yangi Android ilovasi so'rovlarini qabul qilishga tayyor. 🚀

@@ -167,6 +167,12 @@ object EconomyRepository {
     fun spinWheel(
         onComplete: (success: Boolean, segment: String?, label: String?, coins: Int, xp: Int, newBalance: Int, nextSpinAt: String?, message: String?) -> Unit
     ) {
+        val token = prefs().getString("auth_token", null)
+        if (token.isNullOrBlank()) {
+            onComplete(false, null, null, 0, 0, getCachedBalance(), null, "401_NO_TOKEN")
+            return
+        }
+
         ApiClient.instance.spinWheel().enqueue(object : Callback<SpinResponseDto> {
             override fun onResponse(call: Call<SpinResponseDto>, response: Response<SpinResponseDto>) {
                 val body = response.body()
@@ -176,7 +182,7 @@ object EconomyRepository {
                     prefs().edit().putInt(KEY_XP, curXp).apply()
                     onComplete(true, body.segment, body.label, body.reward, body.xp, body.balance, body.nextSpinAt, null)
                 } else {
-                    val msg = body?.message ?: "Server xatosi: ${response.code()}"
+                    val msg = if (response.code() == 401) "401_UNAUTHORIZED" else (body?.message ?: "Server xatosi: ${response.code()}")
                     onComplete(false, null, null, 0, 0, getCachedBalance(), body?.nextSpinAt, msg)
                 }
             }

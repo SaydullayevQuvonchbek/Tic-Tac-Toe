@@ -23,6 +23,9 @@ class MainActivity : AppCompatActivity() {
         insetsController.isAppearanceLightStatusBars = !isDark
         insetsController.isAppearanceLightNavigationBars = !isDark
 
+        // Ensure user is authenticated and has Sanctum token in background
+        com.example.tictactoe.network.AuthManager.ensureAuthenticated(this)
+
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as androidx.navigation.fragment.NavHostFragment
         val navController = navHostFragment.navController
         androidx.navigation.ui.NavigationUI.setupWithNavController(binding.bottomNav, navController)

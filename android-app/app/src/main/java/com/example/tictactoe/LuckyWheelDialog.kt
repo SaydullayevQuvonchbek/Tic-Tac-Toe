@@ -13,6 +13,8 @@ import android.widget.Toast
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import com.example.tictactoe.GameEconomyManager
+import com.example.tictactoe.network.AuthManager
 import com.example.tictactoe.repository.EconomyRepository
 
 class LuckyWheelDialog(
@@ -71,12 +73,53 @@ class LuckyWheelDialog(
             HapticHelper.performClick(context)
             SoundHelper.playRewardSound(context)
 
-            EconomyRepository.spinWheel { success, segment, label, coins, xp, newBalance, nextSpinAt, message ->
-                if (!success) {
-                    tvResult.text = message ?: "Xatolik yuz berdi"
-                    tvResult.setTextColor(Color.parseColor("#EF4444"))
+            val triggerLocalSpin: () -> Unit = {
+                wheelView.startSpin(null) { item ->
+                    prefs.edit().putString("last_lucky_wheel_date", today).apply()
+
+                    val coinsEarned = item.coinAmount
+                    val xpEarned = item.xpAmount
+                    if (coinsEarned > 0) {
+                        GameEconomyManager.addCoins(context, coinsEarned)
+                    }
+                    if (xpEarned > 0) {
+                        val curXp = prefs.getInt("xp", 0) + xpEarned
+                        prefs.edit().putInt("xp", curXp).apply()
+                    }
+
+                    tvResult.text = "🎉 TABRIKLAYMIZ: ${item.label}!"
+                    tvResult.setTextColor(Color.parseColor("#10B981"))
+
+                    ConfettiView.show(rootLayout)
+
+                    btnSpin.text = "QABUL QILISH! 🎁"
                     btnSpin.isEnabled = true
                     btnClose.isEnabled = true
+
+                    btnSpin.setOnClickListener {
+                        onRewardClaimed(coinsEarned, xpEarned)
+                        dismiss()
+                    }
+                }
+            }
+
+            if (!AuthManager.hasValidToken(context)) {
+                triggerLocalSpin()
+                return@setOnClickListener
+            }
+
+            EconomyRepository.spinWheel { success, segment, label, coins, xp, newBalance, nextSpinAt, message ->
+                if (!success) {
+                    if (message != null && (message.contains("429") || message.contains("kelmadi") || message.contains("allaqachon"))) {
+                        tvResult.text = message
+                        tvResult.setTextColor(Color.parseColor("#EF4444"))
+                        btnSpin.isEnabled = true
+                        btnClose.isEnabled = true
+                        return@spinWheel
+                    }
+
+                    // Fallback to local spin on 401, network failure or server error
+                    triggerLocalSpin()
                     return@spinWheel
                 }
 
@@ -93,7 +136,6 @@ class LuckyWheelDialog(
                 }
 
                 wheelView.startSpin(targetIndex) { item ->
-                    // Record spin date
                     prefs.edit().putString("last_lucky_wheel_date", today).apply()
 
                     tvResult.text = "🎉 TABRIKLAYMIZ: ${label ?: item.label}!"

@@ -39,6 +39,9 @@ class DashboardFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Ensure user is authenticated and has token
+        com.example.tictactoe.network.AuthManager.ensureAuthenticated(requireContext())
+
         binding.btnEditProfile.setThrottleClickListener {
             showEditProfileDialog()
         }
