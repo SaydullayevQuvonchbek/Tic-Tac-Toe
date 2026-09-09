@@ -401,72 +401,64 @@ class DashboardFragment : Fragment() {
         val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
         val username = sharedPref.getString("username", "") ?: ""
         if (username.isEmpty()) {
-            showEditProfileDialog()
-            return false
+            com.example.tictactoe.network.AuthManager.getOrInitUsername(requireContext())
         }
         return true
     }
 
     private fun loadProfile() {
         val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
-        val username = sharedPref.getString("username", "") ?: ""
+        var username = sharedPref.getString("username", "") ?: ""
+        if (username.isEmpty()) {
+            username = com.example.tictactoe.network.AuthManager.getOrInitUsername(requireContext())
+        }
         val level = sharedPref.getInt("level", 1)
         val xp = sharedPref.getInt("xp", 0)
         val coins = sharedPref.getInt("coins", 0)
         val streak = sharedPref.getInt("streak_count", 0)
 
-        if (username.isNotEmpty()) {
-            binding.tvUsername.text = username
-            binding.tvAvatarInitials.text = initialsOf(username)
-            binding.tvLevelInfo.text = "LVL $level · ${LevelHelper.xpIntoLevel(xp, level)}/${LevelHelper.XP_PER_LEVEL} XP"
-            binding.pbXp.progress = LevelHelper.levelProgressPercent(xp, level)
-            binding.tvStreak.text = "🔥 $streak"
-            binding.tvCoins.text = "🪙 $coins"
+        binding.tvUsername.text = username
+        binding.tvAvatarInitials.text = initialsOf(username)
+        binding.tvLevelInfo.text = "LVL $level · ${LevelHelper.xpIntoLevel(xp, level)}/${LevelHelper.XP_PER_LEVEL} XP"
+        binding.pbXp.progress = LevelHelper.levelProgressPercent(xp, level)
+        binding.tvStreak.text = "🔥 $streak"
+        binding.tvCoins.text = "🪙 $coins"
 
-            val league = QuestManager.getLeagueTier(xp)
-            binding.tvLeagueBadge.text = league.first.replace(" League", "").uppercase()
-            binding.tvLeagueBadge.setTextColor(Color.parseColor(league.second))
+        val league = QuestManager.getLeagueTier(xp)
+        binding.tvLeagueBadge.text = league.first.replace(" League", "").uppercase()
+        binding.tvLeagueBadge.setTextColor(Color.parseColor(league.second))
 
-            updateGameLocks()
-            updateDailyQuestsUI()
-            updateQuickTogglesUI()
+        updateGameLocks()
+        updateDailyQuestsUI()
+        updateQuickTogglesUI()
 
-            // Update Best Records
-            val wins = sharedPref.getInt("wins", 0)
-            val mathScore = sharedPref.getInt("math_high_score", 0)
-            val memoryScore = sharedPref.getInt("memory_game_best", 0)
-            val colorScore = sharedPref.getInt("color_match_high_score", 0)
-            val score2048 = sharedPref.getInt("game_2048_high_score", 0)
-            val connect4Wins = sharedPref.getInt("connect4_wins", 0)
-            val waterUnlocked = sharedPref.getInt("water_sort_unlocked_level", 1)
-            val dotsWins = sharedPref.getInt("dots_and_boxes_wins", 0)
-            val gomokuWins = sharedPref.getInt("gomoku_wins", 0)
-            val checkersWins = sharedPref.getInt("checkers_wins", 0)
-            val durakWins = sharedPref.getInt("durak_wins", 0)
-            val chessWins = sharedPref.getInt("chess_wins", 0)
+        // Update Best Records
+        val wins = sharedPref.getInt("wins", 0)
+        val mathScore = sharedPref.getInt("math_high_score", 0)
+        val memoryScore = sharedPref.getInt("memory_game_best", 0)
+        val colorScore = sharedPref.getInt("color_match_high_score", 0)
+        val score2048 = sharedPref.getInt("game_2048_high_score", 0)
+        val connect4Wins = sharedPref.getInt("connect4_wins", 0)
+        val waterUnlocked = sharedPref.getInt("water_sort_unlocked_level", 1)
+        val dotsWins = sharedPref.getInt("dots_and_boxes_wins", 0)
+        val gomokuWins = sharedPref.getInt("gomoku_wins", 0)
+        val checkersWins = sharedPref.getInt("checkers_wins", 0)
+        val durakWins = sharedPref.getInt("durak_wins", 0)
+        val chessWins = sharedPref.getInt("chess_wins", 0)
 
-            val mathUnlocked = sharedPref.getInt("math_unlocked_level", 1)
-            binding.tvRecordTicTacToe.text = "🏆 Wins: $wins"
-            binding.tvRecordMath.text = "⭐ Level $mathUnlocked / 30"
-            binding.tvRecordMemory.text = if (memoryScore > 0) "⭐ Best: $memoryScore pts" else "⭐ 30 Levels"
-            binding.tvRecordColorMatch.text = if (colorScore > 0) "⭐ High Score: $colorScore" else "⭐ Speed & Focus"
-            binding.tvRecord2048.text = if (score2048 > 0) "⭐ Best: $score2048" else "⭐ Reach 2048 Tile"
-            binding.tvRecordConnect4.text = "🏆 Wins: $connect4Wins"
-            binding.tvRecordWaterSort.text = "⭐ Level $waterUnlocked / 50"
-            binding.tvRecordDotsAndBoxes.text = "🏆 Wins: $dotsWins"
-            binding.tvRecordGomoku.text = "🏆 Wins: $gomokuWins"
-            binding.tvRecordCheckers.text = "🏆 Wins: $checkersWins"
-            binding.tvRecordDurak.text = "🏆 Wins: $durakWins"
-            binding.tvRecordChess.text = "🏆 Wins: $chessWins • Do'st bilan Onlayn & AI Bot"
-        } else {
-            binding.tvUsername.text = "Guest Player"
-            binding.tvAvatarInitials.text = "GP"
-            binding.tvLevelInfo.text = "LVL 1 · 0/${LevelHelper.XP_PER_LEVEL} XP"
-            binding.pbXp.progress = 0
-            binding.tvStreak.text = "🔥 0"
-            binding.tvCoins.text = "🪙 0"
-            showEditProfileDialog()
-        }
+        val mathUnlocked = sharedPref.getInt("math_unlocked_level", 1)
+        binding.tvRecordTicTacToe.text = "🏆 Wins: $wins"
+        binding.tvRecordMath.text = "⭐ Level $mathUnlocked / 30"
+        binding.tvRecordMemory.text = if (memoryScore > 0) "⭐ Best: $memoryScore pts" else "⭐ 30 Levels"
+        binding.tvRecordColorMatch.text = if (colorScore > 0) "⭐ High Score: $colorScore" else "⭐ Speed & Focus"
+        binding.tvRecord2048.text = if (score2048 > 0) "⭐ Best: $score2048" else "⭐ Reach 2048 Tile"
+        binding.tvRecordConnect4.text = "🏆 Wins: $connect4Wins"
+        binding.tvRecordWaterSort.text = "⭐ Level $waterUnlocked / 50"
+        binding.tvRecordDotsAndBoxes.text = "🏆 Wins: $dotsWins"
+        binding.tvRecordGomoku.text = "🏆 Wins: $gomokuWins"
+        binding.tvRecordCheckers.text = "🏆 Wins: $checkersWins"
+        binding.tvRecordDurak.text = "🏆 Wins: $durakWins"
+        binding.tvRecordChess.text = "🏆 Wins: $chessWins • Do'st bilan Onlayn & AI Bot"
     }
 
     private fun initialsOf(name: String): String {

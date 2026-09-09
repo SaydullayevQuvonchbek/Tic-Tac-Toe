@@ -34,6 +34,17 @@ object AuthManager {
         return !token.isNullOrBlank()
     }
 
+    fun getOrInitUsername(context: Context): String {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        var username = prefs.getString(KEY_USERNAME, null)
+        if (username.isNullOrBlank()) {
+            val devId = getOrGenerateDeviceId(context)
+            username = "Player_" + devId.take(5).uppercase()
+            prefs.edit().putString(KEY_USERNAME, username).apply()
+        }
+        return username
+    }
+
     fun clearToken(context: Context) {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             .edit()
@@ -57,7 +68,7 @@ object AuthManager {
         }
 
         val deviceId = getOrGenerateDeviceId(context)
-        val username = prefs.getString(KEY_USERNAME, null) ?: ("Player_" + deviceId.take(6))
+        val username = getOrInitUsername(context)
 
         ApiClient.instance.auth(AuthRequest(deviceId, username)).enqueue(object : Callback<AuthResponse> {
             override fun onResponse(call: Call<AuthResponse>, response: Response<AuthResponse>) {

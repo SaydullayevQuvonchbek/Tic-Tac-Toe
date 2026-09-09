@@ -136,9 +136,14 @@ class LeaderboardFragment : Fragment() {
         binding.rvLeaderboard.visibility = View.VISIBLE
 
         val userInList = players.firstOrNull { it.username.equals(myUsername, ignoreCase = true) }
-        val rank = userInList?.rank
-        val xp = userInList?.xp ?: myXp
-        updateCompactBadge(rank, xp)
+        val isTrulyMe = userInList != null && (userInList.xp == myXp || Math.abs(userInList.xp - myXp) <= 50)
+        val rank = if (isTrulyMe) {
+            userInList!!.rank
+        } else {
+            val higherCount = players.count { it.xp > myXp }
+            if (higherCount == 0 && myXp > 0) 1 else higherCount + 1
+        }
+        updateCompactBadge(rank, myXp)
     }
 
     private fun renderFriendsList() {
