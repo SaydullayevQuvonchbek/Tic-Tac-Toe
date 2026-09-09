@@ -586,9 +586,6 @@ class DashboardFragment : Fragment() {
         sharedPref.edit().putString("username", newUsername).apply()
         loadProfile()
 
-        // TODO: Removed ProgressDialog
-        // val pd = android.app.ProgressDialog(context).apply { ... }
-
         ApiClient.instance.auth(AuthRequest(deviceId, newUsername))
             .enqueue(object : Callback<AuthResponse> {
                 override fun onResponse(call: Call<AuthResponse>, response: Response<AuthResponse>) {
@@ -637,8 +634,6 @@ class DashboardFragment : Fragment() {
         val sharedPref = requireActivity().getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
         val userId = sharedPref.getInt("user_id", -1)
         if (userId == -1) return
-
-        // TODO: Removed ProgressDialog
 
         ApiClient.instance.claimDailyReward(DailyRewardRequest(userId))
             .enqueue(object : Callback<DailyRewardResponse> {

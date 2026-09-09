@@ -223,21 +223,15 @@ class DurakFragment : Fragment() {
     }
 
     private fun joinOnlineRoom(code: String) {
-        val safeContext = context
-        val pd = safeContext?.let {
-            try {
-                android.app.ProgressDialog(it).apply {
-                    setMessage("Joining Durak room...")
-                    setCancelable(false)
-                    show()
-                }
-            } catch (_: Exception) { null }
-        }
+        binding.btnStartGame.isEnabled = false
+        val origText = binding.btnStartGame.text.toString()
+        binding.btnStartGame.text = "Ulanmoqda..."
 
         ApiClient.instance.joinRoom(RoomJoinRequest(myPlayerId, code)).enqueue(object : Callback<RoomJoinResponse> {
             override fun onResponse(call: Call<RoomJoinResponse>, response: Response<RoomJoinResponse>) {
                 if (!isAdded || _binding == null) return
-                try { pd?.dismiss() } catch (_: Exception) {}
+                binding.btnStartGame.isEnabled = true
+                binding.btnStartGame.text = origText
                 if (response.isSuccessful && response.body()?.status == "success") {
                     roomCode = code
                     isHost = false
@@ -247,14 +241,15 @@ class DurakFragment : Fragment() {
                     subscribePusherEvents()
                     sendCardActionOnline("guest_joined", "", "", seqTagged = false)
                 } else {
-                    Toast.makeText(context, response.body()?.message ?: "Room not found", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, response.body()?.message ?: "Xona topilmadi", Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<RoomJoinResponse>, t: Throwable) {
                 if (!isAdded || _binding == null) return
-                try { pd?.dismiss() } catch (_: Exception) {}
-                Toast.makeText(context, "Network Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                binding.btnStartGame.isEnabled = true
+                binding.btnStartGame.text = origText
+                Toast.makeText(context, "Tarmoq xatosi: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }

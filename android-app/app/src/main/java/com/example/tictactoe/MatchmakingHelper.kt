@@ -31,7 +31,7 @@ object MatchmakingHelper {
             "gomoku" -> "Gomoku"
             "dots_and_boxes" -> "Dots & Boxes"
             "durak" -> "Durak"
-            else -> gameType.replace("_", " ").capitalize()
+            else -> gameType.replace("_", " ").replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
         }
     }
 
@@ -130,9 +130,9 @@ object MatchmakingHelper {
                         if (hasRealOpponent) {
                             searchCompleted = true
                             handler.removeCallbacksAndMessages(null)
-                            val roomCode = body?.room_code ?: ""
-                            val isHost = body?.is_host ?: true
-                            val oppName = body?.opponent?.username ?: "Player 2"
+                            val roomCode = body.room_code ?: ""
+                            val isHost = body.is_host ?: true
+                            val oppName = body.opponent?.username ?: "Player 2"
 
                             tvStatus.text = "🎉 Raqib topildi!"
                             tvSub.text = "Raqib: $oppName (Ulanmoqda...)"

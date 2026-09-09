@@ -124,6 +124,7 @@ class LeaderboardFragment : Fragment() {
     }
 
     private fun renderGlobalLeaderboard(players: List<LeaderboardPlayer>) {
+        binding.layoutEmptyState.visibility = View.GONE
         bindPodium(players.take(3))
         // Pass all remaining players (no .take(10) truncation!)
         val listRest = players.drop(3)
@@ -155,6 +156,19 @@ class LeaderboardFragment : Fragment() {
     }
 
     private fun displayFriends(friends: List<FriendsManager.Friend>) {
+        if (friends.isEmpty()) {
+            binding.tvFriendsCount.text = "DO'STLARINGIZ (0)"
+            binding.rvLeaderboard.visibility = View.GONE
+            binding.layoutEmptyState.visibility = View.VISIBLE
+            binding.tvEmptyIcon.text = "👥"
+            binding.tvEmptyTitle.text = "Hozircha do'stlar yo'q"
+            binding.tvEmptyMessage.text = "Do'stingizning taxallusini (username) qidirib toping yoki yuqoridagi 'Do'st qo'shish' tugmasi orqali qo'shing!"
+            updateCompactBadge(rank = 1, xp = myXp)
+            return
+        }
+
+        binding.layoutEmptyState.visibility = View.GONE
+        binding.rvLeaderboard.visibility = View.VISIBLE
         binding.tvFriendsCount.text = "DO'STLARINGIZ (${friends.size})"
 
         val friendList = friends.map {
@@ -241,6 +255,19 @@ class LeaderboardFragment : Fragment() {
     }
 
     private fun displayDivisionPlayers(players: List<LeagueManager.LeaguePlayer>) {
+        if (players.isEmpty()) {
+            binding.rvLeaderboard.visibility = View.GONE
+            binding.layoutEmptyState.visibility = View.VISIBLE
+            binding.tvEmptyIcon.text = "🏆"
+            binding.tvEmptyTitle.text = "Divizionda o'yinchilar yo'q"
+            binding.tvEmptyMessage.text = "Hozirgi ligangizda hali boshqa o'yinchilar yo'q. Birinchilardan bo'lib o'yinlarni yuting!"
+            updateCompactBadge(rank = 1, xp = myXp)
+            return
+        }
+
+        binding.layoutEmptyState.visibility = View.GONE
+        binding.rvLeaderboard.visibility = View.VISIBLE
+
         val rankedDivision = players.map {
             LeaderboardPlayer(
                 rank = it.rank,
@@ -260,7 +287,6 @@ class LeaderboardFragment : Fragment() {
             showChallengeButton = true,
             onChallenge = { player -> onPlayerChallenge(player) }
         )
-        binding.rvLeaderboard.visibility = View.VISIBLE
     }
 
     private fun showAddFriendDialog() {
@@ -391,7 +417,7 @@ class LeaderboardFragment : Fragment() {
                 binding.progressBar.visibility = View.GONE
                 if (response.isSuccessful && response.body()?.status == "success") {
                     val list = response.body()?.leaderboard ?: emptyList()
-                    cachedGlobalPlayers = if (list.isNotEmpty()) list else generateFallbackPlayers()
+                    cachedGlobalPlayers = if (list.isNotEmpty()) list else listOf(LeaderboardPlayer(1, myUsername, myLevel, myXp, myWins))
                     if (currentTab == "GLOBAL") {
                         renderGlobalLeaderboard(cachedGlobalPlayers)
                     }
@@ -410,31 +436,13 @@ class LeaderboardFragment : Fragment() {
 
     private fun useFallbackLeaderboard() {
         if (cachedGlobalPlayers.isEmpty()) {
-            cachedGlobalPlayers = generateFallbackPlayers()
+            cachedGlobalPlayers = listOf(
+                LeaderboardPlayer(1, myUsername, myLevel, myXp, myWins)
+            )
         }
         if (currentTab == "GLOBAL") {
             renderGlobalLeaderboard(cachedGlobalPlayers)
         }
-    }
-
-    private fun generateFallbackPlayers(): List<LeaderboardPlayer> {
-        return listOf(
-            LeaderboardPlayer(1, "Jahongir_King", 15, 6420, 184),
-            LeaderboardPlayer(2, "Sardor_Dev", 14, 5890, 162),
-            LeaderboardPlayer(3, "Nodira_Master", 13, 5120, 140),
-            LeaderboardPlayer(4, "Sherzod_Pro", 12, 4780, 125),
-            LeaderboardPlayer(5, "Alisher_UZB", 11, 4310, 118),
-            LeaderboardPlayer(6, "Malika_Star", 10, 3950, 99),
-            LeaderboardPlayer(7, "Bobur_99", 9, 3420, 85),
-            LeaderboardPlayer(8, "Ziyoda_Chess", 8, 2980, 74),
-            LeaderboardPlayer(9, "Rustam_Fast", 7, 2610, 68),
-            LeaderboardPlayer(10, "Farrux_Arena", 6, 2190, 53),
-            LeaderboardPlayer(11, "Bekzod_Win", 5, 1840, 47),
-            LeaderboardPlayer(12, "Otabek_Top", 5, 1530, 39),
-            LeaderboardPlayer(13, "Kamola_Play", 4, 1280, 32),
-            LeaderboardPlayer(14, "Azamat_Cool", 3, 980, 24),
-            LeaderboardPlayer(15, "Madina_Smart", 2, 750, 18)
-        )
     }
 
     override fun onDestroyView() {

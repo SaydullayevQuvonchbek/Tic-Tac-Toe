@@ -105,9 +105,6 @@ class ProfileFragment : Fragment() {
         sharedPref.edit().putString("username", newUsername).apply()
         loadProfile()
 
-        // TODO: Removed ProgressDialog
-        // val pd = android.app.ProgressDialog(context).apply { ... }
-
         com.example.tictactoe.network.ApiClient.instance.auth(com.example.tictactoe.network.AuthRequest(deviceId, newUsername))
             .enqueue(object : retrofit2.Callback<com.example.tictactoe.network.AuthResponse> {
                 override fun onResponse(call: retrofit2.Call<com.example.tictactoe.network.AuthResponse>, response: retrofit2.Response<com.example.tictactoe.network.AuthResponse>) {

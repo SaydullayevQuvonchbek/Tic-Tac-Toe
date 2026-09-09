@@ -460,21 +460,14 @@ class ChessFragment : Fragment() {
     }
 
     private fun joinOnlineRoom(code: String) {
-        val safeContext = context
-        val pd = safeContext?.let {
-            try {
-                android.app.ProgressDialog(it).apply {
-                    setMessage("Shaxmat xonasiga ulanmoqda...")
-                    setCancelable(false)
-                    show()
-                }
-            } catch (_: Exception) { null }
-        }
+        binding.btnStartGame.isEnabled = false
+        binding.btnStartGame.text = "Ulanmoqda..."
 
         ApiClient.instance.joinRoom(RoomJoinRequest(myUserId, code)).enqueue(object : Callback<RoomJoinResponse> {
             override fun onResponse(call: Call<RoomJoinResponse>, response: Response<RoomJoinResponse>) {
                 if (!isAdded || _binding == null) return
-                try { pd?.dismiss() } catch (_: Exception) {}
+                binding.btnStartGame.isEnabled = true
+                binding.btnStartGame.text = "O'yinni boshlash"
                 if (response.isSuccessful && response.body()?.status == "success") {
                     roomCode = code
                     isHost = false
@@ -493,7 +486,8 @@ class ChessFragment : Fragment() {
 
             override fun onFailure(call: Call<RoomJoinResponse>, t: Throwable) {
                 if (!isAdded || _binding == null) return
-                try { pd?.dismiss() } catch (_: Exception) {}
+                binding.btnStartGame.isEnabled = true
+                binding.btnStartGame.text = "O'yinni boshlash"
                 Toast.makeText(context, "Tarmoq xatosi: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })

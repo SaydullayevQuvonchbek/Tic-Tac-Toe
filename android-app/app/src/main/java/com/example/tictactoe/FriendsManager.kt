@@ -24,17 +24,15 @@ object FriendsManager {
         val lastSeen: String
     )
 
-    private val DEFAULT_FRIENDS = listOf(
-        Friend("f1", 101, "Shohruh_Pro", 8, 2400, 62, true, "Hozir onlayn"),
-        Friend("f2", 102, "Malika_Queen", 6, 1750, 45, true, "Hozir onlayn"),
-        Friend("f3", 103, "Jasur_Master", 5, 1200, 31, false, "1 soat oldin"),
-        Friend("f4", 104, "Sardor_Gamer", 4, 850, 22, true, "Hozir onlayn"),
-        Friend("f5", 105, "Aziza_Chess", 3, 520, 14, false, "Kecha")
-    )
-
     fun getFriends(context: Context): List<Friend> {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        val jsonStr = prefs.getString(KEY_FRIENDS, null) ?: return DEFAULT_FRIENDS
+        val jsonStr = prefs.getString(KEY_FRIENDS, null) ?: return emptyList()
+
+        // Clean up legacy test friends if they were stored in SharedPreferences
+        if (jsonStr.contains("Shohruh_Pro") || jsonStr.contains("Malika_Queen") || jsonStr.contains("Jasur_Master")) {
+            prefs.edit().remove(KEY_FRIENDS).apply()
+            return emptyList()
+        }
 
         return try {
             val arr = JSONArray(jsonStr)
@@ -46,17 +44,17 @@ object FriendsManager {
                         id = obj.getString("id"),
                         user_id = if (obj.has("user_id")) obj.getInt("user_id") else null,
                         username = obj.getString("username"),
-                        level = obj.getInt("level"),
-                        xp = obj.getInt("xp"),
-                        wins = obj.getInt("wins"),
-                        isOnline = obj.getBoolean("isOnline"),
-                        lastSeen = obj.getString("lastSeen")
+                        level = obj.optInt("level", 1),
+                        xp = obj.optInt("xp", 0),
+                        wins = obj.optInt("wins", 0),
+                        isOnline = obj.optBoolean("isOnline", false),
+                        lastSeen = obj.optString("lastSeen", "Yaqinda")
                     )
                 )
             }
-            if (list.isEmpty()) DEFAULT_FRIENDS else list
+            list
         } catch (e: Exception) {
-            DEFAULT_FRIENDS
+            emptyList()
         }
     }
 
@@ -64,7 +62,7 @@ object FriendsManager {
         ApiClient.instance.getFriends().enqueue(object : Callback<FriendsListResponse> {
             override fun onResponse(call: Call<FriendsListResponse>, response: Response<FriendsListResponse>) {
                 val body = response.body()
-                if (response.isSuccessful && body != null && body.success && body.friends.isNotEmpty()) {
+                if (response.isSuccessful && body != null && body.success) {
                     val serverFriends = body.friends.map { f ->
                         Friend(
                             id = f.id ?: "f_${f.user_id}",
@@ -141,11 +139,11 @@ object FriendsManager {
         val newFriend = Friend(
             id = "f_${System.currentTimeMillis()}",
             username = trimmed,
-            level = (1..6).random(),
-            xp = (200..1800).random(),
-            wins = (5..40).random(),
-            isOnline = true,
-            lastSeen = "Hozir onlayn"
+            level = 1,
+            xp = 0,
+            wins = 0,
+            isOnline = false,
+            lastSeen = "Kutilmoqda"
         )
         friends.add(0, newFriend)
         saveFriends(context, friends)

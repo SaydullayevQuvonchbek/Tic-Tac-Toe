@@ -55,29 +55,16 @@ object LeagueManager {
     }
 
     fun getDivisionPlayers(currentLeague: LeagueInfo, userXp: Int, username: String): List<LeaguePlayer> {
-        val players = mutableListOf<LeaguePlayer>()
-        val botNames = listOf("Rustam_UZ", "Shahzod_99", "Farrux_King", "Dilnoza_Star", "Bobur_Pro", "Nodir_Chess", "Akmal_Champion")
-
-        val baseMin = currentLeague.minXp
-        val baseMax = if (currentLeague.maxXp == Int.MAX_VALUE) currentLeague.minXp + 2000 else currentLeague.maxXp
-
-        // Generate bracket of 8 players in this league
-        val generatedXps = mutableListOf<Int>()
-        for (i in 0 until 7) {
-            generatedXps.add((baseMin + (baseMax - baseMin) * Math.random()).toInt())
-        }
-        generatedXps.add(userXp)
-        generatedXps.sortDescending()
-
-        for (i in generatedXps.indices) {
-            val pXp = generatedXps[i]
-            val isMe = (pXp == userXp)
-            val name = if (isMe) username else botNames.getOrElse(i) { "Player_${i + 1}" }
-            val wins = (pXp / 35).coerceAtLeast(1)
-            players.add(LeaguePlayer(i + 1, name, pXp, wins, i < 3))
-        }
-
-        return players
+        val safeName = if (username.isNotBlank()) username else "Player"
+        return listOf(
+            LeaguePlayer(
+                rank = 1,
+                username = safeName,
+                xp = userXp,
+                wins = (userXp / 50).coerceAtLeast(0),
+                isPromotionZone = true
+            )
+        )
     }
 
     fun fetchLeagueStatus(onResult: (LeagueStatusResponse?) -> Unit) {
