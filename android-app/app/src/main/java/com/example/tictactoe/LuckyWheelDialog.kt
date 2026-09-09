@@ -84,8 +84,17 @@ class LuckyWheelDialog(
                         when {
                             message == "401_NO_TOKEN" || message == "401_UNAUTHORIZED" || message?.contains("401") == true || message?.contains("Unauthenticated") == true -> {
                                 AuthManager.clearToken(context)
-                                tvResult.text = "🔒 Avtorizatsiya xatosi (401). Qaytadan bosing (qayta ulaniladi)."
-                                tvResult.setTextColor(Color.parseColor("#EF4444"))
+                                // Automatically retry auth + spin
+                                tvResult.text = "🔄 Qayta ulanilmoqda..."
+                                tvResult.setTextColor(Color.parseColor("#38BDF8"))
+                                AuthManager.ensureAuthenticated(context) { retrySuccess, retryToken ->
+                                    if (retrySuccess && !retryToken.isNullOrBlank()) {
+                                        performServerSpin()
+                                    } else {
+                                        tvResult.text = "⚠️ Serverga ulanib bo'lmadi. Qayta urinib ko'ring."
+                                        tvResult.setTextColor(Color.parseColor("#EF4444"))
+                                    }
+                                }
                             }
                             message != null && (message.contains("429") || message.contains("kelmadi") || message.contains("allaqachon")) -> {
                                 tvResult.text = message
@@ -135,21 +144,27 @@ class LuckyWheelDialog(
                 }
             }
 
-            if (!AuthManager.hasValidToken(context)) {
-                // Ensure authentication first, strictly obtain Sanctum Bearer token
-                AuthManager.ensureAuthenticated(context) { authSuccess, token ->
-                    if (!authSuccess || token.isNullOrBlank()) {
-                        tvResult.text = "⚠️ Avtorizatsiyadan o'tib bo'lmadi. Internetni tekshirib, qayta urinib ko'ring."
-                        tvResult.setTextColor(Color.parseColor("#EF4444"))
-                        btnSpin.isEnabled = true
-                        btnClose.isEnabled = true
-                        return@ensureAuthenticated
+            // Always attempt authentication first, then spin
+            fun trySpinWithAuth(isRetry: Boolean = false) {
+                if (!AuthManager.hasValidToken(context)) {
+                    tvResult.text = "🔄 Server bilan ulanilmoqda..."
+                    tvResult.setTextColor(Color.parseColor("#38BDF8"))
+                    AuthManager.ensureAuthenticated(context) { authSuccess, token ->
+                        if (!authSuccess || token.isNullOrBlank()) {
+                            tvResult.text = "⚠️ Serverga ulanib bo'lmadi. Internet aloqangizni tekshiring va qayta urinib ko'ring."
+                            tvResult.setTextColor(Color.parseColor("#EF4444"))
+                            btnSpin.isEnabled = true
+                            btnClose.isEnabled = true
+                            return@ensureAuthenticated
+                        }
+                        performServerSpin()
                     }
+                } else {
                     performServerSpin()
                 }
-            } else {
-                performServerSpin()
             }
+
+            trySpinWithAuth()
         }
     }
 }

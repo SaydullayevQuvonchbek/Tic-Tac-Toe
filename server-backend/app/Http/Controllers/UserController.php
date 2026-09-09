@@ -93,7 +93,7 @@ class UserController extends Controller
                 'wins' => (int) ($user->wins ?: 0),
                 'losses' => (int) ($user->losses ?: 0),
                 'draws' => (int) ($user->draws ?: 0),
-                'coins' => (int) $wallet->balance,
+                'coins' => $balance,
                 'streak_count' => (int) ($user->streak_count ?: 0),
                 'unlocked_games' => $user->unlocked_games ?? [],
             ],
