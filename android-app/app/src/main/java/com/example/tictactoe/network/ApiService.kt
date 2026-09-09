@@ -2,10 +2,12 @@ package com.example.tictactoe.network
 
 import retrofit2.Call
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 data class AuthRequest(val device_id: String, val username: String)
 data class AuthResponse(val status: String, val user: User?, val token: String? = null, val balance: Int? = null)
@@ -155,4 +157,39 @@ interface ApiService {
 
     @POST("inventory/{itemKey}/equip")
     fun equipItem(@Path("itemKey") itemKey: String): Call<EquipResponseDto>
+
+    // ===== Friends Endpoints =====
+    @GET("friends")
+    fun getFriends(): Call<FriendsListResponse>
+
+    @GET("friends/search")
+    fun searchUsers(@Query("q") query: String): Call<UserSearchResponse>
+
+    @POST("friends/request")
+    fun sendFriendRequest(@Body req: FriendRequestSend): Call<FriendRequestResponse>
+
+    @GET("friends/requests")
+    fun getFriendRequests(): Call<FriendRequestsResponse>
+
+    @POST("friends/requests/{id}/accept")
+    fun acceptFriendRequest(@Path("id") requestId: Long): Call<FriendRequestResponse>
+
+    @POST("friends/requests/{id}/reject")
+    fun rejectFriendRequest(@Path("id") requestId: Long): Call<FriendRequestResponse>
+
+    @DELETE("friends/{id}")
+    fun deleteFriend(@Path("id") friendId: Int): Call<FriendRequestResponse>
+
+    @POST("friends/challenge")
+    fun challengeFriend(@Body req: FriendChallengeRequest): Call<FriendChallengeResponse>
+
+    // ===== Leagues Endpoints =====
+    @GET("leagues/status")
+    fun getLeagueStatus(): Call<LeagueStatusResponse>
+
+    @GET("leagues/division")
+    fun getLeagueDivision(): Call<LeagueDivisionResponse>
+
+    @POST("leagues/claim-season-reward")
+    fun claimSeasonReward(): Call<SeasonRewardClaimResponse>
 }

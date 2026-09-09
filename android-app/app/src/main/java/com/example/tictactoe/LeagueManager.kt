@@ -1,5 +1,14 @@
 package com.example.tictactoe
 
+import com.example.tictactoe.network.ApiClient
+import com.example.tictactoe.network.LeagueDivisionResponse
+import com.example.tictactoe.network.LeagueStatusResponse
+import com.example.tictactoe.network.SeasonRewardClaimResponse
+import com.example.tictactoe.repository.EconomyRepository
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+
 object LeagueManager {
 
     data class LeagueInfo(
@@ -18,7 +27,8 @@ object LeagueManager {
         val username: String,
         val xp: Int,
         val wins: Int,
-        val isPromotionZone: Boolean
+        val isPromotionZone: Boolean,
+        val user_id: Int? = null
     )
 
     val LEAGUES = listOf(
@@ -68,5 +78,73 @@ object LeagueManager {
         }
 
         return players
+    }
+
+    fun fetchLeagueStatus(onResult: (LeagueStatusResponse?) -> Unit) {
+        ApiClient.instance.getLeagueStatus().enqueue(object : Callback<LeagueStatusResponse> {
+            override fun onResponse(call: Call<LeagueStatusResponse>, response: Response<LeagueStatusResponse>) {
+                if (response.isSuccessful && response.body() != null && response.body()!!.success) {
+                    onResult(response.body())
+                } else {
+                    onResult(null)
+                }
+            }
+
+            override fun onFailure(call: Call<LeagueStatusResponse>, t: Throwable) {
+                onResult(null)
+            }
+        })
+    }
+
+    fun fetchDivisionPlayers(
+        fallbackLeague: LeagueInfo,
+        userXp: Int,
+        username: String,
+        onResult: (List<LeaguePlayer>) -> Unit
+    ) {
+        ApiClient.instance.getLeagueDivision().enqueue(object : Callback<LeagueDivisionResponse> {
+            override fun onResponse(call: Call<LeagueDivisionResponse>, response: Response<LeagueDivisionResponse>) {
+                val body = response.body()
+                if (response.isSuccessful && body != null && body.success && body.players.isNotEmpty()) {
+                    val list = body.players.map { p ->
+                        LeaguePlayer(
+                            rank = p.rank,
+                            username = p.username,
+                            xp = p.weekly_xp,
+                            wins = p.wins,
+                            isPromotionZone = p.is_promotion_zone,
+                            user_id = p.user_id
+                        )
+                    }
+                    onResult(list)
+                } else {
+                    onResult(getDivisionPlayers(fallbackLeague, userXp, username))
+                }
+            }
+
+            override fun onFailure(call: Call<LeagueDivisionResponse>, t: Throwable) {
+                onResult(getDivisionPlayers(fallbackLeague, userXp, username))
+            }
+        })
+    }
+
+    fun claimSeasonReward(
+        onResult: (success: Boolean, coins: Int, xp: Int, newBalance: Int, message: String?) -> Unit
+    ) {
+        ApiClient.instance.claimSeasonReward().enqueue(object : Callback<SeasonRewardClaimResponse> {
+            override fun onResponse(call: Call<SeasonRewardClaimResponse>, response: Response<SeasonRewardClaimResponse>) {
+                val body = response.body()
+                if (response.isSuccessful && body != null && body.success) {
+                    EconomyRepository.saveBalance(body.new_balance)
+                    onResult(true, body.reward_coins, body.reward_xp, body.new_balance, body.message)
+                } else {
+                    onResult(false, 0, 0, EconomyRepository.getCachedBalance(), body?.message)
+                }
+            }
+
+            override fun onFailure(call: Call<SeasonRewardClaimResponse>, t: Throwable) {
+                onResult(false, 0, 0, EconomyRepository.getCachedBalance(), t.localizedMessage)
+            }
+        })
     }
 }

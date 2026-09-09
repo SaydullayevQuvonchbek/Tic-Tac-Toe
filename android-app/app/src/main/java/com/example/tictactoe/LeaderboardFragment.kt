@@ -141,10 +141,22 @@ class LeaderboardFragment : Fragment() {
     }
 
     private fun renderFriendsList() {
-        val friends = FriendsManager.getFriends(requireContext())
+        // 1. Render current cached friends immediately
+        val cachedFriends = FriendsManager.getFriends(requireContext())
+        displayFriends(cachedFriends)
+
+        // 2. Fetch fresh friends from server asynchronously
+        FriendsManager.fetchFriendsFromServer(requireContext()) { freshFriends ->
+            activity?.runOnUiThread {
+                if (!isAdded || _binding == null || currentTab != "FRIENDS") return@runOnUiThread
+                displayFriends(freshFriends)
+            }
+        }
+    }
+
+    private fun displayFriends(friends: List<FriendsManager.Friend>) {
         binding.tvFriendsCount.text = "DO'STLARINGIZ (${friends.size})"
 
-        // Construct rankings among friends including the user
         val friendList = friends.map {
             LeaderboardPlayer(
                 rank = 0,
@@ -204,8 +216,32 @@ class LeaderboardFragment : Fragment() {
             binding.tvLeagueProgressText.text = "Eng yuqori Master ligadasiz! Chempion! 👑"
         }
 
-        val divisionPlayers = LeagueManager.getDivisionPlayers(league, myXp, myUsername)
-        val rankedDivision = divisionPlayers.map {
+        // Render initial local division
+        val localPlayers = LeagueManager.getDivisionPlayers(league, myXp, myUsername)
+        displayDivisionPlayers(localPlayers)
+
+        // Fetch authoritative server division and season status
+        LeagueManager.fetchDivisionPlayers(league, myXp, myUsername) { divisionPlayers ->
+            activity?.runOnUiThread {
+                if (!isAdded || _binding == null || currentTab != "LIGA") return@runOnUiThread
+                displayDivisionPlayers(divisionPlayers)
+            }
+        }
+
+        LeagueManager.fetchLeagueStatus { status ->
+            activity?.runOnUiThread {
+                if (!isAdded || _binding == null || currentTab != "LIGA" || status == null) return@runOnUiThread
+                if (status.season != null && status.season.time_left_seconds > 0) {
+                    val days = status.season.time_left_seconds / 86400
+                    val hours = (status.season.time_left_seconds % 86400) / 3600
+                    binding.tvLeagueTierDesc.text = "${league.description} • ⏳ Mavsum tugashiga: ${days}k ${hours}s"
+                }
+            }
+        }
+    }
+
+    private fun displayDivisionPlayers(players: List<LeagueManager.LeaguePlayer>) {
+        val rankedDivision = players.map {
             LeaderboardPlayer(
                 rank = it.rank,
                 username = it.username,
@@ -258,22 +294,62 @@ class LeaderboardFragment : Fragment() {
     }
 
     private fun onPlayerChallenge(player: LeaderboardPlayer) {
+        val games = arrayOf("❌⭕ Tic-Tac-Toe", "♟️ Shaxmat (Chess)", "⚪ Shashka (Checkers)", "🔴 Connect 4")
+        val gameKeys = arrayOf("tictactoe", "chess", "checkers", "connect4")
+
         AlertDialog.Builder(requireContext())
-            .setTitle("⚔️ Do'stona bellashuv")
-            .setMessage("${player.username} bilan bellashishni istaysizmi?\n\nO'yin rejimi: 1v1 Arena")
-            .setPositiveButton("Jangga kirish") { _, _ ->
-                try {
-                    val bundle = Bundle().apply {
-                        putBoolean("is_quick_match", true)
-                        putString("opponent_name", player.username)
+            .setTitle("⚔️ ${player.username} bilan bellashuv")
+            .setItems(games) { _, which ->
+                val selectedKey = gameKeys[which]
+                val safeContext = context ?: return@setItems
+                Toast.makeText(safeContext, "⚔️ ${player.username} ga taklif yuborilmoqda...", Toast.LENGTH_SHORT).show()
+
+                val friendObj = FriendsManager.getFriends(safeContext).firstOrNull { it.username.equals(player.username, ignoreCase = true) }
+                val targetId = friendObj?.user_id ?: 0
+
+                if (targetId > 0) {
+                    FriendsManager.challengeFriend(targetId, selectedKey) { success, roomCode, _ ->
+                        if (!isAdded || _binding == null) return@challengeFriend
+                        if (success && !roomCode.isNullOrEmpty()) {
+                            launchGameWithRoom(selectedKey, roomCode, player.username)
+                        } else {
+                            launchLocalChallenge(selectedKey, player.username)
+                        }
                     }
-                    findNavController().navigate(R.id.gameFragment, bundle)
-                } catch (e: Exception) {
-                    Toast.makeText(context, "⚔️ ${player.username} ga taklif yuborildi!", Toast.LENGTH_SHORT).show()
+                } else {
+                    launchLocalChallenge(selectedKey, player.username)
                 }
             }
             .setNegativeButton("Bekor qilish", null)
             .show()
+    }
+
+    private fun launchGameWithRoom(gameKey: String, roomCode: String, opponentName: String) {
+        val bundle = Bundle().apply {
+            putString("roomCode", roomCode)
+            putBoolean("isHost", true)
+            putBoolean("isOnlineMode", true)
+            putString("opponent_name", opponentName)
+        }
+        when (gameKey) {
+            "chess" -> findNavController().navigate(R.id.chessFragment, bundle)
+            "checkers" -> findNavController().navigate(R.id.checkersFragment, bundle)
+            "connect4" -> findNavController().navigate(R.id.connect4Fragment, bundle)
+            else -> findNavController().navigate(R.id.gameFragment, bundle)
+        }
+    }
+
+    private fun launchLocalChallenge(gameKey: String, opponentName: String) {
+        val bundle = Bundle().apply {
+            putBoolean("is_quick_match", true)
+            putString("opponent_name", opponentName)
+        }
+        when (gameKey) {
+            "chess" -> findNavController().navigate(R.id.chessFragment, bundle)
+            "checkers" -> findNavController().navigate(R.id.checkersFragment, bundle)
+            "connect4" -> findNavController().navigate(R.id.connect4Fragment, bundle)
+            else -> findNavController().navigate(R.id.gameFragment, bundle)
+        }
     }
 
     private fun initialsOf(name: String): String {
